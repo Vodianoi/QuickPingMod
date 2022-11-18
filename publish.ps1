@@ -44,6 +44,7 @@ Write-Host "Publishing for $Target from $TargetPath"
 
 if ($Target.Equals("Debug")) {
     if ($DeployPath.Equals("")){
+      Write-Host "DeployPath Null !"
       $DeployPath = "$ValheimPath\BepInEx\plugins"
     }
     

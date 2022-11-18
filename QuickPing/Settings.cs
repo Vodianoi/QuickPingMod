@@ -1,0 +1,52 @@
+﻿using BepInEx.Configuration;
+using Jotunn.Configs;
+using UnityEngine;
+
+namespace QuickPing
+{
+    static class Settings
+    {
+
+        public static ConfigEntry<bool> PingWhereLooking { get; private set; }
+        public static ConfigEntry<KeyCode> PingKey { get; private set; }
+        public static ConfigEntry<bool> AddPin { get; private set; }
+
+        public static ButtonConfig pingBtn { get; private set; }
+
+        public static void Init()
+        {
+
+            PingWhereLooking = QuickPing.Instance.Config.Bind("General",
+                "PingWhereLooking",
+                true,
+                "Create a ping where you are looking when you press <PingKey>");
+
+            PingKey = QuickPing.Instance.Config.Bind("General",
+                "PingInputKey",
+                KeyCode.T,
+                "The keybind to trigger a ping where you are looking");
+
+            AddPin = QuickPing.Instance.Config.Bind("General",
+                "AddPinOnMap",
+                true,
+                "If true, add a pin when useful resources (copper, berries, campfire, portals etc.) are pinged.");
+
+
+            AddInputs();
+        }
+
+        private static void AddInputs()
+        {
+
+            pingBtn = new ButtonConfig
+            {
+                Name = "Ping",
+                Key = PingKey.Value,
+                ActiveInCustomGUI = true,
+                HintToken = "Ping !"
+            };
+
+            Jotunn.Managers.InputManager.Instance.AddButton(QuickPing.PluginGUID, pingBtn);
+        }
+    }
+}
