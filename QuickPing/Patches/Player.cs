@@ -1,10 +1,5 @@
 ﻿using HarmonyLib;
-using Jotunn.Configs;
-using System;
 using UnityEngine;
-using UnityEngine.Events;
-using static Chat;
-using UnityEngine.UI;
 
 namespace QuickPing.Patches
 {
@@ -15,7 +10,7 @@ namespace QuickPing.Patches
         private static void Player_Update(Player __instance)
         {
 
-
+            string pingText = "Ping!";
             if (Player.m_localPlayer == __instance)
             {
                 if (!Settings.PingWhereLooking.Value)
@@ -36,7 +31,7 @@ namespace QuickPing.Patches
 
 
                             Vector3 pos = hit.point;
-                            QuickPing.Instance.PingText = $"Ping : x:{(int)pos.x}  y:{(int)pos.y}";
+                            pingText = $"Ping : x:{(int)pos.x}  y:{(int)pos.y}";
                             bool pinClose = false;
 
                             if (__instance.GetHoverCreature() != null)
@@ -44,7 +39,7 @@ namespace QuickPing.Patches
                             {
                                 Character creature = __instance.GetHoverCreature();
                                 pos = creature.GetCenterPoint();
-                                QuickPing.Instance.PingText = creature.m_name;
+                                pingText = creature.m_name;
                             }
                             else if (__instance.GetHoverObject() != null)
                             {
@@ -52,8 +47,8 @@ namespace QuickPing.Patches
                                 if (hoverable != null && Settings.AddPin.Value)
                                 {
                                     AddPin(__instance, pos, out pinClose);
-                                    QuickPing.Instance.PingText = hoverable.GetHoverName();
-                                    Jotunn.Logger.LogInfo("Pinged : " + QuickPing.Instance.PingText);
+                                    pingText = hoverable.GetHoverName();
+                                    Jotunn.Logger.LogInfo("Pinged : " + pingText);
                                 }
 
                                 pos = __instance.GetHoverObject().transform.position;
@@ -61,7 +56,7 @@ namespace QuickPing.Patches
                                 //pinText += hoverable.GetHoverName();
                             }
                             if (!pinClose)
-                                SendPing(pos, QuickPing.Instance.PingText);
+                                SendPing(pos, pingText);
 
                         }
             }

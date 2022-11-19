@@ -50,7 +50,7 @@ namespace QuickPing
             DefaultColor = QuickPing.Instance.Config.Bind("General",
                 "DefaultColor",
                 Color.white,
-                "Default color.");
+                "Default color");
 
             AddInputs();
         }

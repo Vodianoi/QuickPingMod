@@ -18,7 +18,6 @@ namespace QuickPing
         public const string PluginVersion = "0.1.0";
 
 
-        public string PingText;
         public static ManualLogSource Log { get; private set; }
         
         // Use this class to add your own localization to the game
@@ -27,13 +26,11 @@ namespace QuickPing
         
         private void Awake()
         {
-            PingText = "PING !";
             Log = Logger;
             Instance = this;
             Log.LogInfo($"Plugin {PluginGUID} is loaded!");
 
             Settings.Init();
-
             Harmony.CreateAndPatchAll(typeof(Player_Patch), PluginGUID);
             Harmony.CreateAndPatchAll(typeof(ChatPing_Patch), PluginGUID);
             Harmony.CreateAndPatchAll(typeof(Minimap_Patch), PluginGUID);
