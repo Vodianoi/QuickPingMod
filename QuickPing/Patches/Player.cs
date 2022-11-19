@@ -36,7 +36,7 @@ namespace QuickPing.Patches
 
 
                             Vector3 pos = hit.point;
-                            string pinText = $"Ping : x:{(int)pos.x}  y:{(int)pos.y}";
+                            QuickPing.Instance.PingText = $"Ping : x:{(int)pos.x}  y:{(int)pos.y}";
                             bool pinClose = false;
 
                             if (__instance.GetHoverCreature() != null)
@@ -44,7 +44,7 @@ namespace QuickPing.Patches
                             {
                                 Character creature = __instance.GetHoverCreature();
                                 pos = creature.GetCenterPoint();
-                                pinText = creature.m_name;
+                                QuickPing.Instance.PingText = creature.m_name;
                             }
                             else if (__instance.GetHoverObject() != null)
                             {
@@ -52,8 +52,8 @@ namespace QuickPing.Patches
                                 if (hoverable != null && Settings.AddPin.Value)
                                 {
                                     AddPin(__instance, pos, out pinClose);
-                                    pinText = hoverable.GetHoverName();
-                                    Jotunn.Logger.LogInfo("Pinged : " + pinText);
+                                    QuickPing.Instance.PingText = hoverable.GetHoverName();
+                                    Jotunn.Logger.LogInfo("Pinged : " + QuickPing.Instance.PingText);
                                 }
 
                                 pos = __instance.GetHoverObject().transform.position;
@@ -61,15 +61,8 @@ namespace QuickPing.Patches
                                 //pinText += hoverable.GetHoverName();
                             }
                             if (!pinClose)
-                                SendPing(pos, pinText);
-                            else
-                            {
-                                //GameObject obj = isObj ? __instance.GetHoverObject() : __instance.GetHoverCreature().gameObject;
-                                //TODO? Ping with custommessage
+                                SendPing(pos, QuickPing.Instance.PingText);
 
-                                //OnNewChatMessage(obj, __instance.GetPlayerID(), pos, Talker.Type.Ping, __instance.m_name, pinText, __instance.m_name);
-                                //AddInworldText(Chat.instance, obj, __instance.GetOwner(), pos, Talker.Type.Ping, __instance.m_name, pinText);
-                            }
                         }
             }
         }

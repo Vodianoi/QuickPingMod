@@ -10,12 +10,15 @@ namespace QuickPing
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     [BepInDependency(Jotunn.Main.ModGuid)]
     //[NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
-    internal class QuickPing : BaseUnityPlugin
+    public class QuickPing : BaseUnityPlugin
     {
         public static QuickPing Instance { get; set; }
         public const string PluginGUID = "com.atopy.plugins.quickping";
         public const string PluginName = "QuickPing";
         public const string PluginVersion = "0.1.0";
+
+
+        public string PingText;
         public static ManualLogSource Log { get; private set; }
         
         // Use this class to add your own localization to the game
@@ -24,6 +27,7 @@ namespace QuickPing
         
         private void Awake()
         {
+            PingText = "PING !";
             Log = Logger;
             Instance = this;
             Log.LogInfo($"Plugin {PluginGUID} is loaded!");
