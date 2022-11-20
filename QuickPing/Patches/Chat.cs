@@ -1,6 +1,8 @@
 ﻿using HarmonyLib;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
+using static PrivilegeManager;
 
 namespace QuickPing.Patches
 {
@@ -11,7 +13,6 @@ namespace QuickPing.Patches
         [HarmonyPatch(typeof(Chat))]
         [HarmonyPatch("AddInworldText")]
         [HarmonyPrefix]
-        [HarmonyDebug]
         public static bool AddInworldText(Chat __instance, GameObject go, long senderID, Vector3 position, Talker.Type type, string user, string text)
         {
             Chat.WorldTextInstance worldTextInstance = __instance.FindExistingWorldText(senderID);
@@ -47,6 +48,8 @@ namespace QuickPing.Patches
                     color = Settings.DefaultColor.Value;
                     break;
             }
+            
+            worldTextInstance.m_textField.supportRichText = true;
             worldTextInstance.m_textField.color = color;
             worldTextInstance.m_textField.GetComponent<Outline>().enabled = type != Talker.Type.Whisper;
             worldTextInstance.m_timer = 0f;
@@ -56,6 +59,25 @@ namespace QuickPing.Patches
 
             return false;
         }
+
+        [HarmonyPatch(typeof(Chat), "UpdateWorldTextField")]
+        [HarmonyPrefix]
+        public static bool UpdateWorldTextField(Chat __instance, Chat.WorldTextInstance wt)
+        {
+            string text = "";
+            if (wt.m_type == Talker.Type.Shout || wt.m_type == Talker.Type.Ping)
+            {
+                //"<color=#" + ColorUtility.ToHtmlStringRGBA(Settings.PlayerColor.Value) + ">" + user + "</color>: <color=#" + ColorUtility.ToHtmlStringRGBA(color) + ">" + text + "</color>";
+                text = "<color=#" + ColorUtility.ToHtmlStringRGBA(Settings.PlayerColor.Value) + ">" + wt.m_name + ": ";
+            }
+
+            text += "</color>: <color=#" + ColorUtility.ToHtmlStringRGBA(wt.m_textField.color) + ">" + wt.m_text + "</color>";
+            wt.m_textField.text = text;
+
+            return false;
+        }
+
+
 
 
 

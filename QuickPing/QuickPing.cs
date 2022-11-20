@@ -4,12 +4,13 @@ using BepInEx;
 using HarmonyLib;
 using QuickPing.Patches;
 using BepInEx.Logging;
+using Jotunn.Utils;
 
 namespace QuickPing
 {
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     [BepInDependency(Jotunn.Main.ModGuid)]
-    //[NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.Minor)]
+    [NetworkCompatibility(CompatibilityLevel.NotEnforced, VersionStrictness.Minor)]
     public class QuickPing : BaseUnityPlugin
     {
         public static QuickPing Instance { get; set; }
@@ -34,6 +35,7 @@ namespace QuickPing
             Harmony.CreateAndPatchAll(typeof(Player_Patch), PluginGUID);
             Harmony.CreateAndPatchAll(typeof(ChatPing_Patch), PluginGUID);
             Harmony.CreateAndPatchAll(typeof(Minimap_Patch), PluginGUID);
+            Harmony.CreateAndPatchAll(typeof(Terminal_Patch), PluginGUID);
 
 
             // To learn more about Jotunn's features, go to

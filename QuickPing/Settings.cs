@@ -10,6 +10,7 @@ namespace QuickPing
         public static ConfigEntry<bool> PingWhereLooking { get; private set; }
         public static ConfigEntry<KeyCode> PingKey { get; private set; }
         public static ConfigEntry<bool> AddPin { get; private set; }
+        public static ConfigEntry<Color> PlayerColor { get; private set; }
         public static ConfigEntry<Color> ShoutColor { get; private set; }
         public static ConfigEntry<Color> WhisperColor { get; private set; }
         public static ConfigEntry<Color> PingColor { get; private set; }
@@ -34,6 +35,11 @@ namespace QuickPing
                 "AddPinOnMap",
                 true,
                 "If true, add a pin when useful resources (copper, berries, campfire, portals etc.) are pinged.");
+
+            PlayerColor = QuickPing.Instance.Config.Bind("General",
+                "PlayerColor",
+                Color.green,
+                "Color for Player name in pings/messages.");
 
             ShoutColor = QuickPing.Instance.Config.Bind("General",
                 "ShoutColor",
