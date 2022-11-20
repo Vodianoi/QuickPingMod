@@ -27,6 +27,7 @@ namespace QuickPing
         
         private void Awake()
         {
+            
             Log = Logger;
             Instance = this;
             Log.LogInfo($"Plugin {PluginGUID} is loaded!");
