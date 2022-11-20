@@ -42,22 +42,23 @@ namespace QuickPing.Patches
                     break;
                 case Talker.Type.Ping:
                     color = Settings.PingColor.Value;
-
                     break;
                 default:
                     color = Settings.DefaultColor.Value;
                     break;
             }
-
             worldTextInstance.m_textField.color = color;
             worldTextInstance.m_textField.GetComponent<Outline>().enabled = type != Talker.Type.Whisper;
             worldTextInstance.m_timer = 0f;
             worldTextInstance.m_text = text;
-            
+
             __instance.UpdateWorldTextField(worldTextInstance);
 
             return false;
         }
+
+
+
 
     }
 
