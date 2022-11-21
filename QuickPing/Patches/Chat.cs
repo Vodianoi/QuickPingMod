@@ -41,6 +41,11 @@ namespace QuickPing.Patches
                     break;
                 case Talker.Type.Ping:
                     color = Settings.PingColor.Value;
+                    if (text == "")
+                    {
+                        ///fix #1
+                        text = "PING !";
+                    }
                     break;
                 default:
                     color = Settings.DefaultColor.Value;
