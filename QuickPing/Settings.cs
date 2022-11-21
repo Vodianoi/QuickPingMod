@@ -43,7 +43,7 @@ namespace QuickPing
 
             ShoutColor = QuickPing.Instance.Config.Bind("General",
                 "ShoutColor",
-                Color.cyan,
+                Color.yellow,
                 "Color for Shout ping.");
             WhisperColor = QuickPing.Instance.Config.Bind("General",
                 "WhisperColor",
@@ -72,7 +72,7 @@ namespace QuickPing
                 HintToken = "Ping !"
             };
 
-            Jotunn.Managers.InputManager.Instance.AddButton(QuickPing.PluginGUID, pingBtn);
+            Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, pingBtn);
         }
     }
 }

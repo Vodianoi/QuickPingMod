@@ -1,14 +1,13 @@
-﻿# JotunnModStub
-Upon building for release, this README.md is copied into the `Package` folder for thunderstore packaging. Remember to also edit the manifest.json and supply your own mod icon.
+# QuickPing
+ExploreTogether ping feature remastered. ***WIP***
 
-## Installation (manual)
-
+##Install Instruction
+Works client-side only but must be installed on all clients if you want everyone able to see pinged objects.
 
 ## Features
-
-
-## Changelog
-
+- Use T (by default, see config) to ping what you point, name of pointed object/creature is displayed in the world and on the minimap to all players.
+- Ping ores, berries, portals etc to add a pin on the map (TODO : Add a key to add any object on the map)
+- Change text colors (chat, ping, shout, whisper, names) in config ***need improvement***
 
 ## Known issues
-You can find the github at:
+You can find the github at: https://github.com/Vodianoi/QuickPingMod

@@ -1,8 +1,6 @@
 ﻿using HarmonyLib;
-using System;
 using UnityEngine;
 using UnityEngine.UI;
-using static PrivilegeManager;
 
 namespace QuickPing.Patches
 {
@@ -48,7 +46,7 @@ namespace QuickPing.Patches
                     color = Settings.DefaultColor.Value;
                     break;
             }
-            
+
             worldTextInstance.m_textField.supportRichText = true;
             worldTextInstance.m_textField.color = color;
             worldTextInstance.m_textField.GetComponent<Outline>().enabled = type != Talker.Type.Whisper;

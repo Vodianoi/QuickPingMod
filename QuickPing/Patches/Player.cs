@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using System;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
 using UnityEngine;
 
 namespace QuickPing.Patches
@@ -29,22 +28,15 @@ namespace QuickPing.Patches
                                 out Vector3 pos,
                                 500f);
 
-                            //var ray = new Ray(GameCamera.instance.transform.position, GameCamera.instance.transform.TransformDirection(Vector3.forward));
-
-                            //var mask = Pathfinding.instance.m_layers | Pathfinding.instance.m_waterLayers;
-                            //Physics.Raycast(ray, out var hit, 500f, mask);
-
-                            //pingText = $"Ping : x:{(int)pos.x}  y:{(int)pos.y}";
                             if (hover == null && hoverCreature == null) return;
 
 
                             bool pinClose = false;
                             if (hoverCreature != null)
                             {
-                                QuickPing.Log.LogError($"Ping : {hoverCreature}");
+                                //QuickPing.Log.LogError($"Ping : {hoverCreature}");
                                 if (Settings.AddPin.Value)
                                 {
-
                                     AddPin(__instance, hoverCreature, pos, out pinClose);
                                 }
                                 pingText = Localization.instance.Localize(hoverCreature.GetHoverName());
@@ -52,27 +44,25 @@ namespace QuickPing.Patches
                             else if (hover != null && hover.TryGetComponent(out Hoverable hoverable))
                             {
 
-                                QuickPing.Log.LogDebug($"Ping : {hoverable}");
+                                //QuickPing.Log.LogDebug($"Ping : {hoverable}");
                                 if (Settings.AddPin.Value)
                                 {
-
                                     AddPin(__instance, hoverable, pos, out pinClose);
                                 }
                                 pingText = Localization.instance.Localize(hoverable.GetHoverName());
                             }
                             else if (hover.transform.parent && hover.transform.parent.TryGetComponent(out hoverable))
                             {
-                                QuickPing.Log.LogDebug($"Ping : {hoverable} in parent");
+                                //QuickPing.Log.LogDebug($"Ping : {hoverable} in parent");
                                 if (Settings.AddPin.Value)
                                 {
-
                                     AddPin(__instance, hoverable, pos, out pinClose);
                                 }
                                 pingText = Localization.instance.Localize(hoverable.GetHoverName());
                             }
                             else if (hover.transform.parent && hover.transform.parent.parent && hover.transform.parent.parent.TryGetComponent(out hoverable))
                             {
-                                QuickPing.Log.LogDebug($"Ping : {hoverable} in parent");
+                                //QuickPing.Log.LogDebug($"Ping : {hoverable} in parent");
                                 if (Settings.AddPin.Value)
                                 {
 
@@ -81,6 +71,8 @@ namespace QuickPing.Patches
                                 pingText = Localization.instance.Localize(hoverable.GetHoverName());
                             }
 
+                            /// Fix #1
+                            pingText = pingText == "" ? "PING !" : pingText;
                             if (!pinClose)
                                 SendPing(pos, pingText);
                             else
@@ -147,7 +139,7 @@ namespace QuickPing.Patches
             {
                 Vector3 vector = position;
                 //vector.y = localPlayer.transform.position.y;
-                ZRoutedRpc.instance.InvokeRoutedRPC(local ? Player.m_localPlayer.GetZDOID().userID : ZRoutedRpc.Everybody, "ChatMessage", vector, 3, localPlayer.GetPlayerName(), text, PrivilegeManager.GetNetworkUserId());
+                ZRoutedRpc.instance.InvokeRoutedRPC(local ? Player.m_localPlayer.GetZDOID().userID : ZRoutedRpc.Everybody, "ChatMessage", vector, 3, localPlayer.GetPlayerName(), text, 1);
                 if (Player.m_debugMode && Console.instance != null && Console.instance.IsCheatsEnabled() && Console.instance != null)
                 {
                     Console.instance.AddString(string.Format("Pinged at: {0}, {1}", vector.x, vector.z));
