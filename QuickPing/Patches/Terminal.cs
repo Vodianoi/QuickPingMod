@@ -1,9 +1,5 @@
 ﻿using HarmonyLib;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace QuickPing.Patches
@@ -11,9 +7,8 @@ namespace QuickPing.Patches
     internal class Terminal_Patch
     {
 
-        [HarmonyPatch(typeof(Terminal), "AddString", new Type[] {typeof(string), typeof(string), typeof(Talker.Type), typeof(bool)})]
+        [HarmonyPatch(typeof(Terminal), "AddString", new Type[] { typeof(string), typeof(string), typeof(Talker.Type), typeof(bool) })]
         [HarmonyPrefix]
-        [HarmonyDebug]
         public static bool AddString(Terminal __instance, string user, string text, Talker.Type type, bool timestamp = false)
         {
             Color color;

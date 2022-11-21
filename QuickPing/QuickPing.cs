@@ -1,42 +1,50 @@
+using BepInEx;
+using BepInEx.Logging;
+using HarmonyLib;
 using Jotunn.Entities;
 using Jotunn.Managers;
-using BepInEx;
-using HarmonyLib;
-using QuickPing.Patches;
-using BepInEx.Logging;
 using Jotunn.Utils;
+using QuickPing.Patches;
+
+
 
 namespace QuickPing
 {
-    [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
-    [BepInDependency(Jotunn.Main.ModGuid)]
+
+    public static class MyPluginInfo
+    {
+        public const string GUID = "com.atopy.plugins.quickping";
+        public const string NAME = "QuickPing";
+        public const string VERSION = "1.0.2";
+    }
+
+    [BepInPlugin(MyPluginInfo.GUID, MyPluginInfo.NAME, MyPluginInfo.VERSION)]
+    [BepInDependency(Jotunn.Main.ModGuid, BepInDependency.DependencyFlags.HardDependency)]
     [NetworkCompatibility(CompatibilityLevel.NotEnforced, VersionStrictness.Minor)]
     public class QuickPing : BaseUnityPlugin
     {
+
         public static QuickPing Instance { get; set; }
-        public const string PluginGUID = "com.atopy.plugins.quickping";
-        public const string PluginName = "QuickPing";
-        public const string PluginVersion = "0.1.0";
 
 
         public static ManualLogSource Log { get; private set; }
-        
+
         // Use this class to add your own localization to the game
         // https://valheim-modding.github.io/Jotunn/tutorials/localization.html
         public static CustomLocalization Localization = LocalizationManager.Instance.GetLocalization();
-        
+
         private void Awake()
         {
-            
+
             Log = Logger;
             Instance = this;
-            Log.LogInfo($"Plugin {PluginGUID} is loaded!");
+            //Log.LogInfo($"Plugin {MyPluginInfo.GUID} is loaded!");
 
             Settings.Init();
-            Harmony.CreateAndPatchAll(typeof(Player_Patch), PluginGUID);
-            Harmony.CreateAndPatchAll(typeof(ChatPing_Patch), PluginGUID);
-            Harmony.CreateAndPatchAll(typeof(Minimap_Patch), PluginGUID);
-            Harmony.CreateAndPatchAll(typeof(Terminal_Patch), PluginGUID);
+            Harmony.CreateAndPatchAll(typeof(Player_Patch), MyPluginInfo.GUID);
+            Harmony.CreateAndPatchAll(typeof(ChatPing_Patch), MyPluginInfo.GUID);
+            Harmony.CreateAndPatchAll(typeof(Minimap_Patch), MyPluginInfo.GUID);
+            Harmony.CreateAndPatchAll(typeof(Terminal_Patch), MyPluginInfo.GUID);
 
 
             // To learn more about Jotunn's features, go to
