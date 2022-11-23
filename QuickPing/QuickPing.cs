@@ -1,12 +1,7 @@
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using Jotunn.Entities;
-using Jotunn.Managers;
-using Jotunn.Utils;
 using QuickPing.Patches;
-
-
 
 namespace QuickPing
 {
@@ -19,8 +14,6 @@ namespace QuickPing
     }
 
     [BepInPlugin(MyPluginInfo.GUID, MyPluginInfo.NAME, MyPluginInfo.VERSION)]
-    [BepInDependency(Jotunn.Main.ModGuid, BepInDependency.DependencyFlags.HardDependency)]
-    [NetworkCompatibility(CompatibilityLevel.NotEnforced, VersionStrictness.Minor)]
     public class QuickPing : BaseUnityPlugin
     {
 
@@ -29,9 +22,10 @@ namespace QuickPing
 
         public static ManualLogSource Log { get; private set; }
 
+
         // Use this class to add your own localization to the game
         // https://valheim-modding.github.io/Jotunn/tutorials/localization.html
-        public static CustomLocalization Localization = LocalizationManager.Instance.GetLocalization();
+        //public static CustomLocalization Localization = LocalizationManager.Instance.GetLocalization();
 
         private void Awake()
         {
@@ -45,7 +39,6 @@ namespace QuickPing
             Harmony.CreateAndPatchAll(typeof(ChatPing_Patch), MyPluginInfo.GUID);
             Harmony.CreateAndPatchAll(typeof(Minimap_Patch), MyPluginInfo.GUID);
             Harmony.CreateAndPatchAll(typeof(Terminal_Patch), MyPluginInfo.GUID);
-
 
             // To learn more about Jotunn's features, go to
             // https://valheim-modding.github.io/Jotunn/tutorials/overview.html
