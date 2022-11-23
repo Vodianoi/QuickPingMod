@@ -63,13 +63,12 @@ namespace QuickPing
 
         private static void AddInputs()
         {
-
-            pingBtn = new ButtonConfig
+            pingBtn = new ZInput.ButtonDef
             {
-                Name = "Ping",
-                Key = PingKey.Value,
-                ActiveInCustomGUI = true,
-                HintToken = "Ping !"
+                m_name = "Ping",
+                m_key = PingKey.Value,
+                m_showHints = true,
+
             };
 
             Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, pingBtn);
