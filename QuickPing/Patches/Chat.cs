@@ -7,7 +7,17 @@ namespace QuickPing.Patches
 
     public class ChatPing_Patch
     {
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="__instance"></param>
+        /// <param name="go"></param>
+        /// <param name="senderID"></param>
+        /// <param name="position"></param>
+        /// <param name="type"></param>
+        /// <param name="user"></param>
+        /// <param name="text"></param>
+        /// <returns></returns>
         [HarmonyPatch(typeof(Chat))]
         [HarmonyPatch("AddInworldText")]
         [HarmonyPrefix]
@@ -18,7 +28,7 @@ namespace QuickPing.Patches
             {
                 worldTextInstance = new Chat.WorldTextInstance();
                 worldTextInstance.m_talkerID = senderID;
-                worldTextInstance.m_gui = UnityEngine.Object.Instantiate(__instance.m_worldTextBase, __instance.transform);
+                worldTextInstance.m_gui = Object.Instantiate(__instance.m_worldTextBase, __instance.transform);
                 worldTextInstance.m_gui.gameObject.SetActive(value: true);
                 worldTextInstance.m_textField = worldTextInstance.m_gui.transform.Find("Text").GetComponent<Text>();
                 __instance.m_worldTexts.Add(worldTextInstance);
@@ -41,11 +51,8 @@ namespace QuickPing.Patches
                     break;
                 case Talker.Type.Ping:
                     color = Settings.PingColor.Value;
-                    if (text == "")
-                    {
-                        ///fix #1
-                        text = "PING !";
-                    }
+                    if (text == string.Empty)
+                        text = Settings.pingText;
                     break;
                 default:
                     color = Settings.DefaultColor.Value;
@@ -63,6 +70,12 @@ namespace QuickPing.Patches
             return false;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="__instance"></param>
+        /// <param name="wt"></param>
+        /// <returns></returns>
         [HarmonyPatch(typeof(Chat), "UpdateWorldTextField")]
         [HarmonyPrefix]
         public static bool UpdateWorldTextField(Chat __instance, Chat.WorldTextInstance wt)
