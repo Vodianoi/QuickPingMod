@@ -2,7 +2,7 @@
 
 namespace QuickPing.Utilities
 {
-    internal static class Utils
+    internal static class GO_Ext
     {
         public static IDestructible GetRecursiveComponentInParents<IDestructible>(Transform root)
 
