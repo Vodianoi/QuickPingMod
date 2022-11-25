@@ -17,7 +17,7 @@ namespace QuickPing.Patches
         /// <param name="strID"></param>
         /// <param name="pos"></param>
         /// <param name="pinable"></param>
-        public static void AddPin(Player instance, GameObject hover, IDestructible idestructible, string strID, Vector3 pos, out bool pinable)
+        public static void AddPin(GameObject hover, string strID, Vector3 pos, out bool pinable)
         {
             pinable = false;
 
@@ -102,9 +102,11 @@ namespace QuickPing.Patches
 
                     if (pinData.m_name == null)
                         pinData.m_name = Localization.instance.Localize(strID);
+
+                    //Check if there is another pin in range
                     Minimap.PinData closestPin = Minimap.instance.GetClosestPin(pos, Settings.ClosestPinRange.Value);
 
-                    //Check if an already existing pin is at pos
+                    //PORTAL :Check if an already existing pin is at pos
                     if (strID == "$piece_portal")
                     {
                         pinData.m_type = Minimap.PinType.Icon4;
@@ -119,39 +121,39 @@ namespace QuickPing.Patches
                             if (closestPin != null)
                                 Minimap.instance.RemovePin(closestPin);
                             var pin = Minimap.instance.AddPin(pos, pinData.m_type, pinData.m_name, true, false, 0L);
-                            if (idestructible != null)
-                            {
-                                switch (idestructible)
-                                {
-                                    case WearNTear wearNTear:
-                                        QuickPing.Log.LogWarning($"Add on destroyed to -> {wearNTear.gameObject.name}");
-                                        wearNTear.m_onDestroyed += () => Minimap.instance.RemovePin(pin);
-                                        break;
-                                }
-                            }
+                            pinable = true;
+                            //if (idestructible != null)
+                            //{
+                            //    switch (idestructible)
+                            //    {
+                            //        case WearNTear wearNTear:
+                            //            QuickPing.Log.LogWarning($"Add on destroyed to -> {wearNTear.gameObject.name}");
+                            //            wearNTear.m_onDestroyed += () => Minimap.instance.RemovePin(pin);
+                            //            break;
+                            //    }
+                            //}
                             //INFO
                             QuickPing.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pos.x}, y:{pos.y}, Type:{pinData.m_type}");
                         }
                     }
+                    //OTHERS
                     else if (closestPin == null)
                     {
                         var pin = Minimap.instance.AddPin(pos, pinData.m_type, pinData.m_name, true, false, 0L);
-                        if (idestructible != null)
-                        {
-                            switch (idestructible)
-                            {
-                                case Destructible destructible:
-                                    QuickPing.Log.LogWarning($"Add on destroyed to -> {destructible.gameObject.name}");
-                                    destructible.m_onDestroyed += () => Minimap.instance.RemovePin(pin);
-                                    break;
-                                //DEBUG
-                                case MineRock5 mineRock5:
-                                    QuickPing.Log.LogWarning($"Add on destroyed to -> {mineRock5.gameObject.name}");
-                                    //MineRock_Patch.OnDestroyed += (x) => Minimap.instance.RemovePin(pin);
-                                    break;
-                                    //DEBUG
-                            }
-                        }
+                        pinable = true;
+                        //if (idestructible != null)
+                        //{
+                        //    switch (idestructible)
+                        //    {
+                        //        case Destructible destructible:
+                        //            QuickPing.Log.LogWarning($"Add on destroyed to -> {destructible.gameObject.name}");
+                        //            destructible.m_onDestroyed += () => Minimap.instance.RemovePin(pin);
+                        //            break;
+                        //        case MineRock5 mineRock5:
+                        //            QuickPing.Log.LogWarning($"Add on destroyed to -> {mineRock5.gameObject.name}");
+                        //            break;
+                        //    }
+                        //}
 
                         //INFO
                         QuickPing.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pos.x}, y:{pos.y}, Type:{pinData.m_type}");

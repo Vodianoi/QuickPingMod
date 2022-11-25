@@ -31,7 +31,6 @@ namespace QuickPing.Patches
                             FindHoverObject(
                                 out GameObject hover,
                                 out Character hoverCreature,
-                                out IDestructible destructible,
                                 out HoverType type,
                                 out Vector3 pos,
                                 out Vector3 center,
@@ -55,7 +54,7 @@ namespace QuickPing.Patches
 
                                 if (Settings.AddPin.Value)
                                 {
-                                    Minimap_Patch.AddPin(__instance, hover, destructible, pingText, center, out pinClose);
+                                    Minimap_Patch.AddPin(hover, pingText, center, out pinClose);
                                 }
                                 pingText = Localization.instance.Localize(pingText);
                             }
@@ -115,13 +114,12 @@ namespace QuickPing.Patches
         /// <param name="pos"></param>
         /// <param name="center"></param>
         /// <param name="range"></param>
-        public static void FindHoverObject(out GameObject hover, out Character hoverCreature, out IDestructible destructible, out HoverType type, out Vector3 pos, out Vector3 center, float range)
+        public static void FindHoverObject(out GameObject hover, out Character hoverCreature, out HoverType type, out Vector3 pos, out Vector3 center, float range)
         {
 
             type = HoverType.GameObject;
             hover = null;
             hoverCreature = null;
-            destructible = null;
             pos = Player.m_localPlayer.GetHeadPoint();
             center = pos;
             LayerMask m_interactMask = LayerMask.GetMask("Default", "static_solid", "Default_small", "piece", "piece_nonsolid", "terrain", "character", "character_net", "character_ghost", "character_noenv", "vehicle");
@@ -154,14 +152,14 @@ namespace QuickPing.Patches
                     {
                         hoverCreature = character;
                         center = hoverCreature.transform.position;
-                        character.gameObject.TryGetComponent(out destructible);
+                        //character.gameObject.TryGetComponent(out destructible);
                     }
                 }
 
                 if (Vector3.Distance(Player.m_localPlayer.GetEyePoint(), raycastHit.point) < range)
                 {
 
-                    destructible = (IDestructible)raycastHit.collider.GetComponent(typeof(IDestructible));
+                    //destructible = (IDestructible)raycastHit.collider.GetComponent(typeof(IDestructible));
                     //Collider
                     if (raycastHit.collider.GetComponent<Piece>())
                     {
@@ -184,7 +182,7 @@ namespace QuickPing.Patches
                         var list = raycastHit.collider.GetComponentsInChildren<GameObject>();
                         foreach (var go in list)
                         {
-                            destructible = (IDestructible)go.GetComponent(typeof(IDestructible));
+                            //destructible = (IDestructible)go.GetComponent(typeof(IDestructible));
                             if (go.TryGetComponent(out Piece _))
                             {
                                 type = HoverType.Piece;
@@ -204,7 +202,7 @@ namespace QuickPing.Patches
                     //Parents
                     else if (raycastHit.collider.transform.parent != null)
                     {
-                        destructible = Utilities.GO_Ext.GetRecursiveComponentInParents<IDestructible>(raycastHit.collider.transform);
+                        //destructible = Utilities.GO_Ext.GetRecursiveComponentInParents<IDestructible>(raycastHit.collider.transform);
                         //if (hover = Utilities.Utils.GetRecursiveParentWithComponent<Destructible>(raycastHit.collider.transform))
                         //{
                         //    type = HoverType.Destructible;
@@ -254,10 +252,10 @@ namespace QuickPing.Patches
 
                         break;
                 }
-                if (destructible != null)
-                {
-                    QuickPing.Log.LogWarning($"Found ${destructible}");
-                }
+                //if (destructible != null)
+                //{
+                //    QuickPing.Log.LogWarning($"Found ${destructible}");
+                //}
 #endif
             }
         }
