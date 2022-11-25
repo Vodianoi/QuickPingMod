@@ -7,13 +7,13 @@ namespace QuickPing.Patches
     /// <summary>
     /// Patch Player Class to add Ping Key and automatic pins
     /// </summary>
-    class Player_Patch
+    static class Player_Patch
     {
         /// <summary>
         /// Check for Key Input
         /// </summary>
         /// <param name="__instance">Local Player</param>
-        [HarmonyPatch(typeof(Player), "Update")]
+        [HarmonyPatch(typeof(Player), nameof(Player.Update))]
         [HarmonyPostfix]
         private static void Player_Update(Player __instance)
         {
@@ -31,6 +31,7 @@ namespace QuickPing.Patches
                             FindHoverObject(
                                 out GameObject hover,
                                 out Character hoverCreature,
+                                out IDestructible destructible,
                                 out HoverType type,
                                 out Vector3 pos,
                                 out Vector3 center,
@@ -54,7 +55,7 @@ namespace QuickPing.Patches
 
                                 if (Settings.AddPin.Value)
                                 {
-                                    Minimap_Patch.AddPin(__instance, hover, pingText, center, out pinClose);
+                                    Minimap_Patch.AddPin(__instance, hover, destructible, pingText, center, out pinClose);
                                 }
                                 pingText = Localization.instance.Localize(pingText);
                             }
@@ -100,18 +101,12 @@ namespace QuickPing.Patches
                     location = hover.GetComponent<Location>();
                     pingText = Localization_Patch.Localize(location);
                     break;
+                case HoverType.Destructible:
+                    break;
             }
-
             return pingText;
         }
 
-        public enum HoverType
-        {
-            GameObject,
-            Hoverable,
-            Piece,
-            Location
-        }
         /// <summary>
         /// 
         /// </summary>
@@ -120,12 +115,13 @@ namespace QuickPing.Patches
         /// <param name="pos"></param>
         /// <param name="center"></param>
         /// <param name="range"></param>
-        public static void FindHoverObject(out GameObject hover, out Character hoverCreature, out HoverType type, out Vector3 pos, out Vector3 center, float range)
+        public static void FindHoverObject(out GameObject hover, out Character hoverCreature, out IDestructible destructible, out HoverType type, out Vector3 pos, out Vector3 center, float range)
         {
 
             type = HoverType.GameObject;
             hover = null;
             hoverCreature = null;
+            destructible = null;
             pos = Player.m_localPlayer.GetHeadPoint();
             center = pos;
             LayerMask m_interactMask = LayerMask.GetMask("Default", "static_solid", "Default_small", "piece", "piece_nonsolid", "terrain", "character", "character_net", "character_ghost", "character_noenv", "vehicle");
@@ -138,13 +134,14 @@ namespace QuickPing.Patches
                 var ray = new Ray(GameCamera.instance.transform.position, GameCamera.instance.transform.forward);
                 pos = ray.GetPoint(range);
                 center = pos;
+                return;
             }
             //get closest actually
-            for (int i = 0; i < array2.Length; i++)
+            for (int i = 0; i < 1; i++)
             {
                 pos = array2[i].point;
                 RaycastHit raycastHit = array2[i];
-                if ((bool)raycastHit.collider.attachedRigidbody && raycastHit.collider.attachedRigidbody.gameObject == Player.m_localPlayer.gameObject)
+                if (OverlappingPlayer(ref raycastHit))
                 {
                     continue;
                 }
@@ -157,12 +154,14 @@ namespace QuickPing.Patches
                     {
                         hoverCreature = character;
                         center = hoverCreature.transform.position;
+                        character.gameObject.TryGetComponent(out destructible);
                     }
                 }
 
                 if (Vector3.Distance(Player.m_localPlayer.GetEyePoint(), raycastHit.point) < range)
                 {
 
+                    destructible = (IDestructible)raycastHit.collider.GetComponent(typeof(IDestructible));
                     //Collider
                     if (raycastHit.collider.GetComponent<Piece>())
                     {
@@ -185,6 +184,7 @@ namespace QuickPing.Patches
                         var list = raycastHit.collider.GetComponentsInChildren<GameObject>();
                         foreach (var go in list)
                         {
+                            destructible = (IDestructible)go.GetComponent(typeof(IDestructible));
                             if (go.TryGetComponent(out Piece _))
                             {
                                 type = HoverType.Piece;
@@ -204,16 +204,21 @@ namespace QuickPing.Patches
                     //Parents
                     else if (raycastHit.collider.transform.parent != null)
                     {
-
-                        if ((hover = GetRecursiveParentWithComponent<Location>(raycastHit.collider.transform)) != null)
+                        destructible = Utilities.GO_Ext.GetRecursiveComponentInParents<IDestructible>(raycastHit.collider.transform);
+                        //if (hover = Utilities.Utils.GetRecursiveParentWithComponent<Destructible>(raycastHit.collider.transform))
+                        //{
+                        //    type = HoverType.Destructible;
+                        //}
+                        /*else */
+                        if (hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Location>(raycastHit.collider.transform))
                         {
                             type = HoverType.Location;
                         }
-                        else if ((hover = GetRecursiveParentWithComponent<Piece>(raycastHit.collider.transform)) != null)
+                        else if (hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Piece>(raycastHit.collider.transform))
                         {
                             type = HoverType.Piece;
                         }
-                        else if ((hover = GetRecursiveParentWithComponent<Hoverable>(raycastHit.collider.transform)) != null)
+                        else if (hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Hoverable>(raycastHit.collider.transform))
                         {
                             type = HoverType.Hoverable;
                         }
@@ -249,31 +254,20 @@ namespace QuickPing.Patches
 
                         break;
                 }
+                if (destructible != null)
+                {
+                    QuickPing.Log.LogWarning($"Found ${destructible}");
+                }
 #endif
             }
         }
 
-        public static T GetRecursiveComponentInParents<T>(Transform root)
+        private static bool OverlappingPlayer(ref RaycastHit raycastHit)
         {
-
-            if (root.parent == null) return default;
-            var parent = root.parent;
-            if (parent.gameObject.TryGetComponent(out T res))
-                return res;
-            else
-                return GetRecursiveComponentInParents<T>(parent);
+            return (bool)raycastHit.collider.attachedRigidbody && raycastHit.collider.attachedRigidbody.gameObject == Player.m_localPlayer.gameObject;
         }
 
-        public static GameObject GetRecursiveParentWithComponent<T>(Transform root)
-        {
-            if (!root.parent) return null;
-            if (root.parent.gameObject.TryGetComponent(out T _))
-            {
-                return root.parent.gameObject;
-            }
-            else
-                return GetRecursiveParentWithComponent<T>(root.parent);
-        }
+
 
         /// <summary>
         /// 
