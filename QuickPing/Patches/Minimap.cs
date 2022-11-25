@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static Minimap;
 
 namespace QuickPing.Patches
 {
@@ -8,6 +9,7 @@ namespace QuickPing.Patches
     /// </summary>
     internal static class Minimap_Patch
     {
+        public static Dictionary<Vector3, GameObject> Pins { get; private set; }
         /// <summary>
         /// Add correct pin to map if Settings.
         /// </summary>
@@ -15,7 +17,7 @@ namespace QuickPing.Patches
         /// <param name="strID"></param>
         /// <param name="pos"></param>
         /// <param name="pinable"></param>
-        public static void AddPin(Player instance, GameObject hover, string strID, Vector3 pos, out bool pinable)
+        public static void AddPin(Player instance, GameObject hover, IDestructible idestructible, string strID, Vector3 pos, out bool pinable)
         {
             pinable = false;
 
@@ -113,17 +115,43 @@ namespace QuickPing.Patches
                             string tag = portalText.Split('"')[1];
                             Jotunn.Logger.LogInfo(tag);
                             pinData.m_name = tag;
+                            //TODO CHECK BEFORE REMOVE NON MAIS OH
                             if (closestPin != null)
                                 Minimap.instance.RemovePin(closestPin);
-                            Minimap.instance.AddPin(pos, pinData.m_type, pinData.m_name, true, false, 0L);
-
+                            var pin = Minimap.instance.AddPin(pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                            if (idestructible != null)
+                            {
+                                switch (idestructible)
+                                {
+                                    case WearNTear wearNTear:
+                                        QuickPing.Log.LogWarning($"Add on destroyed to -> {wearNTear.gameObject.name}");
+                                        wearNTear.m_onDestroyed += () => Minimap.instance.RemovePin(pin);
+                                        break;
+                                }
+                            }
                             //INFO
                             QuickPing.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pos.x}, y:{pos.y}, Type:{pinData.m_type}");
                         }
                     }
                     else if (closestPin == null)
                     {
-                        Minimap.instance.AddPin(pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                        var pin = Minimap.instance.AddPin(pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                        if (idestructible != null)
+                        {
+                            switch (idestructible)
+                            {
+                                case Destructible destructible:
+                                    QuickPing.Log.LogWarning($"Add on destroyed to -> {destructible.gameObject.name}");
+                                    destructible.m_onDestroyed += () => Minimap.instance.RemovePin(pin);
+                                    break;
+                                //DEBUG
+                                case MineRock5 mineRock5:
+                                    QuickPing.Log.LogWarning($"Add on destroyed to -> {mineRock5.gameObject.name}");
+                                    //MineRock_Patch.OnDestroyed += (x) => Minimap.instance.RemovePin(pin);
+                                    break;
+                                    //DEBUG
+                            }
+                        }
 
                         //INFO
                         QuickPing.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pos.x}, y:{pos.y}, Type:{pinData.m_type}");
@@ -135,6 +163,42 @@ namespace QuickPing.Patches
 
 
 
+        }
+        public static PinData FindPin(Vector3 pos, PinType type = PinType.None, string name = null)
+        {
+            var pins = new List<(PinData pin, float dis)>();
+
+            foreach (var pin in Minimap.instance.m_pins)
+                if (type == PinType.None || pin.m_type == type)
+                    pins.Add((pin, Utils.DistanceXZ(pos, pin.m_pos)));
+
+            PinData closest = null;
+            float closestDis = float.MaxValue;
+
+            foreach (var (pin, dis) in pins)
+                if (closest == null || dis < closestDis)
+                {
+                    closest = pin;
+                    closestDis = dis;
+                }
+
+            if (closestDis > 1f)
+                return null;
+
+            if (!string.IsNullOrEmpty(name) && closest.m_name != name)
+                return null;
+
+            return closest;
+        }
+
+        public static bool RemovePin(Vector3 pos, PinType type = PinType.None, string name = null)
+        {
+            if (FindPin(pos, type, name) is not PinData pin)
+                return false;
+
+            Minimap.instance.RemovePin(pin);
+
+            return true;
         }
     }
 }
