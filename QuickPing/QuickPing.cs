@@ -20,6 +20,7 @@ namespace QuickPing
         public static QuickPing Instance { get; set; }
 
 
+
         public static ManualLogSource Log { get; private set; }
 
 
@@ -39,6 +40,7 @@ namespace QuickPing
             Harmony.CreateAndPatchAll(typeof(ChatPing_Patch), MyPluginInfo.GUID);
             Harmony.CreateAndPatchAll(typeof(Minimap_Patch), MyPluginInfo.GUID);
             Harmony.CreateAndPatchAll(typeof(Terminal_Patch), MyPluginInfo.GUID);
+            Harmony.CreateAndPatchAll(typeof(MineRock5_Patch), MyPluginInfo.GUID);
 
             // To learn more about Jotunn's features, go to
             // https://valheim-modding.github.io/Jotunn/tutorials/overview.html
