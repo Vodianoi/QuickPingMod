@@ -52,6 +52,9 @@
   <PropertyGroup>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>QuickPing.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Patches\Chat.cs" />
     <Compile Include="Patches\Localization.cs" />
@@ -81,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Package\icon.png" />
+    <Content Include="QuickPing.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BepInEx.BaseLib">
