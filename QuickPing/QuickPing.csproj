@@ -67,6 +67,7 @@
     <Compile Include="Utilities\ReflectionUtil.cs" />
     <Compile Include="Utilities\ResourceUtils.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Utilities\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
