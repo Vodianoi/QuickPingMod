@@ -19,7 +19,7 @@ namespace QuickPing.Patches
         /// <param name="text"></param>
         /// <returns></returns>
         [HarmonyPatch(typeof(Chat))]
-        [HarmonyPatch("AddInworldText")]
+        [HarmonyPatch(nameof(Chat.AddInworldText))]
         [HarmonyPrefix]
         public static bool AddInworldText(Chat __instance, GameObject go, long senderID, Vector3 position, Talker.Type type, string user, string text)
         {
@@ -76,7 +76,7 @@ namespace QuickPing.Patches
         /// <param name="__instance"></param>
         /// <param name="wt"></param>
         /// <returns></returns>
-        [HarmonyPatch(typeof(Chat), "UpdateWorldTextField")]
+        [HarmonyPatch(typeof(Chat), nameof(Chat.UpdateWorldTextField))]
         [HarmonyPrefix]
         public static bool UpdateWorldTextField(Chat __instance, Chat.WorldTextInstance wt)
         {
