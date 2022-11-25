@@ -96,17 +96,6 @@
       <Version>22.5.1.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="ConnectedStorage">
-      <HintPath>..\..\unstrip_valheim\valheim\AuxiliaryFiles\GameAssemblies\ConnectedStorage.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Security">
-      <HintPath>..\..\unstrip_valheim\valheim\AuxiliaryFiles\GameAssemblies\Mono.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="XGamingRuntime">
-      <HintPath>..\..\unstrip_valheim\valheim\AuxiliaryFiles\GameAssemblies\XGamingRuntime.dll</HintPath>
-    </Reference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'">
     <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot; -DeployPath &quot;$(MOD_DEPLOYPATH.TrimEnd('\'))&quot; -ProjectPath &quot;$(ProjectDir.TrimEnd('\'))&quot; " />
