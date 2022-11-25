@@ -5,7 +5,14 @@ using QuickPing.Patches;
 
 namespace QuickPing
 {
-
+    public enum HoverType
+    {
+        GameObject,
+        Hoverable,
+        Piece,
+        Location,
+        Destructible
+    }
     public static class MyPluginInfo
     {
         public const string GUID = "com.atopy.plugins.quickping";
