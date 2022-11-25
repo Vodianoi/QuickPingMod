@@ -48,6 +48,8 @@ namespace QuickPing
             Harmony.CreateAndPatchAll(typeof(Minimap_Patch), MyPluginInfo.GUID);
             Harmony.CreateAndPatchAll(typeof(Terminal_Patch), MyPluginInfo.GUID);
             Harmony.CreateAndPatchAll(typeof(MineRock5_Patch), MyPluginInfo.GUID);
+            Harmony.CreateAndPatchAll(typeof(Destructible_Patch), MyPluginInfo.GUID);
+            Harmony.CreateAndPatchAll(typeof(WearNTear_Patch), MyPluginInfo.GUID);
 
             // To learn more about Jotunn's features, go to
             // https://valheim-modding.github.io/Jotunn/tutorials/overview.html

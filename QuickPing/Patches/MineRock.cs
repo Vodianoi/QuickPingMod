@@ -18,4 +18,37 @@ namespace QuickPing.Patches
             }
         }
     }
+
+    [HarmonyPatch(typeof(WearNTear))]
+    internal static class WearNTear_Patch
+    {
+        [HarmonyPatch(typeof(WearNTear), nameof(WearNTear.Awake))]
+        [HarmonyPostfix]
+        public static void Awake(WearNTear __instance)
+        {
+            var pos = __instance.transform.position;
+            if (Minimap_Patch.FindPin(pos, Minimap.PinType.Icon4) is Minimap.PinData pin)
+            {
+                __instance.m_onDamaged += () => Minimap.instance.RemovePin(pin);
+                QuickPing.Log.LogWarning($"Removed ping at x:{pos.x}, y:{pos.y}, z:{pos.z}");
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Destructible))]
+    internal static class Destructible_Patch
+    {
+        [HarmonyPatch(typeof(Destructible), nameof(Destructible.Awake))]
+        [HarmonyPostfix]
+        public static void Awake(Destructible __instance)
+        {
+            var pos = __instance.transform.position;
+            if (Minimap_Patch.FindPin(pos) is Minimap.PinData pin)
+            {
+                __instance.m_onDamaged += () => Minimap.instance.RemovePin(pin);
+                QuickPing.Log.LogWarning($"Removed ping at x:{pos.x}, y:{pos.y}, z:{pos.z}");
+            }
+        }
+    }
+
 }
