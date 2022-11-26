@@ -17,7 +17,7 @@ namespace QuickPing
     {
         public const string GUID = "com.atopy.plugins.quickping";
         public const string NAME = "QuickPing";
-        public const string VERSION = "1.0.2";
+        public const string VERSION = "1.0.3";
     }
 
     [BepInPlugin(MyPluginInfo.GUID, MyPluginInfo.NAME, MyPluginInfo.VERSION)]
