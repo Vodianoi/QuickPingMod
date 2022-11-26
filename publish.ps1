@@ -15,7 +15,11 @@ param(
     [Parameter(Mandatory)]
     [System.String]$ProjectPath,
     
-    [System.String]$DeployPath
+    [Parameter(Mandatory)]
+    [System.String]$DeployPath,
+	
+    [Parameter(Mandatory)]
+    [System.String]$AssemblyFileVersion
 )
 
 # Make sure Get-Location is the script path
@@ -61,10 +65,17 @@ if($Target.Equals("Release")) {
     $PackagePath="$ProjectPath\$Package"
 
     Write-Host "$PackagePath\$TargetAssembly"
+	$a = Get-Content "$PackagePath\manifest.json" -raw | ConvertFrom-Json
+	$ver = "$AssemblyFileVersion" -replace '^(\d+)\.(\d+)\.(\d+)\.(\d+)','$1.$2.$3'
+	$a.version_number=$ver
+	$a | ConvertTo-Json -depth 32| set-content "$PackagePath\manifest.json"
+
     New-Item -Type Directory -Path "$PackagePath\plugins" -Force
     Copy-Item -Path "$TargetPath\$TargetAssembly" -Destination "$PackagePath\plugins\$TargetAssembly" -Force
     Copy-Item -Path "$ProjectPath\README.md" -Destination "$PackagePath\README.md" -Force
-    Compress-Archive -Path "$PackagePath\*" -DestinationPath "$TargetPath\$TargetAssembly.zip" -Force
+    Compress-Archive -Path "$PackagePath\*" -DestinationPath "$ProjectPath\$name.zip" -Force
+	
+	Write-Host "Added package zip to $TargetPath\$name.zip"
 }
 
 # Pop Location
