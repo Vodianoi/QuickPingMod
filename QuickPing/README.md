@@ -2,12 +2,13 @@
 ExploreTogether ping feature remastered. 
 
 ## Install Instruction
-Works client-side only but must be installed on all clients if you want everyone able to see pinged objects.
+Works client-side but must be installed on all clients if you want everyone able to see text changes.
 
 ## Features
 - Use T (by default, see config) to ping what you point, name of pointed object/creature is displayed in the world and on the minimap to all players.
 - Ping ores, berries, portals etc to add a pin on the map
 - Change text colors (chat, ping, shout, whisper, names) in config ***need improvement***
+- Change already existing Portal pin by pinging the portal again, it will change the pin's name to portal tag.
 
 ## ChangeLog
 
