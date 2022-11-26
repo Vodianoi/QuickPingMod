@@ -75,7 +75,7 @@ if($Target.Equals("Release")) {
     Copy-Item -Path "$ProjectPath\README.md" -Destination "$PackagePath\README.md" -Force
     Compress-Archive -Path "$PackagePath\*" -DestinationPath "$ProjectPath\$name.zip" -Force
 	
-	Write-Host "Added package zip to $TargetPath\$name.zip"
+	Write-Host "Added package zip to $ProjectPath\$name.zip"
 }
 
 # Pop Location
