@@ -82,7 +82,7 @@ namespace QuickPing.Patches
             //QuickPing.Log.LogWarning($"Get base translation for -> {str}");
             if (str == "") return "noStr";
             Dictionary<string, string> values = Localization.instance.m_translations;
-            var res = values.SingleOrDefault(x => x.Value == str).Key;
+            var res = values.FirstOrDefault(x => x.Value == str).Key;
 
             //QuickPing.Log.LogWarning($"{str} -> ${res}");
             return "$" + res;
