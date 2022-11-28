@@ -9,25 +9,16 @@ namespace QuickPing.Patches
     /// </summary>
     internal static class Minimap_Patch
     {
-        public static Dictionary<Vector3, GameObject> Pins { get; private set; }
         /// <summary>
-        /// Add correct pin to map if Settings.
+        /// 
         /// </summary>
-        /// <param name="instance"></param>
         /// <param name="strID"></param>
-        /// <param name="pos"></param>
-        /// <param name="pinable"></param>
-        public static void AddPin(GameObject hover, string strID, Vector3 pos, out bool pinable)
+        /// <returns></returns>
+        public static PinType IsPinable(string strID)
         {
-            pinable = false;
-
-            if (string.IsNullOrEmpty(strID) || !Settings.AddPin.Value) { return; }
-
-            Minimap.PinData pinData = new Minimap.PinData();
 
             string baseLocalization = Localization_Patch.GetBaseTranslation(strID);
-
-            Dictionary<Minimap.PinType, List<string>> pinables = new Dictionary<Minimap.PinType, List<string>>
+            Dictionary<Minimap.PinType, List<string>> pinables = new()
             {
                 //Fire pin
                 {
@@ -95,77 +86,111 @@ namespace QuickPing.Patches
 
             foreach (var pinType in pinables.Keys)
             {
-
                 if (pinables[pinType].Contains(strID) || pinables[pinType].Contains(baseLocalization))
                 {
-                    pinData.m_type = pinType;
+                    return pinType;
+                }
+            }
+            return PinType.None;
+        }
 
-                    if (pinData.m_name == null)
-                        pinData.m_name = Localization.instance.Localize(strID);
+        /// <summary>
+        /// Add correct pin to map if Settings.
+        /// </summary>
+        /// <param name="obj"></param>
+        public static void AddPin(HoverObject obj) => AddPin(obj.hover, obj.destructible, obj.name, obj.center);
+        /// <summary>
+        /// Add correct pin to map if Settings.
+        /// </summary>
+        /// <param name="strID"></param>
+        /// <param name="pos"></param>
+        public static void AddPin(GameObject hover, IDestructible idestructible, string strID, Vector3 pos)
+        {
 
-                    //Check if there is another pin in range
-                    Minimap.PinData closestPin = Minimap.instance.GetClosestPin(pos, Settings.ClosestPinRange.Value);
+            if (string.IsNullOrEmpty(strID) || !Settings.AddPin.Value || hover == null) { return; }
 
-                    //PORTAL :Check if an already existing pin is at pos
-                    if (strID == "$piece_portal")
+            Minimap.PinData pinData = new Minimap.PinData
+            {
+                m_type = IsPinable(strID)
+            };
+
+
+            if (pinData.m_type != PinType.None)
+            {
+
+                pinData.m_name ??= Localization.instance.Localize(strID);
+
+                //Check if there is another pin in range
+                Minimap.PinData closestPin = Minimap.instance.GetClosestPin(pos, Settings.ClosestPinRange.Value);
+
+                //PORTAL :Check if an already existing pin is at pos
+                if (strID == "$piece_portal")
+                {
+                    if (hover.TryGetComponent(out Hoverable hoverable))
                     {
-                        pinData.m_type = Minimap.PinType.Icon4;
-                        if (hover.TryGetComponent(out Hoverable hoverable))
+                        string tag = GetPortalTag(hoverable);
+                        Jotunn.Logger.LogInfo(tag);
+                        pinData.m_name = tag;
+                        //TODO CHECK BEFORE REMOVE NON MAIS OH
+                        if (closestPin != null)
                         {
-
-                            string portalText = hoverable.GetHoverText();
-                            string tag = portalText.Split('"')[1];
-                            Jotunn.Logger.LogInfo(tag);
-                            pinData.m_name = tag;
-                            //TODO CHECK BEFORE REMOVE NON MAIS OH
-                            if (closestPin != null)
-                                Minimap.instance.RemovePin(closestPin);
-                            var pin = Minimap.instance.AddPin(pos, pinData.m_type, pinData.m_name, true, false, 0L);
-                            pinable = true;
-                            //if (idestructible != null)
-                            //{
-                            //    switch (idestructible)
-                            //    {
-                            //        case WearNTear wearNTear:
-                            //            QuickPing.Log.LogWarning($"Add on destroyed to -> {wearNTear.gameObject.name}");
-                            //            wearNTear.m_onDestroyed += () => Minimap.instance.RemovePin(pin);
-                            //            break;
-                            //    }
-                            //}
-                            //INFO
-                            QuickPing.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pos.x}, y:{pos.y}, Type:{pinData.m_type}");
+                            Minimap.instance.RemovePin(closestPin);
                         }
-                    }
-                    //OTHERS
-                    else if (closestPin == null)
-                    {
-                        var pin = Minimap.instance.AddPin(pos, pinData.m_type, pinData.m_name, true, false, 0L);
-                        pinable = true;
-                        //if (idestructible != null)
-                        //{
-                        //    switch (idestructible)
-                        //    {
-                        //        case Destructible destructible:
-                        //            QuickPing.Log.LogWarning($"Add on destroyed to -> {destructible.gameObject.name}");
-                        //            destructible.m_onDestroyed += () => Minimap.instance.RemovePin(pin);
-                        //            break;
-                        //        case MineRock5 mineRock5:
-                        //            QuickPing.Log.LogWarning($"Add on destroyed to -> {mineRock5.gameObject.name}");
-                        //            break;
-                        //    }
-                        //}
+
+                        Minimap.instance.AddPin(pos, pinData.m_type, pinData.m_name, true, false, 0L);
 
                         //INFO
                         QuickPing.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pos.x}, y:{pos.y}, Type:{pinData.m_type}");
                     }
-                    else
-                        break;
+                }
+                //OTHERS
+                else if (closestPin == null)
+                {
+                    Minimap.instance.AddPin(pos, pinData.m_type, pinData.m_name, true, false, 0L);
+
+                    //INFO
+                    QuickPing.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pos.x}, y:{pos.y}, Type:{pinData.m_type}");
+                }
+                if(idestructible != null)
+                {
+                    switch (idestructible)
+                    {
+                        case Destructible d_:
+                            //d_.m_nview.SetPersistent(true);
+                            if (!d_.m_nview.m_functions.ContainsKey("RemovePin".GetStableHashCode()))
+                                d_.m_nview.Register<Vector3>("RemovePin", RPC_RemovePin);
+                            break;
+
+                        case WearNTear d_:
+                            //d_.m_nview.SetPersistent(true);
+                            if (!d_.m_nview.m_functions.ContainsKey("RemovePin".GetStableHashCode()))
+                                d_.m_nview.Register<Vector3>("RemovePin", RPC_RemovePin);
+                            break;
+
+                        case MineRock5 d_:
+                            //d_.m_nview.SetPersistent(true);
+                            if (!d_.m_nview.m_functions.ContainsKey("RemovePin".GetStableHashCode()))
+                                d_.m_nview.Register<Vector3>("RemovePin", RPC_RemovePin);
+                            break;
+                    }
                 }
             }
-
-
-
         }
+
+        private static string GetPortalTag(Hoverable hoverable)
+        {
+            string portalText = hoverable.GetHoverText();
+            string tag = portalText.Split('"')[1];
+            return tag;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static PinData FindPin(Vector3 pos, PinType type = PinType.None, string name = null)
         {
             var pins = new List<(PinData pin, float dis)>();
@@ -193,14 +218,20 @@ namespace QuickPing.Patches
             return closest;
         }
 
-        public static bool RemovePin(Vector3 pos, PinType type = PinType.None, string name = null)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="type"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static void RPC_RemovePin(long sender, Vector3 pos) => RemovePin(pos, PinType.None, null);
+        public static void RemovePin(Vector3 pos, PinType type = PinType.None, string name = null)
         {
             if (FindPin(pos, type, name) is not PinData pin)
-                return false;
+                return;
 
             Minimap.instance.RemovePin(pin);
-
-            return true;
         }
     }
 }
