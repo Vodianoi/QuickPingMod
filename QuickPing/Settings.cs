@@ -6,7 +6,7 @@ namespace QuickPing
 {
     static class Settings
     {
-        public const string pingText = "PING !";
+        public const string DefaultPingText = "PING !";
         public static ConfigEntry<bool> PingWhereLooking { get; private set; }
         public static ConfigEntry<KeyCode> PingKey { get; private set; }
         public static ConfigEntry<bool> AddPin { get; private set; }
@@ -75,7 +75,7 @@ namespace QuickPing
             {
                 Name = "Ping",
                 Key = PingKey.Value,
-                HintToken = pingText,
+                HintToken = DefaultPingText,
                 ActiveInCustomGUI = true,
 
             };

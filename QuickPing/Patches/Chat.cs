@@ -52,7 +52,7 @@ namespace QuickPing.Patches
                 case Talker.Type.Ping:
                     color = Settings.PingColor.Value;
                     if (text == string.Empty)
-                        text = Settings.pingText;
+                        text = Settings.DefaultPingText;
                     break;
                 default:
                     color = Settings.DefaultColor.Value;
