@@ -58,7 +58,7 @@
   <ItemGroup>
     <Compile Include="Patches\Chat.cs" />
     <Compile Include="Patches\Localization.cs" />
-    <Compile Include="Patches\MineRock.cs" />
+    <Compile Include="Patches\IDestructible.cs" />
     <Compile Include="Patches\Minimap.cs" />
     <Compile Include="Patches\Player.cs" />
     <Compile Include="Patches\Terminal.cs" />
