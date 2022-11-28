@@ -8,10 +8,10 @@ namespace QuickPing
     public enum HoverType
     {
         GameObject,
+        Character,
         Hoverable,
         Piece,
-        Location,
-        Destructible
+        Location
     }
     public static class MyPluginInfo
     {
@@ -50,6 +50,9 @@ namespace QuickPing
             Harmony.CreateAndPatchAll(typeof(MineRock5_Patch), MyPluginInfo.GUID);
             Harmony.CreateAndPatchAll(typeof(Destructible_Patch), MyPluginInfo.GUID);
             Harmony.CreateAndPatchAll(typeof(WearNTear_Patch), MyPluginInfo.GUID);
+
+            Player_Patch.OnPlayerPing.AddListener(Player_Patch.SendPing);
+            Player_Patch.OnPlayerPing.AddListener(Minimap_Patch.AddPin);
 
             // To learn more about Jotunn's features, go to
             // https://valheim-modding.github.io/Jotunn/tutorials/overview.html
