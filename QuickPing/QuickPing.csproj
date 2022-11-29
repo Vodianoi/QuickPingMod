@@ -56,7 +56,6 @@
     <ApplicationIcon>QuickPing.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="HoverObject.cs" />
     <Compile Include="Patches\Chat.cs" />
     <Compile Include="Patches\Localization.cs" />
     <Compile Include="Patches\IDestructible.cs" />
