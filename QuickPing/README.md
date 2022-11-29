@@ -17,7 +17,7 @@ Ping position and markers will always work but must be installed on all clients 
 ### What's Changed
 > ### 1.0.4 by @Vodianoi in [#17](https://github.com/Vodianoi/QuickPingMod/pull/17)
 > 
-> - [Add Pin Everything key ! Press G (default) to add a pin on map, conve…](https://github.com/Vodianoi/QuickPingMod/commit/8126423c3e10d42bdd47e36eaced576642b76ea0)
+> - [Add Pin Everything key ! Press G (default) to add a pin on map, conveâ€¦](https://github.com/Vodianoi/QuickPingMod/commit/8126423c3e10d42bdd47e36eaced576642b76ea0)
 > 
 > - [Add bbcode readme (nexus)](https://github.com/Vodianoi/QuickPingMod/commit/72cf73aa0f105ee764e22d07c63d4958da8d611d)
 > 
@@ -25,7 +25,7 @@ Ping position and markers will always work but must be installed on all clients 
 > 
 > - [Remove patch on Awake, big performance improvement](https://github.com/Vodianoi/QuickPingMod/commit/e045169a78e892b11c426cf619236a945c5308a8)
 > 
-> - [Add save/load system for persistent data, works with steam cloud and …](https://github.com/Vodianoi/QuickPingMod/commit/1e52e33a370bd4896e8f1463d7d4244521e8f419)
+> - [Add save/load system for persistent data, works with steam cloud and â€¦](https://github.com/Vodianoi/QuickPingMod/commit/1e52e33a370bd4896e8f1463d7d4244521e8f419)
 > 
 > - [Add Data utils](https://github.com/Vodianoi/QuickPingMod/commit/d699b9124ae49eb1ba9afc4534b9be827854b9d0)
 > 
