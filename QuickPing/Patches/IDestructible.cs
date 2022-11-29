@@ -1,8 +1,5 @@
 ﻿using HarmonyLib;
-using System.ComponentModel;
-using System.Runtime.Remoting.Messaging;
 using UnityEngine;
-using static Attack;
 
 namespace QuickPing.Patches
 {
@@ -17,25 +14,14 @@ namespace QuickPing.Patches
 
             if (__instance.m_nview)
             {
-                var pos = __instance.transform.position;
-                __instance.m_nview.InvokeRPC("RemovePin", pos, Minimap.PinType.Icon2);
-            }
-
-        }
-
-        [HarmonyPatch(typeof(MineRock5), nameof(MineRock5.Start))]
-        [HarmonyPostfix]
-        public static void Start(MineRock5 __instance)
-        {
-            if ((bool)__instance.m_nview && __instance.m_nview.GetZDO() != null)
-            {
-                if (Minimap_Patch.FindPin(__instance.transform.position) != null)
-                    if (!__instance.m_nview.m_functions.ContainsKey("RemovePin".GetStableHashCode()))
-                        __instance.m_nview.Register<Vector3>("RemovePin", Minimap_Patch.RPC_RemovePin);
+                var id = __instance.m_nview.GetZDO().m_uid;
+                if (Minimap_Patch.PinnedObjects.ContainsKey(id))
+                {
+                    Minimap_Patch.RemovePin(Minimap_Patch.PinnedObjects[id]);
+                    Minimap_Patch.PinnedObjects.Remove(__instance.m_nview.GetZDO().m_uid);
+                }
             }
         }
-
-
     }
 
     [HarmonyPatch(typeof(WearNTear))]
@@ -47,22 +33,12 @@ namespace QuickPing.Patches
         {
             if ((bool)__instance.m_nview && __instance.m_nview.GetZDO() != null)
             {
-                var pos = __instance.transform.position;
-                __instance.m_nview.InvokeRPC("RemovePin", pos);
-
-            }
-
-        }
-
-        [HarmonyPatch(typeof(WearNTear), nameof(WearNTear.Awake))]
-        [HarmonyPostfix]
-        public static void Awake(WearNTear __instance)
-        {
-            if ((bool)__instance.m_nview && __instance.m_nview.GetZDO() != null)
-            {
-                if (Minimap_Patch.FindPin(__instance.transform.position) != null)
-                    if (!__instance.m_nview.m_functions.ContainsKey("RemovePin".GetStableHashCode()))
-                        __instance.m_nview.Register<Vector3>("RemovePin", Minimap_Patch.RPC_RemovePin);
+                var id = __instance.m_nview.GetZDO().m_uid;
+                if (Minimap_Patch.PinnedObjects.ContainsKey(id))
+                {
+                    Minimap_Patch.RemovePin(Minimap_Patch.PinnedObjects[id]);
+                    Minimap_Patch.PinnedObjects.Remove(__instance.m_nview.GetZDO().m_uid);
+                }
             }
         }
     }
@@ -70,6 +46,13 @@ namespace QuickPing.Patches
     [HarmonyPatch(typeof(Destructible))]
     internal static class Destructible_Patch
     {
+        /// <summary>
+        /// Complete repatch, check if Destructible place something on destroy, if true change zdoid of PinnedObjects to ondestroy object
+        /// </summary>
+        /// <param name="__instance"></param>
+        /// <param name="hitPoint"></param>
+        /// <param name="hitDir"></param>
+        /// <returns></returns>
         [HarmonyPatch(typeof(Destructible), nameof(Destructible.Destroy))]
         [HarmonyPrefix]
         public static bool Destroy(Destructible __instance, Vector3 hitPoint, Vector3 hitDir)
@@ -85,6 +68,7 @@ namespace QuickPing.Patches
                 }
             }
 
+            var id = __instance.m_nview.GetZDO().m_uid;
             if ((bool)__instance.m_spawnWhenDestroyed)
             {
                 GameObject obj = UnityEngine.Object.Instantiate(__instance.m_spawnWhenDestroyed, __instance.transform.position, __instance.transform.rotation);
@@ -96,16 +80,29 @@ namespace QuickPing.Patches
                 {
                     component2.Setup(hitPoint, hitDir);
                 }
-                if (obj.TryGetComponent(out MineRock5 mineRock))
+                if (obj.TryGetComponent(out MineRock5 _))
                 {
-                    if (!component.m_functions.ContainsKey("RemovePin".GetStableHashCode()))
-                        component.Register<Vector3>("RemovePin", Minimap_Patch.RPC_RemovePin);
+                    if (!Minimap_Patch.PinnedObjects.ContainsKey(component.GetZDO().m_uid)
+                        && Minimap_Patch.PinnedObjects.ContainsKey(id))
+                    {
+                        ZDOID zdoid = component.GetZDO().m_uid;
+                        Minimap.PinData pinData = Minimap_Patch.PinnedObjects[id];
+                        Minimap_Patch.PinnedObjects.Add(zdoid, pinData);
+                        Minimap_Patch.PinnedObjects.Remove(id);
+                    }
+                    else if (Minimap_Patch.PinnedObjects.ContainsKey(id))
+                    {
+                        Minimap_Patch.PinnedObjects.Remove(id);
+                    }
                 }
             }
             else
             {
-                var pos = __instance.transform.position;
-                __instance.m_nview.InvokeRPC("RemovePin", pos);
+                if (Minimap_Patch.PinnedObjects.ContainsKey(id))
+                {
+                    Minimap_Patch.RemovePin(Minimap_Patch.PinnedObjects[id]);
+                    Minimap_Patch.PinnedObjects.Remove(id);
+                }
             }
 
             __instance.m_onDestroyed?.Invoke();
@@ -115,23 +112,6 @@ namespace QuickPing.Patches
             __instance.m_destroyed = true;
 
             return false;
-
-
         }
-
-        [HarmonyPatch(typeof(Destructible), nameof(Destructible.Awake))]
-        [HarmonyPostfix]
-        public static void Awake(Destructible __instance)
-        {
-            if ((bool)__instance.m_nview && __instance.m_nview.GetZDO() != null)
-            {
-                if (Minimap_Patch.FindPin(__instance.transform.position) != null)
-                    if (!__instance.m_nview.m_functions.ContainsKey("RemovePin".GetStableHashCode()))
-                        __instance.m_nview.Register<Vector3>("RemovePin", Minimap_Patch.RPC_RemovePin);
-            }
-        }
-
-
     }
-
 }
