@@ -30,7 +30,7 @@ namespace QuickPing.Patches
                 if (Player.m_localPlayer && ZInput.instance != null)
                     if (Settings.PingKey.Value != KeyCode.None)
                     {
-                        if (ZInput.GetButtonDown(Settings.pingBtn.Name))
+                        if (ZInput.GetButtonDown(Settings.PingBtn.m_name))
                         {
                             HoverObject ping = FindHoverObject(500f);
 
@@ -43,7 +43,7 @@ namespace QuickPing.Patches
                     }
                 if (Settings.PingEverythingKey.Value != KeyCode.None)
                 {
-                    if (ZInput.GetButtonDown(Settings.pingEverythingBtn.Name))
+                    if (ZInput.GetButtonDown(Settings.PingEverythingBtn.m_name))
                     {
                         HoverObject ping = FindHoverObject(500f);
 
