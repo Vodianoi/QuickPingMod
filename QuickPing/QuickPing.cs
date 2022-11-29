@@ -5,14 +5,7 @@ using QuickPing.Patches;
 
 namespace QuickPing
 {
-    public enum HoverType
-    {
-        GameObject,
-        Character,
-        Hoverable,
-        Piece,
-        Location
-    }
+
     public static class MyPluginInfo
     {
         public const string GUID = "com.atopy.plugins.quickping";
@@ -21,11 +14,10 @@ namespace QuickPing
     }
 
     [BepInPlugin(MyPluginInfo.GUID, MyPluginInfo.NAME, MyPluginInfo.VERSION)]
-    public class QuickPing : BaseUnityPlugin
+    public class QuickPingPlugin : BaseUnityPlugin
     {
 
-        public static QuickPing Instance { get; set; }
-
+        public static QuickPingPlugin Instance { get; set; }
 
 
         public static ManualLogSource Log { get; private set; }
@@ -49,6 +41,7 @@ namespace QuickPing
             Harmony.CreateAndPatchAll(typeof(Terminal_Patch), MyPluginInfo.GUID);
             Harmony.CreateAndPatchAll(typeof(MineRock5_Patch), MyPluginInfo.GUID);
             Harmony.CreateAndPatchAll(typeof(Destructible_Patch), MyPluginInfo.GUID);
+            Harmony.CreateAndPatchAll(typeof(ZNet_Patch), MyPluginInfo.GUID);
             Harmony.CreateAndPatchAll(typeof(WearNTear_Patch), MyPluginInfo.GUID);
 
             Player_Patch.OnPlayerPing.AddListener(Player_Patch.SendPing);
