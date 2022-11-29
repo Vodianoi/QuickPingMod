@@ -25,6 +25,9 @@ namespace QuickPing.Patches
                     {
                         #region Blackforest
                         case "TrollCave":
+                        case "TrollCave01":
+                        case "TrollCave02":
+                        case "TrollCave03":
                             res = Localization.instance.Localize("$location_forestcave");
                             break;
                         case "Crypt2":
