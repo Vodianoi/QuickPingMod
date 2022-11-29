@@ -6,10 +6,15 @@ namespace QuickPing
 {
     static class Settings
     {
+
         public const string DefaultPingText = "PING !";
         public static ConfigEntry<bool> PingWhereLooking { get; private set; }
-        public static ConfigEntry<KeyCode> PingKey { get; private set; }
         public static ConfigEntry<bool> AddPin { get; private set; }
+        public static ConfigEntry<KeyCode> PingKey { get; private set; }
+        public static ConfigEntry<KeyCode> PingEverythingKey { get; internal set; }
+
+        public static ConfigEntry<Minimap.PinType> DefaultPinType { get; internal set; }
+
         public static ConfigEntry<Color> PlayerColor { get; private set; }
         public static ConfigEntry<Color> ShoutColor { get; private set; }
         public static ConfigEntry<Color> WhisperColor { get; private set; }
@@ -18,54 +23,65 @@ namespace QuickPing
         public static ConfigEntry<float> ClosestPinRange { get; private set; }
 
         public static ButtonConfig pingBtn { get; private set; }
-
-
+        public static ButtonConfig pingEverythingBtn { get; private set; }
         public static void Init()
         {
             //GENERAL
-            PingWhereLooking = QuickPing.Instance.Config.Bind("General",
-                "PingWhereLooking",
-                true,
-                "Create a ping where you are looking when you press <PingKey>");
+            PingWhereLooking = QuickPingPlugin.Instance.Config.Bind("General",
+            "PingWhereLooking",
+            true,
+            "Create a ping where you are looking when you press <PingKey>");
 
-            AddPin = QuickPing.Instance.Config.Bind("General",
+            AddPin = QuickPingPlugin.Instance.Config.Bind("General",
                 "AddPinOnMap",
                 true,
                 "If true, add a pin when useful resources (copper, berries, campfire, portals etc.) are pinged.");
 
-            ClosestPinRange = QuickPing.Instance.Config.Bind("General",
+            ClosestPinRange = QuickPingPlugin.Instance.Config.Bind("General",
                 "ClosestPinRange",
                 2f,
                 "Minimum distance between objects to pin/replace portal tag");
 
+
+            DefaultPinType = QuickPingPlugin.Instance.Config.Bind("General",
+                "DefaultPinType",
+                Minimap.PinType.RandomEvent, //ExclamationPoint
+                "Default pin when forcing adding a pin on map");
+
             //COLORS
-            PlayerColor = QuickPing.Instance.Config.Bind("Colors",
+            PlayerColor = QuickPingPlugin.Instance.Config.Bind("Colors",
                 "PlayerColor",
                 Color.green,
                 "Color for Player name in pings/messages.");
 
-            ShoutColor = QuickPing.Instance.Config.Bind("Colors",
+            ShoutColor = QuickPingPlugin.Instance.Config.Bind("Colors",
                 "ShoutColor",
                 Color.yellow,
                 "Color for Shout ping.");
-            WhisperColor = QuickPing.Instance.Config.Bind("Colors",
+            WhisperColor = QuickPingPlugin.Instance.Config.Bind("Colors",
                 "WhisperColor",
                 new Color(1f, 1f, 1f, 0.75f),
                 "Color for Whisper ping.");
-            PingColor = QuickPing.Instance.Config.Bind("Colors",
+            PingColor = QuickPingPlugin.Instance.Config.Bind("Colors",
                 "PingColor",
                 new Color(0.6f, 0.7f, 1f, 1f),
                 "Color for \"Ping\" ping.");
-            DefaultColor = QuickPing.Instance.Config.Bind("Colors",
+            DefaultColor = QuickPingPlugin.Instance.Config.Bind("Colors",
                 "DefaultColor",
                 Color.white,
                 "Default color");
 
             //BINDINGS
-            PingKey = QuickPing.Instance.Config.Bind("Bindings",
+            PingKey = QuickPingPlugin.Instance.Config.Bind("Bindings",
                 "PingInputKey",
                 KeyCode.T,
                 "The keybind to trigger a ping where you are looking");
+
+            PingEverythingKey = QuickPingPlugin.Instance.Config.Bind("Bindings",
+                "PingEverythingInputKey",
+                KeyCode.G,
+                "Add a pin on minimap to whatever you're looking at.");
+
             AddInputs();
         }
 
@@ -80,7 +96,17 @@ namespace QuickPing
 
             };
 
+            pingEverythingBtn = new ButtonConfig
+            {
+                Name = "PingEveything",
+                Key = PingEverythingKey.Value,
+                HintToken = DefaultPingText,
+                ActiveInCustomGUI = true,
+
+            };
+
             Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, pingBtn);
+            Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, pingEverythingBtn);
 
         }
     }

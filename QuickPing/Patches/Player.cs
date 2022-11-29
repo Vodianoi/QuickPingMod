@@ -1,30 +1,17 @@
 ﻿using HarmonyLib;
-using Steamworks;
 using System;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.Events;
-using static CharacterAnimEvent;
 
 namespace QuickPing.Patches
 {
-
-    public struct HoverObject
-    {
-        public string name;
-        public GameObject hover;
-        public IDestructible destructible;
-        public Vector3 pos;
-        public Vector3 center;
-        public HoverType type;
-        public bool pinable;
-    }
     /// <summary>
     /// Patch Player Class to add Ping Key and automatic pins
     /// </summary>
     static class Player_Patch
     {
         public static UnityEvent<HoverObject> OnPlayerPing = new UnityEvent<HoverObject>();
+        public static UnityEvent<HoverObject> OnPlayerForcePing = new UnityEvent<HoverObject>();
 
         /// <summary>
         /// Check for Key Input
@@ -42,24 +29,29 @@ namespace QuickPing.Patches
                 }
                 if (Player.m_localPlayer && ZInput.instance != null)
                     if (Settings.PingKey.Value != KeyCode.None)
+                    {
                         if (ZInput.GetButtonDown(Settings.pingBtn.Name))
                         {
                             HoverObject ping = FindHoverObject(500f);
 
-                            //if (ping.hover != null)
-                            //{
-                            ping.name = GetHoverName(ping.name, ping.hover, ping.type);
+                            ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
 
-                            //if (Settings.AddPin.Value)
-                            //{
-                            //    Minimap_Patch.AddPin(ping.hover, ping.name, ping.center);
-                            //}
-                            ping.name = Localization.instance.Localize(ping.name);
+
+                            ping.Name = Localization.instance.Localize(ping.Name);
                             OnPlayerPing.Invoke(ping);
-                            //}
-
-
                         }
+                    }
+                if (Settings.PingEverythingKey.Value != KeyCode.None)
+                {
+                    if (ZInput.GetButtonDown(Settings.pingEverythingBtn.Name))
+                    {
+                        HoverObject ping = FindHoverObject(500f);
+
+                        ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
+                        ping.Name = Localization.instance.Localize(ping.Name);
+                        OnPlayerForcePing.Invoke(ping);
+                    }
+                }
             }
         }
 
@@ -79,6 +71,10 @@ namespace QuickPing.Patches
                     pingText = !hoverable.GetHoverName().StartsWith("$")
                         ? Localization_Patch.GetBaseTranslation(hoverable.GetHoverName())
                         : hoverable.GetHoverName();
+
+                    if (pingText == "$")
+                        pingText = hoverable.GetHoverName();
+
 
                     if (pingText == "noStr")
                         pingText = hoverable.GetHoverName();
@@ -124,7 +120,7 @@ namespace QuickPing.Patches
                 type = HoverType.GameObject,
                 pos = Player.m_localPlayer.GetHeadPoint(),
                 center = Player.m_localPlayer.GetHeadPoint(),
-                name = Settings.DefaultPingText
+                Name = Settings.DefaultPingText
             };
             LayerMask m_interactMask = LayerMask.GetMask("Default", "static_solid", "Default_small", "piece", "piece_nonsolid", "terrain", "character", "character_net", "character_ghost", "character_noenv", "vehicle");
             RaycastHit[] array = Physics.RaycastAll(GameCamera.instance.transform.position, GameCamera.instance.transform.forward, range + 10, layerMask: m_interactMask);
@@ -157,16 +153,16 @@ namespace QuickPing.Patches
                     if (character != null && (!character.GetBaseAI() || !character.GetBaseAI().IsSleeping()))
                     {
                         hoverObj.type = HoverType.Character;
-                        hoverObj.hover = character.gameObject;
+                        hoverObj.Hover = character.gameObject;
                         hoverObj.center = character.transform.position;
                     }
 
-                    else if ((hoverObj.type = CheckType(raycastHit.collider.transform, out hoverObj.destructible))
+                    else if ((hoverObj.type = CheckType(raycastHit.collider.transform, out hoverObj.Destructible))
                         != HoverType.GameObject)
                     {
-                        hoverObj.hover = raycastHit.collider.transform.gameObject;
-                        hoverObj.center = hoverObj.hover.transform.position;
-                        QuickPing.Log.LogWarning("Root");
+                        hoverObj.Hover = raycastHit.collider.transform.gameObject;
+                        hoverObj.center = hoverObj.Hover.transform.position;
+                        QuickPingPlugin.Log.LogWarning("Root");
                     }
 
 
@@ -176,11 +172,11 @@ namespace QuickPing.Patches
                         var list = raycastHit.collider.GetComponentsInChildren<GameObject>();
                         foreach (var go in list)
                         {
-                            if ((hoverObj.type = CheckType(go.transform, out hoverObj.destructible)) != HoverType.GameObject)
+                            if ((hoverObj.type = CheckType(go.transform, out hoverObj.Destructible)) != HoverType.GameObject)
                             {
-                                hoverObj.hover = go.transform.gameObject;
-                                hoverObj.center = hoverObj.hover.transform.position;
-                                QuickPing.Log.LogWarning("Child");
+                                hoverObj.Hover = go.transform.gameObject;
+                                hoverObj.center = hoverObj.Hover.transform.position;
+                                QuickPingPlugin.Log.LogWarning("Child");
                             }
                         }
 
@@ -188,17 +184,17 @@ namespace QuickPing.Patches
                     //Parents
                     else if (raycastHit.collider.transform.parent != null)
                     {
-                        hoverObj.destructible = Utilities.GO_Ext.GetRecursiveComponentInParents<IDestructible>(raycastHit.collider.transform);
+                        hoverObj.Destructible = Utilities.GO_Ext.GetRecursiveComponentInParents<IDestructible>(raycastHit.collider.transform);
                         //TODO Check order
-                        if (hoverObj.hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Location>(raycastHit.collider.transform))
+                        if (hoverObj.Hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Location>(raycastHit.collider.transform))
                         {
                             hoverObj.type = HoverType.Location;
                         }
-                        else if (hoverObj.hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Piece>(raycastHit.collider.transform))
+                        else if (hoverObj.Hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Piece>(raycastHit.collider.transform))
                         {
                             hoverObj.type = HoverType.Piece;
                         }
-                        else if (hoverObj.hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Hoverable>(raycastHit.collider.transform))
+                        else if (hoverObj.Hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Hoverable>(raycastHit.collider.transform))
                         {
                             hoverObj.type = HoverType.Hoverable;
                         }
@@ -207,9 +203,9 @@ namespace QuickPing.Patches
                 break;
             }
 
-            if (hoverObj.hover)
+            if (hoverObj.Hover)
             {
-                hoverObj.center = hoverObj.hover.transform.position;
+                hoverObj.center = hoverObj.Hover.transform.position;
 
 #if DEBUG
                 //DEBUG
@@ -217,36 +213,32 @@ namespace QuickPing.Patches
                 switch (hoverObj.type)
                 {
                     case HoverType.GameObject:
-                        QuickPing.Log.LogWarning($"Ping ! : {hoverObj.hover} (GameObject)");
+                        QuickPingPlugin.Log.LogWarning($"Ping ! : {hoverObj.Hover} (GameObject)");
                         break;
                     case HoverType.Hoverable:
-                        if (hoverObj.hover.TryGetComponent(out Hoverable hoverable))
-                            QuickPing.Log.LogWarning($"Ping ! : {hoverable} (Hoverable) -> Name: {hoverable.GetHoverName()}");
+                        if (hoverObj.Hover.TryGetComponent(out Hoverable hoverable))
+                            QuickPingPlugin.Log.LogWarning($"Ping ! : {hoverable} (Hoverable) -> Name: {hoverable.GetHoverName()}");
                         break;
                     case HoverType.Piece:
-                        if (hoverObj.hover.TryGetComponent(out Piece piece))
-                            QuickPing.Log.LogWarning($"Ping ! : {piece} (Piece) -> Name: {piece.name} -> Trad: {Localization.instance.Localize(piece.name)}");
+                        if (hoverObj.Hover.TryGetComponent(out Piece piece))
+                            QuickPingPlugin.Log.LogWarning($"Ping ! : {piece} (Piece) -> Name: {piece.name} -> Trad: {Localization.instance.Localize(piece.name)}");
                         break;
                     case HoverType.Location:
-                        if (hoverObj.hover.TryGetComponent(out Location location))
-                            QuickPing.Log.LogWarning($"Ping ! : {location} (Location) -> Name: {location.name} -> Trad: {Localization.instance.Localize(location.name)}");
+                        if (hoverObj.Hover.TryGetComponent(out Location location))
+                            QuickPingPlugin.Log.LogWarning($"Ping ! : {location} (Location) -> Name: {location.name} -> Trad: {Localization.instance.Localize(location.name)}");
 
                         break;
                     case HoverType.Character:
-                        if (hoverObj.hover.TryGetComponent(out Character hoverCreature))
-                            QuickPing.Log.LogWarning($"Ping ! : {hoverCreature} (Character) ->  Name: {hoverCreature.m_name} -> Trad: {hoverCreature.GetHoverName()}");
+                        if (hoverObj.Hover.TryGetComponent(out Character hoverCreature))
+                            QuickPingPlugin.Log.LogWarning($"Ping ! : {hoverCreature} (Character) ->  Name: {hoverCreature.m_name} -> Trad: {hoverCreature.GetHoverName()}");
 
                         break;
 
                 }
-                if (hoverObj.destructible != null)
+                if (hoverObj.Destructible != null)
                 {
-                    QuickPing.Log.LogWarning($"Ping ! : {hoverObj.destructible} (Destructible) -> Type: {hoverObj.destructible.GetDestructibleType()}");
+                    QuickPingPlugin.Log.LogWarning($"Ping ! : {hoverObj.Destructible} (Destructible) -> Type: {hoverObj.Destructible.GetDestructibleType()}");
                 }
-                //if (destructible != null)
-                //{
-                //    QuickPing.Log.LogWarning($"Found ${destructible}");
-                //}
 #endif
             }
             else
@@ -291,14 +283,14 @@ namespace QuickPing.Patches
 
 
 
-        public static void SendPing(HoverObject ping) => SendPing(ping.pos, ping.name);
+        public static void SendPing(HoverObject ping) => SendPing(ping.pos, ping.Name);
         public static void SendPing(Vector3 position, string text, bool local = false)
         {
 
             Player localPlayer = Player.m_localPlayer;
             if ((bool)localPlayer)
             {
-                QuickPing.Log.LogInfo("SendPing : " + text);
+                QuickPingPlugin.Log.LogInfo("SendPing : " + text);
                 ZRoutedRpc.instance.InvokeRoutedRPC(local ? Player.m_localPlayer.GetZDOID().userID : ZRoutedRpc.Everybody, "ChatMessage", position, 3, localPlayer.GetPlayerName(), text, 1);
                 if (Player.m_debugMode && Console.instance != null && Console.instance.IsCheatsEnabled() && Console.instance != null)
                 {

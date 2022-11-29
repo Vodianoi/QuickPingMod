@@ -53,6 +53,8 @@ namespace QuickPing
 
             Player_Patch.OnPlayerPing.AddListener(Player_Patch.SendPing);
             Player_Patch.OnPlayerPing.AddListener(Minimap_Patch.AddPin);
+            Player_Patch.OnPlayerForcePing.AddListener(Player_Patch.SendPing);
+            Player_Patch.OnPlayerForcePing.AddListener(Minimap_Patch.ForceAddPin);
 
             // To learn more about Jotunn's features, go to
             // https://valheim-modding.github.io/Jotunn/tutorials/overview.html
