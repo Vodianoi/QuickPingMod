@@ -2,6 +2,7 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using QuickPing.Patches;
+using UnityEngine;
 
 namespace QuickPing
 {
@@ -11,6 +12,24 @@ namespace QuickPing
         public const string GUID = "com.atopy.plugins.quickping";
         public const string NAME = "QuickPing";
         public const string VERSION = "1.0.4";
+    }
+    public enum HoverType
+    {
+        GameObject,
+        Character,
+        Hoverable,
+        Piece,
+        Location
+    }
+    public class HoverObject : MonoBehaviour
+    {
+        public string Name { get; set; }
+        public GameObject Hover;
+        public IDestructible Destructible;
+        public Vector3 pos;
+        public Vector3 center;
+        public HoverType type;
+        public bool pinable;
     }
 
     [BepInPlugin(MyPluginInfo.GUID, MyPluginInfo.NAME, MyPluginInfo.VERSION)]
