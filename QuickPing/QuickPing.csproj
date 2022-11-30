@@ -9,7 +9,7 @@
     <RootNamespace>QuickPing</RootNamespace>
     <AssemblyName>QuickPing</AssemblyName>
     <Product>QuickPing</Product>
-    <Version>1.0.3</Version>
+    <Version>1.0.5</Version>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <LangVersion>9.0</LangVersion>
     <FileAlignment>512</FileAlignment>
@@ -182,16 +182,57 @@
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT'">
+  <Target Name="GetAssemblyVersion" AfterTargets="Build">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
-      <Output TaskParameter="Assemblies" ItemName="AssemblyVersion" />
+      <Output TaskParameter="Assemblies" ItemName="Targets" />
     </GetAssemblyIdentity>
-    <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot; -DeployPath &quot;$(MOD_DEPLOYPATH.TrimEnd('\'))&quot; -ProjectPath &quot;$(ProjectDir.TrimEnd('\'))&quot; -AssemblyFileVersion &quot;%(AssemblyVersion.Version)&quot; " />
+    <ItemGroup>
+      <AssemblyVersions Include="@(Targets->'%(Version)')" />
+    </ItemGroup>
+    <PropertyGroup>
+      <AssemblyVersion>%(AssemblyVersions.Identity)</AssemblyVersion>
+      <Major>$(AssemblyVersion.Split('.')[0])</Major>
+      <Minor>$(AssemblyVersion.Split('.')[1])</Minor>
+      <Patch>$(AssemblyVersion.Split('.')[2])</Patch>
+      <PackageName>$(AssemblyName)</PackageName>
+      <PackageDir>Package\</PackageDir>
+      <ModsPath>D:\Games\ThunderStoreModsStorage\Valheim\profiles\qFd9lRFKhh\BepInEx\plugins\$(AssemblyName)</ModsPath>
+    </PropertyGroup>
   </Target>
-  <PropertyGroup>
+  <Target Name="MakeThunderstorePackage">
+    <ItemGroup>
+      <PackageFiles Include="$(TargetDir)$(AssemblyName).dll; README.md;" />
+      <DestinationFiles Include="$(PackageDir)plugins/$(AssemblyName).dll; $(PackageDir)README.md;" />
+    </ItemGroup>
+    <Exec command="PowerShell -EncodedCommand 
+	$a = (Get-Content) $PackageDir\manifest.json -raw | ConvertFrom-Json; $ver = $AssemblyFileVersion -replace '^(\d+)\.(\d+)\.(\d+)\.(\d+)','$1.$2.$3'; $a.version_number=$ver; $a | ConvertTo-Json -depth 32| set-content $PackageDir\manifest.json" />
+    <MakeDir Directories="$(PackageDir)" />
+    <MakeDir Directories="$(PackageDir)\plugins\" />
+    <Copy SourceFiles="@(PackageFiles)" DestinationFiles="@(DestinationFiles)" />
+    <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="$(PackageName).zip" Overwrite="true" />
+    <!-- <RemoveDir Directories="$(PackageDir)" /> -->
+  </Target>
+  <Target Name="PublishToThunderstorePath">
+    <ItemGroup>
+      <PackageFiles Include="$(TargetDir)$(AssemblyName).dll; $(TargetDir)$(AssemblyName).dll.mdb; $(TargetDir)$(AssemblyName).pdb;" />
+    </ItemGroup>
+    <MakeDir Directories="$(ModsPath)" />
+    <Exec command="$(SolutionDir)libraries\Debug\pdb2mdb.exe $(TargetPath)" />
+    <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(ModsPath)" />
+    <!-- <RemoveDir Directories="$(PackageDir)" /> -->
+  </Target>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BuildDependsOn>
       $(BuildDependsOn);
-      JotunnPostBuildTaskWin
+	  GetAssemblyVersion;
+	  MakeThunderstorePackage
+    </BuildDependsOn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <BuildDependsOn>
+      $(BuildDependsOn);
+	  GetAssemblyVersion;
+	  PublishToThunderstorePath
     </BuildDependsOn>
   </PropertyGroup>
   <PropertyGroup>
