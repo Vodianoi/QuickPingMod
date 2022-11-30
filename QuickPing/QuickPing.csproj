@@ -238,7 +238,7 @@
       <Patch>$(AssemblyVersion.Split('.')[2])</Patch>
       <PackageName>$(AssemblyName)</PackageName>
       <PackageDir>Package\</PackageDir>
-      <ModsPath>D:\Games\ThunderStoreModsStorage\Valheim\profiles\qFd9lRFKhh\BepInEx\plugins\$(AssemblyName)</ModsPath>
+      <ModsPath>C:\Users\axelp\AppData\Roaming\Thunderstore Mod Manager\DataFolder\Valheim\profiles\qFd9lRFKhh\BepInEx\plugins\$(AssemblyName)</ModsPath>
     </PropertyGroup>
   </Target>
   <Target Name="MakeThunderstorePackage">
