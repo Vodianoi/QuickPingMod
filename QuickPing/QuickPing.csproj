@@ -244,13 +244,13 @@
   </Target>
   <Target Name="MakeThunderstorePackage">
     <ItemGroup>
-      <PackageFiles Include="$(TargetDir)$(AssemblyName).dll; README.md;" />
-      <DestinationFiles Include="$(PackageDir)plugins/$(AssemblyName).dll; $(PackageDir)README.md;" />
+	  <README Include="README.md; $(PackageDir)/README.md"/>
     </ItemGroup>
     <Exec command="PowerShell -ExecutionPolicy RemoteSigned -File $(SolutionDir)version.ps1 -PackageDir $(PackageDir) -AssemblyVersion $(Major).$(Minor).$(Patch) " />
     <MakeDir Directories="$(PackageDir)" />
     <MakeDir Directories="$(PackageDir)\plugins\" />
-    <Copy SourceFiles="@(PackageFiles)" DestinationFiles="@(DestinationFiles)" />
+    <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFiles="$(PackageDir)plugins/$(AssemblyName).dll" />
+    <Copy SourceFiles="../README.md; ../README.md" DestinationFiles="@(README)" />
     <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="$(PackageName).zip" Overwrite="true" />
     <!-- <RemoveDir Directories="$(PackageDir)" /> -->
   </Target>

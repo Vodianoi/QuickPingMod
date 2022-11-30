@@ -14,3 +14,6 @@ else
 {
 	Write-Host "Version number didn't change."
 }
+# Invoke-Expression "& `"ls`" "
+Write-Host "Convert readme to bbcode for Nexus"
+Invoke-Expression "& `"md_to_bbcode`" `"-i`" `"../README.md`" `"-o`" `"README.bbcode`" "
