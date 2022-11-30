@@ -101,6 +101,8 @@ namespace QuickPing
                 m_showHints = true,
 
             };
+            if (ZInput.instance == null)
+                ZInput.Initialize();
             ZInput.instance.AddButton("Ping", PingKey.Value, showHints: true);
             ZInput.instance.AddButton("PingEveything", PingEverythingKey.Value, showHints: true);
             //Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, PingBtn);
