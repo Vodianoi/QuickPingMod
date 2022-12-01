@@ -1,7 +1,7 @@
 {
     "name":  "QuickPing",
     "description":  "Ping what you see, with colors !",
-    "version_number":  "1.0.4",
+    "version_number":  "1.4.1",
     "website_url":  "https://github.com/Vodianoi/QuickPingMod",
     "dependencies":  [
                          "ValheimModding-Jotunn-2.9.0"
