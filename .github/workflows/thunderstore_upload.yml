@@ -21,3 +21,4 @@ jobs:
           community: Valheim
           categories: client-side utility tools misc tweaks mods
           dev: true
+          paht: https://github.com/Vodianoi/QuickPingMod/tree/master/QuickPing
