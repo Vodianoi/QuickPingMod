@@ -265,15 +265,15 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BuildDependsOn>
       $(BuildDependsOn);
-	  GetAssemblyVersion;
-	  MakeThunderstorePackage
+	  <!-- GetAssemblyVersion; -->
+	  <!-- MakeThunderstorePackage -->
     </BuildDependsOn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <BuildDependsOn>
       $(BuildDependsOn);
-	  GetAssemblyVersion;
-	  PublishToThunderstorePath
+	  <!-- GetAssemblyVersion; -->
+	  <!-- PublishToThunderstorePath -->
     </BuildDependsOn>
   </PropertyGroup>
   <PropertyGroup>
