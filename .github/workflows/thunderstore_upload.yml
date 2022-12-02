@@ -1,0 +1,24 @@
+name: Publish Mod
+
+# Run when a new release is... released
+on: 
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Use checkout to publish the files in your repo
+      - uses: actions/checkout@v3
+      - uses: GreenTF/upload-thunderstore-package@v2.2
+        with:
+          namespace: Atopy # the thunderstore 'team' to publish under
+          description: Ping what you see, with colors ! 
+          token: ${{ secrets.DEV_THUNDERSTORE_TOKEN }}
+          name: QuickPing # the name of the package
+          version: ${{ github.ref_name }} # Use the tag as the package version
+          community: Valheim
+          categories: client-side utility tools misc tweaks mods
+          dev: true
+          paht: https://github.com/Vodianoi/QuickPingMod/tree/master/QuickPing
