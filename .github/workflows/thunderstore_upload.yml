@@ -22,7 +22,7 @@ jobs:
         with:
           namespace: Atopy # the thunderstore 'team' to publish under
           description: Ping what you see, add quick pins to map !
-          token: ${{ secrets.THUNDERSTORE_TOKEN }}
+          token: ${{ secrets.DEV_THUNDERSTORE_TOKEN }}
           name: QuickPing # the name of the package
           version: ${{ github.ref_name }} # Use the tag as the package version
           community: Valheim
