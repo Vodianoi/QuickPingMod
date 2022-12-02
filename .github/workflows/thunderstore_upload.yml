@@ -19,6 +19,6 @@ jobs:
           name: QuickPing # the name of the package
           version: ${{ github.ref_name }} # Use the tag as the package version
           community: Valheim
-          categories: client-side utility tools misc tweaks mods
+          categories: "client-side utility tools misc tweaks mods"
           dev: true
           paht: https://github.com/Vodianoi/QuickPingMod/tree/master/QuickPing
