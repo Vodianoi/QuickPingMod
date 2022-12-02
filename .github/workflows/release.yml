@@ -13,10 +13,8 @@ jobs:
     steps:
       - name: Setup Nuget
         uses: nuget/setup-nuget@v1 
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
-        with:
-            dotnet-version: LTS
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
       - name: Checkout
         uses: actions/checkout@v2
 
