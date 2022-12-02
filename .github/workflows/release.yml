@@ -13,9 +13,10 @@ jobs:
     steps:
       - name: Setup Nuget
         uses: nuget/setup-nuget@v1- 
+      - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
-            dotnet-version: '4.8.x'
+            dotnet-version: 4.8
       - name: Checkout
         uses: actions/checkout@v2
 
