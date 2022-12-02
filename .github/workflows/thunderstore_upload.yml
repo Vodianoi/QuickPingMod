@@ -4,6 +4,13 @@ name: Publish Mod
 on: 
   release:
     types: [published]
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -18,7 +25,7 @@ jobs:
           token: ${{ secrets.DEV_THUNDERSTORE_TOKEN }}
           name: QuickPing # the name of the package
           version: ${{ github.ref_name }} # Use the tag as the package version
-          community: Valheim
-          categories: "client-side utility tools misc tweaks mods"
+          community: test
+          categories: "tools tweaks mods"
           dev: true
           paht: https://github.com/Vodianoi/QuickPingMod/tree/master/QuickPing
