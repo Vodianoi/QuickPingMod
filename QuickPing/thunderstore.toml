@@ -1,23 +1,22 @@
 [config]
-schemaVersion = "0.0.1"
+schemaVersion = "0.0.2"
 
 [package]
-namespace = "AuthorName"
-name = "PackageName"
-versionNumber = "0.0.1"
-description = "Example mod description"
-websiteUrl = "https://thunderstore.io"
+namespace = "com.atopy.plugins.quickping"
+name = "QuickPing"
+versionNumber = "1.4.3"
+description = "Ping what you see, with colors !"
+websiteUrl = "https://github.com/Vodianoi/QuickPingMod"
 containsNsfwContent = false
-dependencies = { AuthorName-PackageName = "0.0.1" }
+dependencies = {  }
 
 [build]
-icon = "./icon.png"
-readme = "./README.md"
+icon = "Package/icon.png"
+readme = "Package/README.md"
 outdir = "./build"
 copy = [ ]
 
 [publish]
-repository = "https://thunderstore.io"
-communities = [ "riskofrain2", ]
-categories = [ "items", "skills", ]
-
+repository = "https://thunderstore.dev"
+communities = [ "test", ]
+categories = [ "tweaks", "tools", "mods" ]
