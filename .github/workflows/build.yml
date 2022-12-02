@@ -17,6 +17,6 @@ jobs:
 
       - name: Dotnet Build
         run: |
-          cd RPCPlugin
-          dotnet restore RPCPlugin.csproj
-          dotnet build RPCPlugin.csproj --configuration Release
+          cd QuickPing
+          dotnet restore QuickPing.csproj
+          dotnet build QuickPing.csproj --configuration Release
