@@ -28,4 +28,4 @@ jobs:
           community: test
           categories: "tools tweaks mods"
           dev: true
-          paht: https://github.com/Vodianoi/QuickPingMod/tree/master/QuickPing
+          path: https://github.com/Vodianoi/QuickPingMod/tree/master/QuickPing
