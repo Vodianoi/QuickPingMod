@@ -4,13 +4,13 @@ name: Publish Mod
 on: 
   release:
     types: [published]
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-  workflow_dispatch:
+#   push:
+#     branches:
+#       - master
+#   pull_request:
+#     branches:
+#       - master
+#   workflow_dispatch:
 
 jobs:
   publish:
@@ -21,11 +21,11 @@ jobs:
       - uses: GreenTF/upload-thunderstore-package@v2.2
         with:
           namespace: Atopy # the thunderstore 'team' to publish under
-          description: Ping what you see, with colors ! 
-          token: ${{ secrets.DEV_THUNDERSTORE_TOKEN }}
+          description: Ping what you see, add quick pins to map !
+          token: ${{ secrets.THUNDERSTORE_TOKEN }}
           name: QuickPing # the name of the package
           version: ${{ github.ref_name }} # Use the tag as the package version
-          community: test
-          categories: "tools tweaks mods"
-          dev: true
+          community: Valheim
+          categories: "client-side misc utility tools tweaks mods"
+          dev: false
           path: ./QuickPing/Package
