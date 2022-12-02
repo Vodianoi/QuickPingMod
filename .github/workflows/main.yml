@@ -20,5 +20,4 @@ jobs:
           version: $GITHUB_REF_NAME # Use the tag as the package version
           community: Valheim
           categories: client-side utility tools misc tweaks mods
-          path: https://github.com/Vodianoi/QuickPingMod/blob/master/QuickPing/QuickPing.zip
           dev: true
