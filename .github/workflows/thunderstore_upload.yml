@@ -17,7 +17,7 @@ jobs:
           description: Ping what you see, with colors ! 
           token: ${{ secrets.THUNDERSTORE_TOKEN }}
           name: QuickPing # the name of the package
-          version: ${{ GITHUB_REF_NAME }} # Use the tag as the package version
+          version: ${{ github.ref_name }} # Use the tag as the package version
           community: Valheim
           categories: client-side utility tools misc tweaks mods
           dev: true
