@@ -1,0 +1,22 @@
+name: Checks Builds on PR
+
+on: [pull_request]
+
+jobs:
+  Build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Setup Nuget
+        uses: nuget/setup-nuget@v1
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Dotnet Build
+        run: |
+          cd RPCPlugin
+          dotnet restore RPCPlugin.csproj
+          dotnet build RPCPlugin.csproj --configuration Release
