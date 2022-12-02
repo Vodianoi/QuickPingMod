@@ -1,5 +1,4 @@
 ﻿using BepInEx.Configuration;
-using Jotunn.Configs;
 using UnityEngine;
 
 namespace QuickPing
@@ -22,8 +21,8 @@ namespace QuickPing
         public static ConfigEntry<Color> DefaultColor { get; private set; }
         public static ConfigEntry<float> ClosestPinRange { get; private set; }
 
-        public static ButtonConfig pingBtn { get; private set; }
-        public static ButtonConfig pingEverythingBtn { get; private set; }
+        public static ZInput.ButtonDef PingBtn { get; private set; }
+        public static ZInput.ButtonDef PingEverythingBtn { get; private set; }
         public static void Init()
         {
             //GENERAL
@@ -87,26 +86,27 @@ namespace QuickPing
 
         private static void AddInputs()
         {
-            pingBtn = new ButtonConfig
+            PingBtn = new ZInput.ButtonDef
             {
-                Name = "Ping",
-                Key = PingKey.Value,
-                HintToken = DefaultPingText,
-                ActiveInCustomGUI = true,
+                m_name = "Ping",
+                m_key = PingKey.Value,
+                m_showHints = true,
 
             };
 
-            pingEverythingBtn = new ButtonConfig
+            PingEverythingBtn = new ZInput.ButtonDef
             {
-                Name = "PingEveything",
-                Key = PingEverythingKey.Value,
-                HintToken = DefaultPingText,
-                ActiveInCustomGUI = true,
+                m_name = "PingEveything",
+                m_key = PingEverythingKey.Value,
+                m_showHints = true,
 
             };
-
-            Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, pingBtn);
-            Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, pingEverythingBtn);
+            if (ZInput.instance == null)
+                ZInput.Initialize();
+            ZInput.instance.AddButton("Ping", PingKey.Value, showHints: true);
+            ZInput.instance.AddButton("PingEveything", PingEverythingKey.Value, showHints: true);
+            //Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, PingBtn);
+            //Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, PingEverythingBtn);
 
         }
     }
