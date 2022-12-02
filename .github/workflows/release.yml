@@ -5,7 +5,7 @@ on:
     branches:
       - master
     paths:
-      - 'Quickping/Package/manifest.json'
+      - './Quickping/Package/manifest.json'
 
 jobs:
   Build_and_Release:
@@ -20,7 +20,7 @@ jobs:
         shell: pwsh
         id: package
         run: |
-         $json = Get-Content "Quickping/Package/manifest.json" | ConvertFrom-Json
+         $json = Get-Content "./Quickping/Package/manifest.json" | ConvertFrom-Json
           $version = $json.version_number
           $name = $json.name
           $description = $json.description
