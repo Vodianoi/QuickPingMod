@@ -46,6 +46,7 @@ jobs:
           Set-Content ${{steps.package.outputs.PLUGIN}} -Value $pluginValue
           Set-Content ${{steps.package.outputs.PROJECT}} -Value $projectValue
           dotnet restore ${{steps.package.outputs.PROJECT}}
+          dotnet nuget add source "https://nuget.bepinex.dev/v3/index.json"
           dotnet build ${{steps.package.outputs.PROJECT}} --configuration Release
           
       - name: Publish
