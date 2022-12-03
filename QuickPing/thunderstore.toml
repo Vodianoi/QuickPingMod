@@ -2,7 +2,7 @@
 schemaVersion = "0.0.2"
 
 [package]
-namespace = "com.atopy.plugins.quickping"
+namespace = "Atopy"
 name = "QuickPing"
 versionNumber = "1.4.3"
 description = "Ping what you see, with colors !"
