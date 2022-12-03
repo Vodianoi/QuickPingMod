@@ -33,13 +33,13 @@ namespace QuickPing.Patches
             int count = binary.ReadInt32();
             ZPackage zPackage = new ZPackage(binary.ReadBytes(count));
 
-            Minimap_Patch.ReadPinData(zPackage);
+            Minimap_Patch.PinnedObjects = Utilities.DataUtils.ReadPinnedObjects(zPackage);
 
         }
 
 
 
-        [HarmonyPatch(typeof(ZNet), "SaveWorldThread")]
+        [HarmonyPatch(typeof(ZNet), nameof(ZNet.SaveWorldThread))]
         [HarmonyPostfix]
         private static void SaveWorldThread()
         {
