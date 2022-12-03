@@ -1,6 +1,6 @@
 {
     "name":  "QuickPing",
-    "description":  "Ping what you see, with colors !",
+    "description":  "Ping what you see and pin it on the map !",
     "version_number":  "1.5.0",
     "website_url":  "https://github.com/Vodianoi/QuickPingMod",
     "dependencies":  [
