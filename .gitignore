@@ -375,3 +375,4 @@ Environment.props
 */Package/plugins/*
 /QuickPing/PinObject.cs
 QuickPing/Package/tcli.exe
+/QuickPing/tcli.exe

@@ -1,0 +1,17 @@
+name: Publish Mod
+
+# Run when a new release is... released
+on: 
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Use checkout to publish the files in your repo
+      - uses: actions/checkout@v3
+      - run: |
+         wget https://github.com/thunderstore-io/thunderstore-cli/releases/download/0.1.6/tcli-0.1.6-linux-x64.tar.gz | tar -xvf -C ./QuickPing
+         cd QuickPing
+         tcli publish --file QuickPing.zip
