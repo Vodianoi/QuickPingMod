@@ -18,5 +18,5 @@ copy = [ ]
 
 [publish]
 repository = "https://thunderstore.dev"
-communities = [ "test", ]
-categories = [ "tweaks", "tools", "mods" ]
+communities = [ "Valheim", ]
+categories = [ "client-side", "tweaks", "utility", "misc", "tools", "mods" ]

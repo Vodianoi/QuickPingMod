@@ -1,9 +1,0 @@
-{
-    "name":  "QuickPing",
-    "description":  "Ping what you see, with colors !",
-    "version_number":  "1.4.4",
-    "website_url":  "https://github.com/Vodianoi/QuickPingMod",
-    "dependencies":  [
-
-                     ]
-}

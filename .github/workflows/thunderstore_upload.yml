@@ -1,12 +1,10 @@
-name: Publish Mod
+name: Publish Thunder Mod
 
 # Run when a new release is... released
 on: 
-  release:
-    types: [published]
-  push:
+  pull_request:
     branches:
-      - 1.5.0
+      - master
 
 jobs:
   publish:
@@ -20,4 +18,4 @@ jobs:
          tar -xvf tcli-0.1.6-linux-x64.tar.gz
          mv ./tcli-0.1.6-linux-x64/tcli QuickPing/tcli
          cd QuickPing
-         ./tcli publish --file QuickPing.zip --token ${{ secrets.DEV_THUNDERSTORE_TOKEN }} --repository https://thunderstore.dev
+         ./tcli publish --file QuickPing.zip --token ${{ secrets.THUNDERSTORE_TOKEN }}
