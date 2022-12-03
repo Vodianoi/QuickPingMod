@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Setup Nuget
         uses: nuget/setup-nuget@v1 
+        run: |
+            dotnet nuget add source https://nuget.bepinex.dev/v3/index.json --name "BaGet"
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
       - name: Checkout
@@ -46,7 +48,6 @@ jobs:
           Set-Content ${{steps.package.outputs.PLUGIN}} -Value $pluginValue
           Set-Content ${{steps.package.outputs.PROJECT}} -Value $projectValue
           dotnet restore ${{steps.package.outputs.PROJECT}}
-          dotnet nuget add source "https://nuget.bepinex.dev/v3/index.json"
           dotnet build ${{steps.package.outputs.PROJECT}} --configuration Release
           
       - name: Publish
