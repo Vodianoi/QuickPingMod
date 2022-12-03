@@ -115,6 +115,7 @@
       <ModsPath>C:\Users\axelp\AppData\Roaming\Thunderstore Mod Manager\DataFolder\Valheim\profiles\qFd9lRFKhh\BepInEx\plugins\$(AssemblyName)</ModsPath>
     </PropertyGroup>
   </Target>
+  <!-- Create Zip, update readme and change manifest -->
   <Target Name="MakeThunderstorePackage">
     <ItemGroup>
       <README Include="README.md; $(PackageDir)/README.md" />
@@ -127,6 +128,7 @@
     <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="$(PackageName).zip" Overwrite="true" />
     <!-- <RemoveDir Directories="$(PackageDir)" /> -->
   </Target>
+  <!-- Move debug files to thunderstore profile -->
   <Target Name="PublishToThunderstorePath">
     <ItemGroup>
       <PackageFiles Include="$(TargetDir)$(AssemblyName).dll; $(TargetDir)$(AssemblyName).dll.mdb; $(TargetDir)$(AssemblyName).pdb;" />
@@ -139,12 +141,16 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BuildDependsOn>
       $(BuildDependsOn);
-	  <!-- GetAssemblyVersion; --><!-- MakeThunderstorePackage --></BuildDependsOn>
+	  GetAssemblyVersion;
+	  MakeThunderstorePackage
+	</BuildDependsOn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <BuildDependsOn>
       $(BuildDependsOn);
-	  <!-- GetAssemblyVersion; --><!-- PublishToThunderstorePath --></BuildDependsOn>
+	  GetAssemblyVersion;
+	  PublishToThunderstorePath
+	</BuildDependsOn>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>
