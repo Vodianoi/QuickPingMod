@@ -4,6 +4,9 @@ name: Publish Mod
 on: 
   release:
     types: [published]
+  push:
+    branches:
+      - 1.5.0
 
 jobs:
   publish:
@@ -12,6 +15,7 @@ jobs:
       # Use checkout to publish the files in your repo
       - uses: actions/checkout@v3
       - run: |
+         ls
          wget https://github.com/thunderstore-io/thunderstore-cli/releases/download/0.1.6/tcli-0.1.6-linux-x64.tar.gz | tar -xvf -C ./QuickPing
          cd QuickPing
          tcli publish --file QuickPing.zip
