@@ -1,5 +1,8 @@
-﻿using System;
+﻿using HarmonyLib;
+using QuickPing.Utilities;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -188,6 +191,10 @@ namespace QuickPing.Patches
                 FieldInfo fieldInfo = idestructible.GetType().GetField("m_nview", BindingFlags.Instance | BindingFlags.NonPublic);
                 ZNetView netView = fieldInfo.GetValue(idestructible) as ZNetView;
                 ZDOID uid = netView.GetZDO().m_uid;
+                if (uid == null)
+                {
+                    QuickPingPlugin.Log.LogError($"Try adding {idestructible} but {netView} uid is null");
+                }
                 if (!PinnedObjects.ContainsKey(uid))
                     PinnedObjects.Add(uid, pinData);
             }
@@ -200,88 +207,7 @@ namespace QuickPing.Patches
             return tag;
         }
 
-        /// <summary>
-        /// Find pin at pos
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <param name="type"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static Minimap.PinData FindPin(Vector3 pos, Minimap.PinType type = Minimap.PinType.None, string name = null)
-        {
-            var pins = new List<(Minimap.PinData pin, float dis)>();
 
-            foreach (var pin in Minimap.instance.m_pins)
-                if (type == Minimap.PinType.None || pin.m_type == type)
-                    pins.Add((pin, Utils.DistanceXZ(pos, pin.m_pos)));
-
-            Minimap.PinData closest = null;
-            float closestDis = float.MaxValue;
-
-            foreach (var (pin, dis) in pins)
-                if (closest == null || dis < closestDis)
-                {
-                    closest = pin;
-                    closestDis = dis;
-                }
-
-            if (closestDis > 1f)
-                return null;
-
-            if (!string.IsNullOrEmpty(name) && closest.m_name != name)
-                return null;
-
-            return closest;
-        }
-
-        /// <summary>
-        /// Remove pin pinData (need to be exact value)
-        /// </summary>
-        /// <param name="pinData"></param>
-        public static void RemovePin(Minimap.PinData pinData)
-        {
-            if (pinData == null) return;
-            Minimap.instance.RemovePin(pinData);
-        }
-
-        /// <summary>
-        /// Remove pin in pos, of type and name
-        /// </summary>
-        /// <param name="pos">Pin to remove position</param>
-        /// <param name="type">Pin to remove type</param>
-        /// <param name="name">Pin to remove name</param>
-        public static void RemovePin(Vector3 pos, Minimap.PinType type = Minimap.PinType.None, string name = null)
-        {
-            if (FindPin(pos, type, name) is not Minimap.PinData pin)
-                return;
-
-            Minimap.instance.RemovePin(pin);
-        }
-
-
-        /// <summary>
-        /// Read ZPackage into PinnedObjects list
-        /// </summary>
-        /// <param name="package">Loaded from file</param>
-        public static void ReadPinData(ZPackage package)
-        {
-            if (package == null) return;
-
-            while (package.GetPos() < package.Size())
-            {
-                ZDOID zdoid = package.ReadZDOID();
-                Minimap.PinData pinData = new()
-                {
-                    m_name = package.ReadString(),
-                    m_type = (Minimap.PinType)Enum.Parse(typeof(Minimap.PinType), package.ReadString()),
-                    m_pos = package.ReadVector3()
-                };
-                if (!PinnedObjects.ContainsKey(zdoid))
-                    PinnedObjects.Add(zdoid, pinData);
-
-            }
-
-        }
 
         /// <summary>
         /// Pack ZDOID, name, type and position in ZPackage and returns it.
@@ -291,12 +217,10 @@ namespace QuickPing.Patches
         {
             ZPackage zPackage = new ZPackage();
 
-            foreach (var x in Minimap_Patch.PinnedObjects)
+            foreach (var x in PinnedObjects)
             {
                 zPackage.Write(x.Key);
-                zPackage.Write(x.Value.m_name);
-                zPackage.Write(x.Value.m_type.ToString());
-                zPackage.Write(x.Value.m_pos);
+                zPackage.Write(x.Value);
             }
             return zPackage;
         }
@@ -311,6 +235,23 @@ namespace QuickPing.Patches
             ZPackage zPackage = PackData();
 
             cloudSaveFailed = Utilities.DataUtils.SaveData(world, zPackage);
+
+        }
+
+        [HarmonyPatch(typeof(Minimap))]
+        [HarmonyPatch(nameof(Minimap.RemovePin), new Type[] { typeof(Minimap.PinData) })]
+        [HarmonyPrefix]
+        public static void RemovePin(Minimap __instance, Minimap.PinData pin)
+        {
+            foreach (var p in PinnedObjects)
+            {
+                if (p.Value.Compare(pin))
+                {
+                    pin = __instance.GetClosestPin(p.Value.m_pos, Settings.ClosestPinRange.Value);
+                    PinnedObjects.Remove(PinnedObjects.FirstOrDefault((x) => x.Value.Compare(p.Value)).Key);
+                    break;
+                }
+            }
 
         }
 
