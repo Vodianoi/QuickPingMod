@@ -4,7 +4,7 @@ param(
     [System.String]$AssemblyVersion
 )
 $a = Get-Content "$PackageDir\manifest.json" -raw | ConvertFrom-Json
-if ( $a -eq $AssemblyVersion )
+if ( $a -ne $AssemblyVersion )
 {
 	Write-Host Changing version to $AssemblyVersion
 	$a.version_number = $AssemblyVersion
