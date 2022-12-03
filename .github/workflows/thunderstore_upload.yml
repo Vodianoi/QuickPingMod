@@ -20,4 +20,4 @@ jobs:
          tar -xvf tcli-0.1.6-linux-x64.tar.gz
          mv ./tcli-0.1.6-linux-x64/tcli QuickPing/tcli
          cd QuickPing
-         ./tcli publish --file QuickPing.zip --token ${{ secrets.DEV_THUNDERSTORE_TOKEN }}
+         ./tcli publish --file QuickPing.zip --token ${{ secrets.DEV_THUNDERSTORE_TOKEN }} --repository https://thunderstore.dev
