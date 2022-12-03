@@ -19,4 +19,4 @@ jobs:
          wget https://github.com/thunderstore-io/thunderstore-cli/releases/download/0.1.6/tcli-0.1.6-linux-x64.tar.gz
          tar -xvf tcli-0.1.6-linux-x64.tar.gz -C ./QuickPing
          cd QuickPing
-         tcli publish --file QuickPing.zip
+         ./tcli publish --file QuickPing.zip
