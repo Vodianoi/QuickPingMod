@@ -7,9 +7,8 @@ Ping position and markers will always work but must be installed on all clients 
 ## Features
 - Use T (by default, see config) to **ping what you point**, name of pointed object/creature is displayed in the world and on the minimap to all players.
   Some objects automatically add a pin on map if a player ping them (Copper, Silver, Dungeons, Portals, Berries etc.)
-- ***(New)*** Use G (by default, see config) to **force add a marker** (exclamation point by default**** if not filtered) **on map** with pointed object's name.
+- ***(New)*** Use G (by default, see config) to **force add a marker** (exclamation point by default if not filtered) **on map** with pointed object's name.
 - ***(New)*** If a pinned object is destroyed, it will also destroy its attached marker.
--
 - Change text colors (chat, ping, shout, whisper, names) in config ***need improvement***
 - Change already existing Portal pin by pinging the portal again, it will change the marker's name to portal tag.
 
