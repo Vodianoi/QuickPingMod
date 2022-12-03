@@ -17,6 +17,6 @@ outdir = "./build"
 copy = [ ]
 
 [publish]
-repository = "https://thunderstore.dev"
+repository = "https://thunderstore.io"
 communities = [ "Valheim", ]
 categories = [ "client-side", "tweaks", "utility", "misc", "tools", "mods" ]
