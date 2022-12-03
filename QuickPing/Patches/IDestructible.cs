@@ -17,8 +17,8 @@ namespace QuickPing.Patches
                 var id = __instance.m_nview.GetZDO().m_uid;
                 if (Minimap_Patch.PinnedObjects.ContainsKey(id))
                 {
-                    Minimap_Patch.RemovePin(Minimap_Patch.PinnedObjects[id]);
-                    Minimap_Patch.PinnedObjects.Remove(__instance.m_nview.GetZDO().m_uid);
+                    Minimap.instance.RemovePin(Minimap_Patch.PinnedObjects[id]);
+                    //Minimap_Patch.PinnedObjects.Remove(id);
                 }
             }
         }
@@ -36,8 +36,8 @@ namespace QuickPing.Patches
                 var id = __instance.m_nview.GetZDO().m_uid;
                 if (Minimap_Patch.PinnedObjects.ContainsKey(id))
                 {
-                    Minimap_Patch.RemovePin(Minimap_Patch.PinnedObjects[id]);
-                    Minimap_Patch.PinnedObjects.Remove(__instance.m_nview.GetZDO().m_uid);
+                    Minimap.instance.RemovePin(Minimap_Patch.PinnedObjects[id]);
+                    //Minimap_Patch.PinnedObjects.Remove(id);
                 }
             }
         }
@@ -47,7 +47,7 @@ namespace QuickPing.Patches
     internal static class Destructible_Patch
     {
         /// <summary>
-        /// Complete repatch, check if Destructible place something on destroy, if true change zdoid of PinnedObjects to ondestroy object
+        /// Complete patch, check if Destructible place something on destroy, if true change zdoid of PinnedObjects to ondestroy object
         /// </summary>
         /// <param name="__instance"></param>
         /// <param name="hitPoint"></param>
@@ -97,13 +97,8 @@ namespace QuickPing.Patches
                 }
             }
             else
-            {
                 if (Minimap_Patch.PinnedObjects.ContainsKey(id))
-                {
-                    Minimap_Patch.RemovePin(Minimap_Patch.PinnedObjects[id]);
-                    Minimap_Patch.PinnedObjects.Remove(id);
-                }
-            }
+                Minimap.instance.RemovePin(Minimap_Patch.PinnedObjects[id]);
 
             __instance.m_onDestroyed?.Invoke();
 
@@ -113,5 +108,7 @@ namespace QuickPing.Patches
 
             return false;
         }
+
+
     }
 }
