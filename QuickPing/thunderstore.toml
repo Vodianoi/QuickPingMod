@@ -22,4 +22,4 @@ target = "QuickPing.dll"
 [publish]
 repository = "https://thunderstore.io"
 communities = ["valheim"]
-categories = ["utility","client-side","misc","tools","tweaks","mods"]
+categories = ["client-side","tools","tweaks","mods"]
