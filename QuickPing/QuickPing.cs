@@ -7,6 +7,13 @@ using UnityEngine;
 
 namespace QuickPing
 {
+
+    public static class MyPluginInfo
+    {
+        public const string PLUGIN_GUID = "com.atopy.plugins.quickping";
+        public const string PLUGIN_NAME = "QuickPing";
+        public const string PLUGIN_VERSION = "1.5.1";
+    }
     public enum HoverType
     {
         GameObject,

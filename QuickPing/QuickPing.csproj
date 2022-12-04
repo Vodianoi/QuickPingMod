@@ -8,8 +8,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>QuickPing</RootNamespace>
     <AssemblyName>QuickPing</AssemblyName>
-    <Product>QuickPing</Product>
-    <Version>1.0.5</Version>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <LangVersion>9.0</LangVersion>
     <FileAlignment>512</FileAlignment>
@@ -56,6 +54,9 @@
     <ApplicationIcon>
     </ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Patches\Chat.cs" />
     <Compile Include="Patches\Localization.cs" />
@@ -85,10 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BepInEx.BaseLib">
-      <Version>5.4.21</Version>
-    </PackageReference>
-    <PackageReference Include="BepInEx.PluginInfoProps">
-      <Version>2.1.0</Version>
+      <Version>5.4.19</Version>
     </PackageReference>
     <PackageReference Include="Digitalroot.Valheim.Common.References">
       <Version>0.212.11</Version>
@@ -110,6 +108,7 @@
       <Major>$(AssemblyVersion.Split('.')[0])</Major>
       <Minor>$(AssemblyVersion.Split('.')[1])</Minor>
       <Patch>$(AssemblyVersion.Split('.')[2])</Patch>
+      <Version>$(Major).$(Minor).$(Patch)</Version>
       <PackageName>$(AssemblyName)</PackageName>
       <PackageDir>Package\</PackageDir>
       <ModsPath>C:\Users\axelp\AppData\Roaming\Thunderstore Mod Manager\DataFolder\Valheim\profiles\qFd9lRFKhh\BepInEx\plugins\$(AssemblyName)</ModsPath>
