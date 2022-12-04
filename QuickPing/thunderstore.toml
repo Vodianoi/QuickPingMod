@@ -16,10 +16,10 @@ readme = "Package/README.md"
 outdir = "./build"
 
 [[build.copy]]
-source = "./Package/plugins/QuickPing.dll"
-target = "./QuickPing.dll"
+source = "Package/plugins/QuickPing.dll"
+target = "QuickPing.dll"
 
 [publish]
 repository = "https://thunderstore.io"
-communities = [ "Valheim", ]
-categories = [ "client-side", "tweaks", "utility", "misc", "tools", "mods" ]
+communities = ["valheim"]
+categories = ["utility","client-side","misc","tools","tweaks","mods"]
