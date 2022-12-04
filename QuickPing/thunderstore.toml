@@ -4,7 +4,7 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "Atopy"
 name = "QuickPing"
-versionNumber = "1.5.0"
+versionNumber = "1.5.1"
 description = "Ping what you see and pin it on the map !"
 websiteUrl = "https://github.com/Vodianoi/QuickPingMod"
 containsNsfwContent = false
