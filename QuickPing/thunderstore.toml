@@ -1,5 +1,20 @@
 [config]
-schemaVersion = "0.0.1"
+schemaVersion = "0.0.2"
+
+[package]
+namespace = "Atopy"
+name = "QuickPing"
+versionNumber = "1.4.3"
+description = "Ping what you see, with colors !"
+websiteUrl = "https://github.com/Vodianoi/QuickPingMod"
+containsNsfwContent = false
+dependencies = {  }
+
+[build]
+icon = "Package/icon.png"
+readme = "Package/README.md"
+outdir = "./build"
+copy = [ ]
 
 [publish]
 repository = "https://thunderstore.io"
