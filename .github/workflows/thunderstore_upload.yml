@@ -17,5 +17,4 @@ jobs:
          tar -xf tcli-0.1.6-linux-x64.tar.gz
          mv ./tcli-0.1.6-linux-x64/tcli QuickPing/tcli
          cd QuickPing
-         ./tcli init
-         ./tcli publish --file QuickPing.zip --token ${{ secrets.THUNDERSTORE_TOKEN }} --config-path ./thunderstore.toml
+         ./tcli publish --token ${{ secrets.THUNDERSTORE_TOKEN }}
