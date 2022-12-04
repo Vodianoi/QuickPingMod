@@ -14,7 +14,10 @@ dependencies = {  }
 icon = "Package/icon.png"
 readme = "Package/README.md"
 outdir = "./build"
-copy = [ ]
+
+[[build.copy]]
+source = "./Package/plugins/QuickPing.dll"
+target = "./QuickPing.dll"
 
 [publish]
 repository = "https://thunderstore.io"
