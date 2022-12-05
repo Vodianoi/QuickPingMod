@@ -91,6 +91,11 @@
     <PackageReference Include="Digitalroot.Valheim.Common.References">
       <Version>0.212.11</Version>
     </PackageReference>
+    <PackageReference Include="GitVersion.MsBuild">
+      <Version>5.11.1</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="HarmonyX">
       <Version>2.10.1</Version>
     </PackageReference>
@@ -137,19 +142,37 @@
     <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(ModsPath)" />
     <!-- <RemoveDir Directories="$(PackageDir)" /> -->
   </Target>
+  <Target Name="AddGeneratedFile" BeforeTargets="BeforeCompile;CoreCompile" Inputs="$(MSBuildAllProjects)" Outputs="$(IntermediateOutputPath)GeneratedFile.cs">
+    <PropertyGroup>
+      <BepInExPluginName Condition="'$(BepInExPluginName)' == ''">$(AssemblyName)</BepInExPluginName>
+      <BepInExPluginVersion Condition="'$(BepInExPluginVersion)' == ''">$(AssemblyVersion)</BepInExPluginVersion>
+      <GeneratedText><![CDATA[
+  namespace $(RootNamespace)
+  {
+  public static class MyPluginInfo
+  {
+  	public const string PLUGIN_NAME = "$(BepInExPluginName)"%3B
+  	public const string PLUGIN_VERSION = "$(BepInExPluginVersion)"%3B
+  }
+  }
+    ]]></GeneratedText>
+      <GeneratedFilePath>$(IntermediateOutputPath)MyPluginInfo.cs</GeneratedFilePath>
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Include="$(GeneratedFilePath)" />
+      <FileWrites Include="$(GeneratedFilePath)" />
+    </ItemGroup>
+    <WriteLinesToFile Lines="$(GeneratedText)" File="$(GeneratedFilePath)" WriteOnlyWhenDifferent="true" Overwrite="true" />
+  </Target>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BuildDependsOn>
       $(BuildDependsOn);
-	  GetAssemblyVersion;
-	  MakeThunderstorePackage
-	</BuildDependsOn>
+	  <!-- GetAssemblyVersion; --><!-- MakeThunderstorePackage --></BuildDependsOn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <BuildDependsOn>
       $(BuildDependsOn);
-	  GetAssemblyVersion;
-	  PublishToThunderstorePath
-	</BuildDependsOn>
+	  <!-- GetAssemblyVersion; --><!-- PublishToThunderstorePath --></BuildDependsOn>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>

@@ -7,13 +7,6 @@ using UnityEngine;
 
 namespace QuickPing
 {
-
-    public static class MyPluginInfo
-    {
-        public const string PLUGIN_GUID = "com.atopy.plugins.quickping";
-        public const string PLUGIN_NAME = "QuickPing";
-        public const string PLUGIN_VERSION = "1.5.1";
-    }
     public enum HoverType
     {
         GameObject,
@@ -33,10 +26,11 @@ namespace QuickPing
         public bool pinable;
     }
 
-    [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+    [BepInPlugin(PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     public class QuickPingPlugin : BaseUnityPlugin
     {
 
+        public const string PLUGIN_GUID = "com.atopy.plugins.quickping";
         public static QuickPingPlugin Instance { get; set; }
 
 
@@ -55,14 +49,14 @@ namespace QuickPing
             //Log.LogInfo($"Plugin {MyPluginInfo.GUID} is loaded!");
 
             Settings.Init();
-            Harmony.CreateAndPatchAll(typeof(Player_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(ChatPing_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(Minimap_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(Terminal_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(MineRock5_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(Destructible_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(ZNet_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(WearNTear_Patch), MyPluginInfo.PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(Player_Patch), PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(ChatPing_Patch), PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(Minimap_Patch), PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(Terminal_Patch), PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(MineRock5_Patch), PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(Destructible_Patch), PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(ZNet_Patch), PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(WearNTear_Patch), PLUGIN_GUID);
 
             Player_Patch.OnPlayerPing.AddListener(Player_Patch.SendPing);
             Player_Patch.OnPlayerPing.AddListener(Minimap_Patch.AddPin);
