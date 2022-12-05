@@ -16,7 +16,7 @@ jobs:
         run: |
           echo "done!"
 
-      - uses: "francesco-ballarin/action-automatic-releases@latest"
+      - uses: "maggie0002/actions/packages/automatic-releases@built-packages"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           automatic_release_tag: "latest"
