@@ -4,9 +4,6 @@ name: Publish Thunder Mod
 on: 
   release:
     types: [published]
-    tags:
-      - '*.*.*'
-      - !'*.*.*.*'
 
 jobs:
   publish:
