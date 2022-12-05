@@ -22,5 +22,4 @@ jobs:
           automatic_release_tag: "latest"
           prerelease: true
           title: "Development Build"
-          files: |
-            QuickPing/Package/plugins/*
+          files: QuickPing/Package/plugins/*.dll
