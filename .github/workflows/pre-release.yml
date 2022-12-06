@@ -19,6 +19,13 @@ jobs:
         with:
           dotnet-version: '3.0.x'
           
+      - name: Extract owner and repo
+        uses: jungwinter/split@v1
+        id: repo
+        with:
+          seperator: '/'
+          msg: ${{ github.repository }}
+          
       - name: Allow Unsecure
         run: |
           echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV          
