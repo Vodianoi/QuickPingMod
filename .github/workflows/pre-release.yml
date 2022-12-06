@@ -13,6 +13,23 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          
+          
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.5
+
+      - name: Navigate to Workspace
+        run: cd $GITHUB_WORKSPACE
+
+      - name: Restore Packages
+        run: nuget restore QuickPing.sln
+
+      - name: Build Solution
+        run: |
+          msbuild.exe QuickPing.sln /p:platform="Any CPU" /p:configuration="Release"
       
       ##DOTNET SETUP 3.0.x
       - uses: actions/setup-dotnet@v3
