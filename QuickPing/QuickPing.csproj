@@ -124,7 +124,7 @@
     <MakeDir Directories="$(PackageDir)\plugins\" />
     <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFiles="$(PackageDir)plugins/$(AssemblyName).dll" />
     <Copy SourceFiles="../README.md; ../README.md" DestinationFiles="@(README)" />
-    <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="$(PackageName).zip" Overwrite="true" />
+    <!-- <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="$(PackageName).zip" Overwrite="true" /> -->
     <!-- <RemoveDir Directories="$(PackageDir)" /> -->
   </Target>
   <!-- Move debug files to thunderstore profile -->
