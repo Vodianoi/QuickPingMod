@@ -1,11 +1,12 @@
-name: "pre-release"
+name: "Pre-release"
 
 on: [push]
 
 jobs:
-  build:  
+  build: 
     name: "Build"  
     runs-on: windows-latest 
+    steps:
       ##CHECKOUT
       - uses: actions/checkout@v3
       
