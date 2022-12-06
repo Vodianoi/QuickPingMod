@@ -3,17 +3,9 @@ name: "pre-release"
 on:
   push:
 
-
-
-
-
-
-
-
 jobs:
-
-
-  build:    
+  build:  
+    name: "Build"  
     runs-on: windows-latest 
       ##CHECKOUT
       - uses: actions/checkout@v3
@@ -36,7 +28,7 @@ jobs:
   pre-release:
     name: "Pre Release"
     runs-on: "ubuntu-latest"
-
+    needs: build
     steps:
       ##CHECKOUT
 
