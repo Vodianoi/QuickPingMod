@@ -14,10 +14,10 @@ jobs:
         with:
           fetch-depth: 0
       
-      ##DOTNET SETUP 3.0.0
+      ##DOTNET SETUP 3.0.x
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '3.0.0'
+          dotnet-version: '3.0.x'
           
       - name: Allow Unsecure
         run: |
