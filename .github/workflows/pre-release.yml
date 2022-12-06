@@ -42,7 +42,7 @@ jobs:
       ##DOTNET SETUP 3.0.x
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '3.0.x'
+          dotnet-version: '3.1.0'
           
       - name: Extract owner and repo
         uses: jungwinter/split@v1
