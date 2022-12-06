@@ -119,7 +119,7 @@
     <ItemGroup>
       <README Include="README.md; $(PackageDir)/README.md" />
     </ItemGroup>
-    <Exec command="PowerShell -ExecutionPolicy RemoteSigned -File $(SolutionDir)version.ps1 -PackageDir $(PackageDir) -AssemblyVersion $(Major).$(Minor).$(Patch) " />
+    <!-- <Exec command="PowerShell -ExecutionPolicy RemoteSigned -File $(SolutionDir)version.ps1 -PackageDir $(PackageDir) -AssemblyVersion $(Major).$(Minor).$(Patch) " /> -->
     <MakeDir Directories="$(PackageDir)" />
     <MakeDir Directories="$(PackageDir)\plugins\" />
     <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFiles="$(PackageDir)plugins/$(AssemblyName).dll" />
