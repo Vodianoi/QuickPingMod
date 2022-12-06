@@ -1,7 +1,6 @@
 name: "pre-release"
 
-on:
-  push:
+on: [push]
 
 jobs:
   build:  
