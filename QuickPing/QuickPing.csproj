@@ -79,9 +79,6 @@
     <Folder Include="Package\plugins\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Package\manifest.json" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Package\icon.png" />
   </ItemGroup>
   <ItemGroup>
@@ -89,7 +86,7 @@
       <Version>5.4.19</Version>
     </PackageReference>
     <PackageReference Include="Digitalroot.Valheim.Common.References">
-      <Version>0.212.11</Version>
+      <Version>0.212.12</Version>
     </PackageReference>
     <PackageReference Include="GitVersion.MsBuild">
       <Version>5.11.1</Version>
@@ -116,7 +113,7 @@
       <Version>$(Major).$(Minor).$(Patch)</Version>
       <PackageName>$(AssemblyName)</PackageName>
       <PackageDir>Package\</PackageDir>
-      <ModsPath>C:\Users\axelp\AppData\Roaming\Thunderstore Mod Manager\DataFolder\Valheim\profiles\qFd9lRFKhh\BepInEx\plugins\$(AssemblyName)</ModsPath>
+      <ModsPath>$(AppData)\Thunderstore Mod Manager\DataFolder\Valheim\profiles\qFd9lRFKhh\BepInEx\plugins\$(AssemblyName)</ModsPath>
     </PropertyGroup>
   </Target>
   <!-- Create Zip, update readme and change manifest -->
@@ -124,12 +121,12 @@
     <ItemGroup>
       <README Include="README.md; $(PackageDir)/README.md" />
     </ItemGroup>
-    <Exec command="PowerShell -ExecutionPolicy RemoteSigned -File $(SolutionDir)version.ps1 -PackageDir $(PackageDir) -AssemblyVersion $(Major).$(Minor).$(Patch) " />
+    <Exec command="PowerShell -ExecutionPolicy RemoteSigned -File $(SolutionDir)bb.ps1" />
     <MakeDir Directories="$(PackageDir)" />
     <MakeDir Directories="$(PackageDir)\plugins\" />
     <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFiles="$(PackageDir)plugins/$(AssemblyName).dll" />
     <Copy SourceFiles="../README.md; ../README.md" DestinationFiles="@(README)" />
-    <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="$(PackageName).zip" Overwrite="true" />
+    <!-- <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="$(PackageName).zip" Overwrite="true" /> -->
     <!-- <RemoveDir Directories="$(PackageDir)" /> -->
   </Target>
   <!-- Move debug files to thunderstore profile -->
@@ -167,12 +164,16 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BuildDependsOn>
       $(BuildDependsOn);
-	  <!-- GetAssemblyVersion; --><!-- MakeThunderstorePackage --></BuildDependsOn>
+	  GetAssemblyVersion;
+	  MakeThunderstorePackage
+	  </BuildDependsOn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <BuildDependsOn>
       $(BuildDependsOn);
-	  <!-- GetAssemblyVersion; --><!-- PublishToThunderstorePath --></BuildDependsOn>
+	  GetAssemblyVersion;
+	  PublishToThunderstorePath
+	  </BuildDependsOn>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>

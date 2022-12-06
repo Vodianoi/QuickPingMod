@@ -1,8 +1,8 @@
-param(
-    [System.String]$PackageDir,
+# param(
+    # [System.String]$PackageDir,
 	
-    [System.String]$AssemblyVersion
-)
+    # [System.String]$AssemblyVersion
+# )
 
 
 # # Determine the package's local installation location.
