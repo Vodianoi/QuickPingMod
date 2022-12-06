@@ -88,6 +88,14 @@
     <PackageReference Include="Digitalroot.Valheim.Common.References">
       <Version>0.212.12</Version>
     </PackageReference>
+    <PackageReference Include="GitVersion.CommandLine">
+      <Version>5.11.1</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="GitVersion.Core">
+      <Version>5.11.1</Version>
+    </PackageReference>
     <PackageReference Include="GitVersion.MsBuild">
       <Version>5.11.1</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
