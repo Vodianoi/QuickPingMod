@@ -91,7 +91,7 @@ jobs:
           name: 'Pre-Release ${{ steps.gitversion.outputs.semVer }}'
           isPreRelease: true
           assets:  |
-            QuickPing/Package/plugins/*
+            QuickPing/Package/plugins/QuickPing.dll
            
       ##GitRelease PUBLISH 
       - uses: gittools/actions/gitreleasemanager/publish@v0.9.15
