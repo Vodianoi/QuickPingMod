@@ -77,7 +77,7 @@ jobs:
       - uses: gittools/actions/gitreleasemanager/setup@v0.9.15
         name: Install GitReleaseManager
         with:
-            versionSpec: '0.13.x'
+          versionSpec: '0.12.x'
         
         
       ##GitRelease CREATE
@@ -88,7 +88,6 @@ jobs:
           owner: ${{ steps.repo.outputs._0 }}
           repository: ${{ steps.repo.outputs._1 }}
           name: 'Pre-Release ${{ steps.gitversion.outputs.semVer }}'
-          tagName: ${{ steps.gitversion.outputs.semVer }}  
           isPreRelease: true
           assets:  |
             QuickPing/Package/plugins/*
