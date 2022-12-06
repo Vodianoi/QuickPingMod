@@ -41,7 +41,7 @@ jobs:
           
       ##GitVersion EXECUTE
       - name: Determine Version
-        uses: gittools/actions/gitversion/execute@.13.0
+        uses: gittools/actions/gitversion/execute@0.9.2
         id: gitversion
         with:
           useConfigFile: true
@@ -49,15 +49,15 @@ jobs:
           updateAssemblyInfoFilename: QuickPing/Properties/AssemblyInfo.cs
 
       ##GitRelease SETUP
-      - uses: gittools/actions/gitreleasemanager/setup@latest
+      - uses: gittools/actions/gitreleasemanager/setup@0.9.2
         name: Install GitReleaseManager
         with:
-            versionSpec: '0.11.x'
+            versionSpec: '0.13.0'
         
         
       ##GitRelease CREATE
       - name: Create release with GitReleaseManager
-        uses: gittools/actions/gitreleasemanager/create@0.13.0
+        uses: gittools/actions/gitreleasemanager/create@0.9.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: ${{ steps.repo.outputs._0 }}
@@ -69,7 +69,7 @@ jobs:
             QuickPing/Package/plugins/*
            
       ##GitRelease PUBLISH 
-      - uses: gittools/actions/gitreleasemanager/publish@.13.0
+      - uses: gittools/actions/gitreleasemanager/publish@0.9.2
         name: Publish release with GitReleaseManager
         with:
             token: ${{ secrets.GITHUB_TOKEN }}
