@@ -13,12 +13,19 @@ jobs:
     steps:
       # ...
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: "Build & test"
         run: |
           echo "done!"
-
-      - uses: "maggie0002/actions/packages/automatic-releases@built-packages"
+          
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: false
-          files: ./QuickPing/Package/*
+        versionSpec: '5.x'
+          
+      - name: Determine Version
+        uses: gittools/actions/gitversion/execute@v0.9.7
+        with:
+          useConfigFile: true
+          updateAssemblyInfo: true

@@ -2,8 +2,6 @@ name: "pre-release"
 
 on:
   push:
-    branches:
-      - "master"
 
 jobs:
   pre-release:
@@ -13,14 +11,40 @@ jobs:
     steps:
       # ...
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: "Build & test"
         run: |
           echo "done!"
-
-      - uses: "maggie0002/actions/packages/automatic-releases@built-packages"
+          
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.7
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
-          prerelease: true
-          title: "Development Build"
-          files: ./QuickPing/Package/plugins/*
+            versionSpec: '5.x'
+          
+      - name: Determine Version
+        uses: gittools/actions/gitversion/execute@v0.9.7
+        id: gitversion
+        with:
+          useConfigFile: true
+          updateAssemblyInfo: true
+
+      - uses: gittools/actions/gitreleasemanager/create@v0.9.2
+        name: Create release with GitReleaseManager
+        with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            owner: ${{ github.actor }}
+            repository: ${{ github.event.repository.name }}
+            milestone: ${{ steps.gitversion.outputs.semVer }}
+            isPreRelease: true
+            name: 'v${{ steps.gitversion.outputs.semVer }}'
+            assets:  |
+                QuickPing/Package/plugins/*
+            
+      - uses: gittools/actions/gitreleasemanager/publish@v0.9.2
+        name: Publish release with GitReleaseManager
+        with:
+            token: ${{ secrets.GITHUB_TOKEN }}
+            owner: ${{ github.actor }}
+            repository: ${{ github.event.repository.name }}
+            tagName: ${{ steps.gitversion.outputs.semVer }}          
