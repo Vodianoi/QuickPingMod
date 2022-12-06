@@ -170,7 +170,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: ${{ steps.repo.outputs._0 }}
-          repository: ${{ steps.repo.outputs._1 }}
+          repository: ${{ steps.repo.outputs._1 }}/tree/${GITHUB_REF##*/}
           milestone: ${{ steps.gitversion.outputs.majorMinorPatch }}
           name: 'Pre-Release ${{ steps.gitversion.outputs.semVer }}'
           isPreRelease: true
