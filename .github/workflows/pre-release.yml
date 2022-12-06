@@ -55,7 +55,6 @@ jobs:
             token: ${{ secrets.GITHUB_TOKEN }}
             owner: ${{ github.actor }}
             repository: ${{ github.event.repository.name }}
-            milestone: ${{ steps.gitversion.outputs.semVer }}
             isPreRelease: true
             name: 'v${{ steps.gitversion.outputs.semVer }}'
             assets:  |
