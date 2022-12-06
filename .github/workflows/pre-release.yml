@@ -101,3 +101,4 @@ jobs:
           owner: ${{ steps.repo.outputs._0 }}
           repository: ${{ steps.repo.outputs._1 }}   
           milestone: ${{ steps.gitversion.outputs.majorMinorPatch }} 
+          tagName: 'Pre-Release ${{ steps.gitversion.outputs.majorMinorPatch }}'
