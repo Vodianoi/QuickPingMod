@@ -98,6 +98,6 @@ jobs:
         name: Publish release with GitReleaseManager
         with:
             token: ${{ secrets.GITHUB_TOKEN }}
-            owner: ${{ github.actor }}
-            repository: ${{ github.event.repository.name }}
-            tagName: ${{ steps.gitversion.outputs.semVer }}          
+            owner: ${{ steps.repo.outputs._0 }}
+            repository: ${{ steps.repo.outputs._1 }}
+            tagName: milestone         
