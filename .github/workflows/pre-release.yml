@@ -39,7 +39,7 @@ jobs:
         with:
           useConfigFile: true
           updateAssemblyInfo: true
-          updateAssemblyInfoFilename: "QuickPing/Properties/AssemblyInfo.cs"
+          updateAssemblyInfoFilename: QuickPing/Properties/AssemblyInfo.cs
 
       ##GitRelease SETUP
       - uses: gittools/actions/gitreleasemanager/setup@v0.9.2
@@ -57,7 +57,7 @@ jobs:
             repository: ${{ github.event.repository.name }}
             isPreRelease: true
             name: 'v${{ steps.gitversion.outputs.semVer }}'
-            inputFilePath: QuickPing/Package/plugins/QuickPing.dll
+            inputFilePath: "QuickPing/Package/plugins/QuickPing.dll"
            
       ##GitRelease PUBLISH 
       - uses: gittools/actions/gitreleasemanager/publish@v0.9.2
