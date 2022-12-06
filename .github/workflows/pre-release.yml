@@ -9,19 +9,25 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      # ...
+      ##CHECKOUT
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          
+      - name: Allow Unsecure
+        run: |
+          echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV          
       - name: "Build & test"
         run: |
-          echo "done!"
+          echo "unsecure done!"
           
+      ##GitVersion SETUP
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.7
         with:
             versionSpec: '5.x'
           
+      ##GitVersion EXECUTE
       - name: Determine Version
         uses: gittools/actions/gitversion/execute@v0.9.7
         id: gitversion
@@ -30,6 +36,14 @@ jobs:
           updateAssemblyInfo: true
           updateAssemblyInfoFilename: QuickPing/Properties/AssemblyInfo.cs
 
+      ##GitRelease SETUP
+      - uses: gittools/actions/gitreleasemanager/setup@v0.9.2
+        name: Install GitReleaseManager
+        with:
+        versionSpec: '0.10.x'
+        
+        
+      ##GitRelease CREATE
       - uses: gittools/actions/gitreleasemanager/create@v0.9.2
         name: Create release with GitReleaseManager
         with:
@@ -41,7 +55,8 @@ jobs:
             name: 'v${{ steps.gitversion.outputs.semVer }}'
             assets:  |
                 QuickPing/Package/plugins/*
-            
+           
+      ##GitRelease PUBLISH 
       - uses: gittools/actions/gitreleasemanager/publish@v0.9.2
         name: Publish release with GitReleaseManager
         with:
