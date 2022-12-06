@@ -1,6 +1,11 @@
 name: "Pre-release"
 
-on: [push]
+on:
+  push:
+    branches: 
+      - '*'
+      - '!master'   # excludes master
+
 
 jobs:
   build: 
@@ -39,7 +44,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      ##DOTNET SETUP 3.0.x
+      ##DOTNET SETUP 3.1.x
       - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '3.1.x'
@@ -101,4 +106,4 @@ jobs:
           owner: ${{ steps.repo.outputs._0 }}
           repository: ${{ steps.repo.outputs._1 }}   
           milestone: ${{ steps.gitversion.outputs.majorMinorPatch }} 
-          tagName: ${{ steps.gitversion.outputs.majorMinorPatch }}
+          tagName: ${{ steps.gitversion.outputs.semVer }}
