@@ -64,6 +64,7 @@ jobs:
           repository: ${{ steps.repo.outputs._1 }}
           name: 'Pre-Release ${{ steps.gitversion.outputs.semVer }}'
           isPreRelease: true
+          inputFilePath: README.md
           assets:  |
             QuickPing/Package/plugins/*
            
