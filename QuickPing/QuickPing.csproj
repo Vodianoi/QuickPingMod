@@ -51,10 +51,7 @@
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup>
-	<Company>Atopy</Company>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Company>Atopy</Company>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>
@@ -161,12 +158,12 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-      <Target Name="AddGeneratedFile" BeforeTargets="BeforeCompile;CoreCompile" Inputs="$(MSBuildAllProjects)" Outputs="$(IntermediateOutputPath)GeneratedFile.cs">
-        <PropertyGroup>
-            <BepInExPluginGuid Condition="'$(BepInExPluginGuid)' == ''">com.$(Company.ToLower()).plugins.$(AssemblyName.ToLower())</BepInExPluginGuid>
-            <BepInExPluginName Condition="'$(BepInExPluginName)' == ''">$(Product)</BepInExPluginName>
-            <BepInExPluginVersion Condition="'$(BepInExPluginVersion)' == ''">$(AssemblyVersion)</BepInExPluginVersion>
-            <GeneratedText><![CDATA[
+  <Target Name="AddGeneratedFile" BeforeTargets="BeforeCompile;CoreCompile" Inputs="$(MSBuildAllProjects)" Outputs="$(IntermediateOutputPath)GeneratedFile.cs">
+    <PropertyGroup>
+      <BepInExPluginGuid Condition="'$(BepInExPluginGuid)' == ''">com.$(Company.ToLower()).plugins.$(AssemblyName.ToLower())</BepInExPluginGuid>
+      <BepInExPluginName Condition="'$(BepInExPluginName)' == ''">$(Product)</BepInExPluginName>
+      <BepInExPluginVersion Condition="'$(BepInExPluginVersion)' == ''">$(AssemblyVersion)</BepInExPluginVersion>
+      <GeneratedText><![CDATA[
 namespace $(RootNamespace)
 {
     public static class MyPluginInfo
@@ -177,12 +174,12 @@ namespace $(RootNamespace)
     }
 }
       ]]></GeneratedText>
-            <GeneratedFilePath>$(IntermediateOutputPath)MyPluginInfo.cs</GeneratedFilePath>
-        </PropertyGroup>
-        <ItemGroup>
-            <Compile Include="$(GeneratedFilePath)" />
-            <FileWrites Include="$(GeneratedFilePath)" />
-        </ItemGroup>
-        <WriteLinesToFile Lines="$(GeneratedText)" File="$(GeneratedFilePath)" WriteOnlyWhenDifferent="true" Overwrite="true" />
-    </Target>
+      <GeneratedFilePath>$(IntermediateOutputPath)MyPluginInfo.cs</GeneratedFilePath>
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Include="$(GeneratedFilePath)" />
+      <FileWrites Include="$(GeneratedFilePath)" />
+    </ItemGroup>
+    <WriteLinesToFile Lines="$(GeneratedText)" File="$(GeneratedFilePath)" WriteOnlyWhenDifferent="true" Overwrite="true" />
+  </Target>
 </Project>

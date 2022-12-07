@@ -14,23 +14,6 @@ jobs:
     steps:
       ##CHECKOUT
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      
-      ##GitVersion SETUP
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.15
-        with:
-            versionSpec: '5.x'
-          
-      ##GitVersion EXECUTE
-      - name: Determine Version
-        uses: gittools/actions/gitversion/execute@v0.9.15
-        id: gitversion
-        with:
-          useConfigFile: true
-          updateAssemblyInfo: true
-          updateAssemblyInfoFilename: QuickPing/Properties/AssemblyInfo.cs
       
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
@@ -175,6 +158,20 @@ jobs:
           echo "unsecure done!"
           
 
+      ##GitVersion SETUP
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.15
+        with:
+            versionSpec: '5.x'
+          
+      ##GitVersion EXECUTE
+      - name: Determine Version
+        uses: gittools/actions/gitversion/execute@v0.9.15
+        id: gitversion
+        with:
+          useConfigFile: true
+          updateAssemblyInfo: true
+          updateAssemblyInfoFilename: QuickPing/Properties/AssemblyInfo.cs
 
       ##GitRelease SETUP
       - uses: gittools/actions/gitreleasemanager/setup@v0.9.15
