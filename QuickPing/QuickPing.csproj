@@ -94,6 +94,11 @@
     <PackageReference Include="Digitalroot.Valheim.Common.References">
       <Version>0.212.11</Version>
     </PackageReference>
+    <PackageReference Include="GitVersion.MsBuild">
+      <Version>5.11.1</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="HarmonyX">
       <Version>2.10.1</Version>
     </PackageReference>
@@ -161,7 +166,7 @@
   <Target Name="AddGeneratedFile" BeforeTargets="BeforeCompile;CoreCompile" Inputs="$(MSBuildAllProjects)" Outputs="$(IntermediateOutputPath)GeneratedFile.cs">
     <PropertyGroup>
       <BepInExPluginGuid Condition="'$(BepInExPluginGuid)' == ''">com.$(Company.ToLower()).plugins.$(AssemblyName.ToLower())</BepInExPluginGuid>
-      <BepInExPluginName Condition="'$(BepInExPluginName)' == ''">$(Product)</BepInExPluginName>
+      <BepInExPluginName Condition="'$(BepInExPluginName)' == ''">$(AssemblyName)</BepInExPluginName>
       <BepInExPluginVersion Condition="'$(BepInExPluginVersion)' == ''">$(AssemblyVersion)</BepInExPluginVersion>
       <GeneratedText><![CDATA[
 namespace $(RootNamespace)

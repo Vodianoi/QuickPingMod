@@ -169,6 +169,10 @@ jobs:
           useConfigFile: true
           updateAssemblyInfo: true
           updateAssemblyInfoFilename: QuickPing/Properties/AssemblyInfo.cs
+      
+      - name: Git Release notes setup
+        run: |
+            choco install GitReleaseNotes.Portable
 
       ##GitRelease SETUP
       - uses: gittools/actions/gitreleasemanager/setup@v0.9.15
