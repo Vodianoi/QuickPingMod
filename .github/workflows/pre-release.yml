@@ -13,6 +13,11 @@ jobs:
     name: "Generate Changelog
     runs-on: ubuntu-latest
     steps:
+    
+      ##CHECKOUT
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       ##CHANGELOG
       - name: "✏️ Generate release changelog"
         id: changelogBuilder
