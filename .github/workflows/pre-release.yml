@@ -218,7 +218,7 @@ jobs:
             
       - name: Create Release Command
         run: |
-            dotnet-gitreleasemanager create --owner ${{ github.actor }} --repository ${{ github.event.repository.name }} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory ${{ github.workspace }} --name '${{ env.GitVersion_SemVer }}' --pre --assets QuickPing/Package/plugins/QuickPing.dll --inputFilePath QuickPing/Package/CHANGELOG.md
+            dotnet-gitreleasemanager create --owner ${{ github.actor }} --repository ${{ github.event.repository.name }} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory ${{ github.workspace }} --name '${{ env.GitVersion_SemVer }}' --pre --assets "QuickPing/Package/plugins/QuickPing.dll" --inputFilePath "QuickPing/Package/CHANGELOG.md"
            
       ##GitRelease PUBLISH 
       - uses: gittools/actions/gitreleasemanager/publish@v0.9.15
