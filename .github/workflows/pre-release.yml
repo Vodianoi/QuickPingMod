@@ -1,4 +1,4 @@
-name: "Pre-release"
+name: "Build & Deploy"
 
 on:
   push:
@@ -9,8 +9,8 @@ on:
 
 jobs:
   build: 
-    name: "Build"  
-    runs-on: windows-latest 
+    name: "Build & Deploy"  
+    runs-on: ubuntu-latest 
     steps:
       ##CHECKOUT
       - uses: actions/checkout@v3
