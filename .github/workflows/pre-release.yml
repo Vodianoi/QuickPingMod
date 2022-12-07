@@ -20,7 +20,6 @@ jobs:
           fetch-depth: 0
       ##CHANGELOG
       - name: "✏️ Generate release changelog"
-        id: changelogBuilder
         uses: heinrichreimer/github-changelog-generator-action@v2.3
         with:
           token: ${{ secrets.GITHUB_TOKEN }} 
