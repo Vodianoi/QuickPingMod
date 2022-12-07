@@ -218,7 +218,7 @@ jobs:
             
       - name: Create Release Command
         run: |
-            dotnet-gitreleasemanager create --owner ${GITHUB_REPOSITORY%/*} --repository ${GITHUB_REPOSITORY#*/} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory $GITHUB_WORKSPACE --name '${{ steps.gitversion.outputs.semVer }}' --pre --assets ${GITHUB_WORKSPACE}/QuickPing/Package/plugins/QuickPing.dll --inputFilePath ${GITHUB_WORKSPACE}/QuickPing/Package/CHANGELOG.md
+            dotnet-gitreleasemanager create --owner $env:GITHUB_REPOSITORY%/* --repository $env:GITHUB_REPOSITORY#*/ --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory $env:GITHUB_WORKSPACE --name '$env:GitVersion_SemVer' --pre --assets $env:GITHUB_WORKSPACE/QuickPing/Package/plugins/QuickPing.dll --inputFilePath $env:GITHUB_WORKSPACE/QuickPing/Package/CHANGELOG.md
            
       ##GitRelease PUBLISH 
       - uses: gittools/actions/gitreleasemanager/publish@v0.9.15
@@ -227,5 +227,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: ${GITHUB_REPOSITORY%/*}
           repository: ${GITHUB_REPOSITORY#*/}  
-          milestone: ${{ steps.gitversion.outputs.majorMinorPatch }} 
-          tagName: ${{ steps.gitversion.outputs.majorMinorPatch }} 
+          milestone: $GitVersion_MajorMinorPatch
+          tagName: $GitVersion_MajorMinorPatch
