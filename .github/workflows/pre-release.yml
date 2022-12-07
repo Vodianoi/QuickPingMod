@@ -14,6 +14,8 @@ jobs:
     steps:
       ##CHECKOUT
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
