@@ -34,7 +34,7 @@ jobs:
   build: 
     name: "Build and Deploy"  
     needs: generate-changelog
-    runs-on: winwdows-latest 
+    runs-on: windows-latest 
     steps:
       ##CHECKOUT
       - uses: actions/checkout@v3
