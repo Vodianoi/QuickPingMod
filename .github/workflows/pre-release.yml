@@ -34,6 +34,7 @@ jobs:
         run: nuget restore QuickPing.sln
 
       - name: Build Solution
+        id: gitversion
         run: |
           msbuild.exe QuickPing.sln /p:platform="Any CPU" /p:configuration="Release"
           
@@ -157,20 +158,20 @@ jobs:
           
 
 
-      ##GitVersion SETUP
-      - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.15
-        with:
-            versionSpec: '5.x'
+      # ##GitVersion SETUP
+      # - name: Install GitVersion
+        # uses: gittools/actions/gitversion/setup@v0.9.15
+        # with:
+            # versionSpec: '5.x'
           
-      ##GitVersion EXECUTE
-      - name: Determine Version
-        uses: gittools/actions/gitversion/execute@v0.9.15
-        id: gitversion
-        with:
-          useConfigFile: true
-          updateAssemblyInfo: true
-          updateAssemblyInfoFilename: QuickPing/Properties/AssemblyInfo.cs
+      # ##GitVersion EXECUTE
+      # - name: Determine Version
+        # uses: gittools/actions/gitversion/execute@v0.9.15
+        # id: gitversion
+        # with:
+          # useConfigFile: true
+          # updateAssemblyInfo: true
+          # updateAssemblyInfoFilename: QuickPing/Properties/AssemblyInfo.cs
           
       ##CHANGELOG
       - name: "✏️ Generate release changelog"
@@ -187,7 +188,7 @@ jobs:
           versionSpec: '0.13.x'
         
         
-      ##GitRelease CREATE
+      ##GitRelease CREATE (can't insert inputFilePath argument issue (report)
       # - name: Create release with GitReleaseManager
         # uses: gittools/actions/gitreleasemanager/create@v0.9.15
         # with:
