@@ -38,11 +38,11 @@ jobs:
         run: |
           msbuild.exe QuickPing.sln /p:platform="Any CPU" /p:configuration="Release"
           
-      - name: Archive dll
-        uses: actions/upload-artifact@v3
-        with:
-          name: dll
-          path: QuickPing/Package/plugins/QuickPing.dll
+      # - name: Archive dll
+        # uses: actions/upload-artifact@v3
+        # with:
+          # name: dll
+          # path: QuickPing/Package/plugins/QuickPing.dll
       # - name: Commit dll result
         # uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
         # with:
@@ -149,12 +149,12 @@ jobs:
         with:
           dotnet-version: '3.1.x'
           
-      - name: Extract owner and repo
-        uses: jungwinter/split@v1
-        id: repo
-        with:
-          seperator: '/'
-          msg: ${{ github.repository }}
+      # - name: Extract owner and repo
+        # uses: jungwinter/split@v1
+        # id: repo
+        # with:
+          # seperator: '/'
+          # msg: ${{ github.repository }}
           
 
 
@@ -204,14 +204,14 @@ jobs:
             
       - name: Create Release Command
         run: |
-            dotnet-gitreleasemanager create --owner ${{ steps.repo.outputs._0 }} --repository ${{ steps.repo.outputs._1 }} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory $GITHUB_WORKSPACE --name 'Pre-Release ${{ steps.gitversion.outputs.semVer }}' --pre --assets $GITHUB_WORKSPACE/QuickPing/Package/plugins/QuickPing.dll --inputFilePath $GITHUB_WORKSPACE/QuickPing/Package/CHANGELOG.md
+            dotnet-gitreleasemanager create --owner ${GITHUB_REPOSITORY%/*} --repository ${GITHUB_REPOSITORY#*/} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory $GITHUB_WORKSPACE --name '${{ steps.gitversion.outputs.semVer }}' --pre --assets ${GITHUB_WORKSPACE}/QuickPing/Package/plugins/QuickPing.dll --inputFilePath ${GITHUB_WORKSPACE}/QuickPing/Package/CHANGELOG.md
            
       ##GitRelease PUBLISH 
       - uses: gittools/actions/gitreleasemanager/publish@v0.9.15
         name: Publish release with GitReleaseManager
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${{ steps.repo.outputs._0 }}
-          repository: ${{ steps.repo.outputs._1 }}   
+          owner: ${GITHUB_REPOSITORY%/*}
+          repository: ${GITHUB_REPOSITORY#*/}  
           milestone: ${{ steps.gitversion.outputs.majorMinorPatch }} 
           tagName: ${{ steps.gitversion.outputs.majorMinorPatch }} 
