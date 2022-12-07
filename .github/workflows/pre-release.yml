@@ -38,7 +38,7 @@ jobs:
       - name: Archive dll
         uses: actions/upload-artifact@v3
         with:
-          name: QuickPing/Package/plugins/QuickPing.dll
+          name: dll
           path: QuickPing/Package/plugins/QuickPing.dll
       # - name: Commit dll result
         # uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
@@ -130,8 +130,10 @@ jobs:
         run: |
           echo "unsecure done!"
           
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: dll
+          path: QuickPing/Package/plugins/QuickPing.dll
 
           
        # extract branch name
