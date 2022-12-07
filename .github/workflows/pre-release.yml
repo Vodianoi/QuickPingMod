@@ -218,14 +218,14 @@ jobs:
             
       - name: Create Release Command
         run: |
-            dotnet-gitreleasemanager create --owner ${{ github.repository }} --repository ${{ github.repository }} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory ${{ github.workspace }} --name '${{ env.GitVersion_SemVer }}' --pre --assets '${{ github.workspace }}\QuickPing\Package\plugins\QuickPing.dll' --inputFilePath '${{ github.workspace }}\QuickPing\Package\CHANGELOG.md'
+            dotnet-gitreleasemanager create --owner ${{ github.repository.owner.login }} --repository ${{ github.event.repository.name }} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory ${{ github.workspace }} --name '${{ env.GitVersion_SemVer }}' --pre --assets '${{ github.workspace }}\QuickPing\Package\plugins\QuickPing.dll' --inputFilePath '${{ github.workspace }}\QuickPing\Package\CHANGELOG.md'
            
       ##GitRelease PUBLISH 
       - uses: gittools/actions/gitreleasemanager/publish@v0.9.15
         name: Publish release with GitReleaseManager
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${GITHUB_REPOSITORY%/*}
-          repository: ${GITHUB_REPOSITORY#*/}  
+          owner: ${{ github.repository.owner.login }}
+          repository: ${{ github.event.repository.name }}
           milestone: $GitVersion_MajorMinorPatch
           tagName: $GitVersion_MajorMinorPatch
