@@ -121,11 +121,11 @@ jobs:
             # # Default: ''
             # # tag_push: '--force'
             
-  pre-release:
-    name: "Pre Release"
-    runs-on: "ubuntu-latest"
-    needs: build
-    steps:
+  # pre-release:
+    # name: "Pre Release"
+    # runs-on: "ubuntu-latest"
+    # needs: build
+    # steps:
       - name: Allow Unsecure
         run: |
           echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV          
@@ -133,16 +133,16 @@ jobs:
         run: |
           echo "unsecure done!"
           
-      - uses: actions/download-artifact@v3
-        with:
-          name: dll
-          path: QuickPing/Package/plugins/QuickPing.dll
+      # - uses: actions/download-artifact@v3
+        # with:
+          # name: dll
+          # path: QuickPing/Package/plugins/QuickPing.dll
 
         
-      ##CHECKOUT
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      # ##CHECKOUT
+      # - uses: actions/checkout@v3
+        # with:
+          # fetch-depth: 0
         
       ##DOTNET SETUP 3.1.x
       - uses: actions/setup-dotnet@v3
