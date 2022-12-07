@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("QuickPing")]
 [assembly: AssemblyDescription("Ping what you see !")]
 [assembly: AssemblyConfiguration("")]
-//[assembly: AssemblyCompany("Atopy")]
+[assembly: AssemblyCompany("Atopy")]
 [assembly: AssemblyProduct("QuickPing")]
 [assembly: AssemblyCopyright("Copyright ©  2022")]
 [assembly: AssemblyTrademark("")]

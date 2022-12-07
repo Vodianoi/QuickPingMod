@@ -52,7 +52,10 @@
   </PropertyGroup>
   <PropertyGroup>
 	<Company>Atopy</Company>
-</PropertyGroup>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>
     </ApplicationIcon>
