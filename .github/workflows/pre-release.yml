@@ -188,18 +188,22 @@ jobs:
         
         
       ##GitRelease CREATE
-      - name: Create release with GitReleaseManager
-        uses: gittools/actions/gitreleasemanager/create@v0.9.15
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${{ steps.repo.outputs._0 }}
-          repository: ${{ steps.repo.outputs._1 }}
-          inputFilePath: QuickPing/Package/CHANGELOG.md
-          # milestone: ${{ steps.gitversion.outputs.majorMinorPatch }}
-          name: 'Pre-Release ${{ steps.gitversion.outputs.semVer }}'
-          isPreRelease: true
-          assets:  |
-            QuickPing/Package/plugins/QuickPing.dll
+      # - name: Create release with GitReleaseManager
+        # uses: gittools/actions/gitreleasemanager/create@v0.9.15
+        # with:
+          # token: ${{ secrets.GITHUB_TOKEN }}
+          # owner: ${{ steps.repo.outputs._0 }}
+          # repository: ${{ steps.repo.outputs._1 }}
+          # inputFilePath: QuickPing/Package/CHANGELOG.md
+          # # milestone: ${{ steps.gitversion.outputs.majorMinorPatch }}
+          # name: 'Pre-Release ${{ steps.gitversion.outputs.semVer }}'
+          # isPreRelease: true
+          # assets:  |
+            # QuickPing/Package/plugins/QuickPing.dll
+            
+      - name: Create Release Command
+        run: |
+            dotnet-gitreleasemanager create --owner ${{ steps.repo.outputs._0 }} --repository ${{ steps.repo.outputs._1 }} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory $(GITHUB_WORKSPACE)${{ steps.repo.outputs._1 }}/${{ steps.repo.outputs._1 }} --name Pre-Release 1.6.0-hotfix.1 --pre --assets QuickPing/Package/plugins/QuickPing.dll --inputFilePath QuickPing/Package/CHANGELOG.md
            
       ##GitRelease PUBLISH 
       - uses: gittools/actions/gitreleasemanager/publish@v0.9.15
