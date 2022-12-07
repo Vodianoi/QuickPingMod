@@ -1,4 +1,4 @@
-name: "Build & Deploy"
+name: "Build and Deploy"
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
           path: QuickPing/Package/CHANGELOG.md
         
   build: 
-    name: "Build & Deploy"  
+    name: "Build and Deploy"  
     needs: generate-changelog
     runs-on: winwdows-latest 
     steps:
