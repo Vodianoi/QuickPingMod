@@ -1,73 +1,22 @@
-assembly-versioning-scheme: MajorMinorPatchTag
+
+assembly-versioning-scheme: MajorMinorPatch
+assembly-file-versioning-scheme: MajorMinorPatch
+assembly-informational-format: '{InformationalVersion}'
 mode: ContinuousDelivery
-branches:
-  main:
-    mode: ContinuousDelivery
-    tag: ''
-    increment: Patch
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: false
-    regex: ^master$|^main$
-    tracks-release-branches: false
-    is-release-branch: false
-  release:
-    mode: ContinuousDelivery
-    tag: beta
-    increment: Patch
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: false
-    regex: ^releases?[/-]
-    tracks-release-branches: false
-    is-release-branch: true
-    pre-release-weight: 1000
-  feature:
-    mode: ContinuousDelivery
-    tag: useBranchName
-    increment: Inherit
-    prevent-increment-of-merged-branch-version: false
-    track-merge-target: false
-    regex: ^features?[/-]
-    tracks-release-branches: false
-    is-release-branch: false
-  pull-request:
-    mode: ContinuousDelivery
-    tag: PullRequest
-    increment: Inherit
-    prevent-increment-of-merged-branch-version: false
-    tag-number-pattern: '[/-](?<number>\d+)[-/]'
-    track-merge-target: false
-    regex: ^(pull|pull\-requests|pr)[/-]
-    tracks-release-branches: false
-    is-release-branch: false
-  hotfix:
-    mode: ContinuousDelivery
-    tag: beta
-    increment: Patch
-    prevent-increment-of-merged-branch-version: false
-    track-merge-target: false
-    regex: ^hotfix(es)?[/-]
-    tracks-release-branches: false
-    is-release-branch: false
-  support:
-    mode: ContinuousDelivery
-    tag: ''
-    increment: Patch
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: false
-    regex: ^support[/-]
-    tracks-release-branches: false
-    is-release-branch: false
-  develop:
-    mode: ContinuousDeployment
-    tag: unstable
-    increment: Minor
-    prevent-increment-of-merged-branch-version: false
-    track-merge-target: true
-    regex: ^dev(elop)?(ment)?$
-    tracks-release-branches: true
-    is-release-branch: false
+increment: Inherit
+continuous-delivery-fallback-tag: ci
+tag-prefix: '[vV]'
+major-version-bump-message: '\+semver:\s?(breaking|major)'
+minor-version-bump-message: '\+semver:\s?(feature|minor)'
+patch-version-bump-message: '\+semver:\s?(fix|patch)'
+no-bump-message: '\+semver:\s?(none|skip)'
+legacy-semver-padding: 4
+build-metadata-padding: 4
+commits-since-version-source-padding: 4
+tag-pre-release-weight: 60000
+commit-message-incrementing: Enabled
 ignore:
   sha: []
+  commits-before: 
 merge-message-formats: {}
-
-
+update-build-number: true
