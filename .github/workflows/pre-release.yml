@@ -10,7 +10,7 @@ on:
 jobs:
 
   generate-changelog:
-    name: "Generate Changelog
+    name: "Generate Changelog"
     runs-on: ubuntu-latest
     steps:
     
