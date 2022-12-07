@@ -135,19 +135,6 @@ jobs:
           name: dll
           path: QuickPing/Package/plugins/QuickPing.dll
 
-          
-       # extract branch name
-      - name: Extract branch name
-        if: github.event_name != 'pull_request'
-        shell: bash
-        run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
-
-      # extract branch name on pull request
-      - name: Print branch name
-        if: github.event_name == 'pull_request'
-        run: echo "::set-env name=BRANCH_NAME::$(echo ${GITHUB_HEAD_REF})"
-        
         
       ##CHECKOUT
       - uses: actions/checkout@v3
@@ -211,4 +198,4 @@ jobs:
           owner: ${{ steps.repo.outputs._0 }}
           repository: ${{ steps.repo.outputs._1 }}   
           milestone: ${{ steps.gitversion.outputs.majorMinorPatch }} 
-          tagName: 'latest'
+          tagName: ${{ steps.gitversion.outputs.majorMinorPatch }} 
