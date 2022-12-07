@@ -63,7 +63,7 @@ jobs:
           msbuild.exe QuickPing.sln /p:platform="Any CPU" /p:configuration="Release"
           
       - name: get repository owner
-        run: echo "REPOSITORY_OWNER=${{github.repository%/*}}" >> $GITHUB_ENV
+        run: echo "REPOSITORY_OWNER=${{github.repository}%/*}" >> $GITHUB_ENV
 
       # - name: Commit dll result
         # uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
