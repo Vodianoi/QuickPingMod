@@ -63,7 +63,7 @@ jobs:
           msbuild.exe QuickPing.sln /p:platform="Any CPU" /p:configuration="Release"
           
       - name: get repository owner
-        run: echo "REPOSITORY_OWNER={${{github.repository}}%/*}" >> $GITHUB_ENV
+        run: echo "REPOSITORY_OWNER=${{github.repository}}%/*" >> $GITHUB_ENV
 
       # - name: Commit dll result
         # uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
@@ -220,14 +220,14 @@ jobs:
             
       - name: Create Release Command
         run: |
-            dotnet-gitreleasemanager create --owner ${{ env.REPOSITORY_OWNER }} --repository ${{ github.event.repository.name }} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory ${{ github.workspace }} --name '${{ env.GitVersion_SemVer }}' --pre --assets '${{ github.workspace }}\QuickPing\Package\plugins\QuickPing.dll' --inputFilePath '${{ github.workspace }}\QuickPing\Package\CHANGELOG.md'
+            dotnet-gitreleasemanager create --owner ${{ github.actor }} --repository ${{ github.event.repository.name }} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory ${{ github.workspace }} --name '${{ env.GitVersion_SemVer }}' --pre --assets '${{ github.workspace }}\QuickPing\Package\plugins\QuickPing.dll' --inputFilePath '${{ github.workspace }}\QuickPing\Package\CHANGELOG.md'
            
       ##GitRelease PUBLISH 
       - uses: gittools/actions/gitreleasemanager/publish@v0.9.15
         name: Publish release with GitReleaseManager
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${{ env.REPOSITORY_OWNER }}
+          owner: ${{ github.actor }}
           repository: ${{ github.event.repository.name }}
           milestone: $GitVersion_MajorMinorPatch
           tagName: $GitVersion_MajorMinorPatch
