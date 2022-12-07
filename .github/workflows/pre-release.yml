@@ -118,6 +118,12 @@ jobs:
     runs-on: "ubuntu-latest"
     needs: build
     steps:
+      - name: Allow Unsecure
+        run: |
+          echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV          
+      - name: "Build & test"
+        run: |
+          echo "unsecure done!"
           
        # extract branch name
       - name: Extract branch name
@@ -150,13 +156,7 @@ jobs:
           seperator: '/'
           msg: ${{ github.repository }}
           
-      - name: Allow Unsecure
-        run: |
-          echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV          
-      - name: "Build & test"
-        run: |
-          echo "unsecure done!"
-          
+
 
       ##GitVersion SETUP
       - name: Install GitVersion
