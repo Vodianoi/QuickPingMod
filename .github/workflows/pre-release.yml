@@ -223,7 +223,7 @@ jobs:
           bodyFile: QuickPing/Package/CHANGELOG.md
           commit: ${{ github.repository }}
           tag: ${{ env.GitVersion_SemVer }}
-          name: "Pre-release ${{ env.GitVersion_SemVer }}"
+          name: "Pre-release: ${{ env.GitVersion_SemVer }}"
           prerelease: true
 
           
