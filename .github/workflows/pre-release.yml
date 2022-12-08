@@ -216,12 +216,14 @@ jobs:
           # isPreRelease: true
           # assets:  |
             # QuickPing/Package/plugins/QuickPing.dll
-      - uses: nelonoel/branch-name@v1
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v6
       - uses: ncipollo/release-action@v1
         with:
           artifacts: QuickPing/Package/plugins/*.dll
           bodyFile: QuickPing/Package/CHANGELOG.md
-          commit: ${BRANCH_NAME}
+          commit: ${{ steps.branch-name.outputs.current_branch }}
           tag: "${{ env.GitVersion_SemVer }}"
           name: "Pre-release: ${{ env.GitVersion_SemVer }}"
           prerelease: true
