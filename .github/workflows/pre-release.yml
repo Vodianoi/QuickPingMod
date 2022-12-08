@@ -219,8 +219,9 @@ jobs:
             
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: ./QuickPing/Package/plugins/*.dll
-          bodyFile: ./CHANGELOG.md
+          artifacts: QuickPing/Package/plugins/*.dll
+          bodyFile: QuickPing/Package/CHANGELOG.md
+          commit: ${{ github.repository }}
           tag: ${{ env.GitVersion_SemVer }}
           name: "Pre-release ${{ env.GitVersion_SemVer }}"
           prerelease: true
