@@ -197,10 +197,10 @@ jobs:
 
 
       ##GitRelease SETUP
-      - uses: gittools/actions/gitreleasemanager/setup@v0.9.15
-        name: Install GitReleaseManager
-        with:
-          versionSpec: '0.13.x'
+      # - uses: gittools/actions/gitreleasemanager/setup@v0.9.15
+        # name: Install GitReleaseManager
+        # with:
+          # versionSpec: '0.13.x'
         
         
       ##GitRelease CREATE (can't insert inputFilePath argument issue (report)
@@ -217,17 +217,26 @@ jobs:
           # assets:  |
             # QuickPing/Package/plugins/QuickPing.dll
             
-      - name: Create Release Command
-        run: |
-            ls .\QuickPing\Package\plugins
-            dotnet-gitreleasemanager create --owner ${{ github.actor }} --repository ${{ github.event.repository.name }} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory ${{ github.workspace }} --name '${{ env.GitVersion_SemVer }}' --pre --inputFilePath QuickPing/Package/CHANGELOG.md  --assets ".\QuickPing\Package\plugins\QuickPing.dll,"
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "QuickPing/Package/plugins/*.dll"
+          bodyFile: "CHANGELOG.md"
+          tag: ${{ env.GitVersion_SemVer }}
+          name: "Pre-release ${{ env.GitVersion_SemVer }}"
+          prerelease: true
+
+          
+      # - name: Create Release Command
+        # run: |
+            # ls .\QuickPing\Package\plugins
+            # dotnet-gitreleasemanager create --owner ${{ github.actor }} --repository ${{ github.event.repository.name }} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory ${{ github.workspace }} --name '${{ env.GitVersion_SemVer }}' --pre --inputFilePath QuickPing/Package/CHANGELOG.md  --assets QuickPing\Package\plugins\QuickPing.dll
            
       ##GitRelease PUBLISH 
-      - uses: gittools/actions/gitreleasemanager/publish@v0.9.15
-        name: Publish release with GitReleaseManager
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          owner: ${{ github.actor }}
-          repository: ${{ github.event.repository.name }}
-          milestone: ${{ env.GitVersion_MajorMinorPatch }}
-          tagName: ${{ env.GitVersion_MajorMinorPatch }}
+      # - uses: gittools/actions/gitreleasemanager/publish@v0.9.15
+        # name: Publish release with GitReleaseManager
+        # with:
+          # token: ${{ secrets.GITHUB_TOKEN }}
+          # owner: ${{ github.actor }}
+          # repository: ${{ github.event.repository.name }}
+          # milestone: ${{ env.GitVersion_MajorMinorPatch }}
+          # tagName: ${{ env.GitVersion_MajorMinorPatch }}
