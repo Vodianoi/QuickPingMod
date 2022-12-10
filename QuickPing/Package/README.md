@@ -12,9 +12,8 @@ Ping position and markers will always work but must be installed on all clients 
 - Change text colors (chat, ping, shout, whisper, names) in config ***need improvement***
 - Change already existing Portal pin by pinging the portal again, it will change the marker's name to portal tag.
 
-## What's Changed
-* Removing jotunn dependency by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/21
-* 1.5.0 Fix bugs and optimization, remove unused dependencies by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/22
+## What's Changed 1.5.2
+* fixed an issue where the player can't to ping after settings changed [#30] (https://github.com/Vodianoi/QuickPingMod/pull/30)
 
 
 **Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/v1.4.1...1.5.0
