@@ -12,7 +12,7 @@ namespace QuickPing
     {
         public const string PLUGIN_GUID = "com.atopy.plugins.quickping";
         public const string PLUGIN_NAME = "QuickPing";
-        public const string PLUGIN_VERSION = "1.5.1";
+        public const string PLUGIN_VERSION = "1.5.2";
     }
     public enum HoverType
     {
@@ -63,6 +63,7 @@ namespace QuickPing
             Harmony.CreateAndPatchAll(typeof(Destructible_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(ZNet_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(WearNTear_Patch), MyPluginInfo.PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(ZInput_Patch), MyPluginInfo.PLUGIN_GUID);
 
             Player_Patch.OnPlayerPing.AddListener(Player_Patch.SendPing);
             Player_Patch.OnPlayerPing.AddListener(Minimap_Patch.AddPin);
