@@ -29,6 +29,6 @@ using System.Runtime.InteropServices;
 //      Revision
 //
 //JObject
-[assembly: AssemblyVersion("1.5.1.0")]
-[assembly: AssemblyFileVersion("1.5.1.0")]
+[assembly: AssemblyVersion("1.5.2.0")]
+[assembly: AssemblyFileVersion("1.5.2.0")]
 //[assembly: AssemblyFileVersion("1.0.0.0")]
