@@ -3,9 +3,9 @@ name: "Release"
 on:
   push:
     branches: 
-      - '^master$|^main$'   
-      - 'releases?[/-]'   
-      - '^dev(elop)?(ment)?$'   
+      - 'master'   
+      - 'release-*'   
+      - 'develop'   
 
 
 jobs:
