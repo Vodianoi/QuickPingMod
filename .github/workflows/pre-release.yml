@@ -4,9 +4,9 @@ on:
   push:
     branches: 
       - '**'
-      - '!^master$|^main$'   # excludes master
-      - '!^releases?[/-]'   # excludes release
-      - '!^dev(elop)?(ment)?$'   # excludes develop
+      - '!master'   # excludes master
+      - '!releases'   # excludes release
+      - '!develop'   # excludes develop
 
 
 jobs:
