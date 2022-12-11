@@ -17,7 +17,7 @@ Ping position and markers will always work but must be installed on all clients 
 * 1.5.0 Fix bugs and optimization, remove unused dependencies by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/22
 
 
-**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/v1.4.1...1.5.0
+**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/v1.4.1...1.5.2
 
 ## Known issues and next patch ideas 
 You can find the github and contribute by adding an issue at: [Github](https://github.com/Vodianoi/QuickPingMod)
