@@ -1,57 +1,40 @@
-name: "Build and Deploy"
+name: "Pre-Release"
 
 on:
   push:
     branches: 
       - '**'
-      - '!master'   # excludes master
-      - '!release'   # excludes release
+      - '!^master$|^main$'   # excludes master
+      - '!^releases?[/-]'   # excludes release
+      - '!^dev(elop)?(ment)?$'   # excludes develop
 
 
 jobs:
-
-  generate-changelog:
-    name: "Generate Changelog"
-    runs-on: ubuntu-latest
-    steps:
-    
-      ##CHECKOUT
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      ##CHANGELOG
-      - name: "✏️ Generate release changelog"
-        uses: heinrichreimer/github-changelog-generator-action@v2.3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }} 
-          output: QuickPing/Package/CHANGELOG.md
-          
-      - name: Archive changelog
-        uses: actions/upload-artifact@v3
-        with:
-          name: changelog
-          path: QuickPing/Package/CHANGELOG.md
-        
   build: 
     name: "Build and Deploy"  
     needs: generate-changelog
     runs-on: windows-latest 
     steps:
-      ##CHECKOUT
+      # CHECKOUT
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       
+      # Setups
+      ##############
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1
 
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v1.0.5
+      ##############
         
+      # Add bepinex package source
       - name: Add source
         run: |
             dotnet nuget add source "https://nuget.bepinex.dev/v3/index.json" --name baget 
 
+      # Useless?
       - name: Navigate to Workspace
         run: cd $GITHUB_WORKSPACE
 
@@ -59,163 +42,20 @@ jobs:
         run: nuget restore QuickPing.sln
 
       - name: Build Solution
-        id: gitversion
         run: |
           msbuild.exe QuickPing.sln /p:platform="Any CPU" /p:configuration="Release"
-          
-      - name: get repository owner
-        run: echo "REPOSITORY_OWNER=${{github.repository}}%/*" >> $GITHUB_ENV
 
-      # - name: Commit dll result
-        # uses: EndBug/add-and-commit@v9 # You can change this to use a specific version.
-        # with:
-            # # The arguments for the `git add` command (see the paragraph below for more info)
-            # # Default: '.'
-            # add: 'QuickPing/Package/plugins/QuickPing.dll'
-        
-            # # The name of the user that will be displayed as the author of the commit.
-            # # Default: depends on the default_author input
-            # # author_name: Author Name
-        
-            # # The email of the user that will be displayed as the author of the commit.
-            # # Default: depends on the default_author input
-            # # author_email: mail@example.com
-        
-            # # Additional arguments for the git commit command. The --message argument is already set by the message input.
-            # # Default: ''
-            # commit: --signoff
-        
-            # # The name of the custom committer you want to use, if different from the author of the commit.
-            # # Default: the name of the author (set with either author_name or default_author)
-            # # committer_name: Committer Name
-        
-            # # The email of the custom committer you want to use, if different from the author of the commit.
-            # # Default: the email of the author (set with either author_email or default_author)
-            # # committer_email: mail@example.com
-        
-            # # The local path to the directory where your repository is located. You should use actions/checkout first to set it up.
-            # # Default: '.'
-            # # cwd: './path/to/the/repo'
-        
-            # # Determines the way the action fills missing author name and email. Three options are available:
-            # # - github_actor -> UserName <UserName@users.noreply.github.com>
-            # # - user_info -> Your Display Name <your-actual@email.com>
-            # # - github_actions -> github-actions <email associated with the github logo>
-            # # Default: github_actor
-            # default_author: github_actions
-        
-            # # Arguments for the git fetch command. If set to false, the action won't fetch the repo.
-            # # For more info as to why fetching is usually recommended, please see the "Performance on large repos" FAQ. 
-            # # Default: --tags --force
-            # # fetch: false
-        
-            # # The message for the commit.
-            # # Default: 'Commit from GitHub Actions (name of the workflow)'
-            # message: 'add QuickPing.dll'
-        
-            # # If this input is set, the action will push the commit to a new branch with this name.
-            # # Default: ''
-            # # new_branch: custom-new-branch
-        
-            # # The way the action should handle pathspec errors from the add and remove commands. Three options are available:
-            # # - ignore -> errors will be logged but the step won't fail
-            # # - exitImmediately -> the action will stop right away, and the step will fail
-            # # - exitAtEnd -> the action will go on, every pathspec error will be logged at the end, the step will fail.
-            # # Default: ignore
-            # pathspec_error_handling: exitImmediately
-        
-            # # Arguments for the git pull command. By default, the action does not pull.
-            # # Default: ''
-            # # pull: '--rebase'
-        
-            # # Whether to push the commit and, if any, its tags to the repo. It can also be used to set the git push arguments (see the paragraph below for more info)
-            # # Default: true
-            # push: true
-        
-            # # The arguments for the `git rm` command (see the paragraph below for more info)
-            # # Default: ''
-            # # remove: './dir/old_file.js'
-        
-            # # Arguments for the git tag command (the tag name always needs to be the first word not preceded by an hyphen)
-            # # Default: ''
-            # # tag: 'v1.0.0 --force'
-        
-            # # Arguments for the git push --tags command (any additional argument will be added after --tags)
-            # # Default: ''
-            # # tag_push: '--force'
-            
-  # pre-release:
-    # name: "Pre Release"
-    # runs-on: "ubuntu-latest"
-    # needs: build
-    # steps:
-      - name: Allow Unsecure
-        run: |
-          echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV          
+      # - name: Allow Unsecure
+      #   run: |
+      #     echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV          
 
-          
-      - uses: actions/download-artifact@v3
-        with:
-          name: changelog
-          path: QuickPing/Package/
 
-        
-      # ##CHECKOUT
-      # - uses: actions/checkout@v3
-        # with:
-          # fetch-depth: 0
-        
-      ##DOTNET SETUP 3.1.x
-      - uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '3.1.x'
-          
-      # - name: Extract owner and repo
-        # uses: jungwinter/split@v1
-        # id: repo
-        # with:
-          # seperator: '/'
-          # msg: ${{ github.repository }}
+      # ##DOTNET SETUP 3.1.x
+      # - uses: actions/setup-dotnet@v3
+      #   with:
+      #     dotnet-version: '3.1.x'
           
 
-
-      # ##GitVersion SETUP
-      # - name: Install GitVersion
-        # uses: gittools/actions/gitversion/setup@v0.9.15
-        # with:
-            # versionSpec: '5.x'
-          
-      # ##GitVersion EXECUTE
-      # - name: Determine Version
-        # uses: gittools/actions/gitversion/execute@v0.9.15
-        # id: gitversion
-        # with:
-          # useConfigFile: true
-          # updateAssemblyInfo: true
-          # updateAssemblyInfoFilename: QuickPing/Properties/AssemblyInfo.cs
-          
-
-
-      ##GitRelease SETUP
-      # - uses: gittools/actions/gitreleasemanager/setup@v0.9.15
-        # name: Install GitReleaseManager
-        # with:
-          # versionSpec: '0.13.x'
-        
-        
-      ##GitRelease CREATE (can't insert inputFilePath argument issue (report)
-      # - name: Create release with GitReleaseManager
-        # uses: gittools/actions/gitreleasemanager/create@v0.9.15
-        # with:
-          # token: ${{ secrets.GITHUB_TOKEN }}
-          # owner: ${{ steps.repo.outputs._0 }}
-          # repository: ${{ steps.repo.outputs._1 }}
-          # inputFilePath: QuickPing/Package/CHANGELOG.md
-          # # milestone: ${{ steps.gitversion.outputs.majorMinorPatch }}
-          # name: 'Pre-Release ${{ steps.gitversion.outputs.semVer }}'
-          # isPreRelease: true
-          # assets:  |
-            # QuickPing/Package/plugins/QuickPing.dll
       - name: Get branch name
         id: branch-name
         uses: tj-actions/branch-names@v6
@@ -225,22 +65,8 @@ jobs:
           generateReleaseNotes: true
           # bodyFile: QuickPing/Package/CHANGELOG.md
           commit: ${{ steps.branch-name.outputs.current_branch }}
-          tag: "${{ env.GitVersion_SemVer }}"
+          tag: "latest"
+          allowUpdated: true
+          updateOnlyUnreleased: true
           name: "Pre-release: ${{ env.GitVersion_SemVer }}"
           prerelease: true
-
-          
-      # - name: Create Release Command
-        # run: |
-            # ls .\QuickPing\Package\plugins
-            # dotnet-gitreleasemanager create --owner ${{ github.actor }} --repository ${{ github.event.repository.name }} --token ${{ secrets.GITHUB_TOKEN }} --targetDirectory ${{ github.workspace }} --name '${{ env.GitVersion_SemVer }}' --pre --inputFilePath QuickPing/Package/CHANGELOG.md  --assets QuickPing\Package\plugins\QuickPing.dll
-           
-      ##GitRelease PUBLISH 
-      # - uses: gittools/actions/gitreleasemanager/publish@v0.9.15
-        # name: Publish release with GitReleaseManager
-        # with:
-          # token: ${{ secrets.GITHUB_TOKEN }}
-          # owner: ${{ github.actor }}
-          # repository: ${{ github.event.repository.name }}
-          # milestone: ${{ env.GitVersion_MajorMinorPatch }}
-          # tagName: ${{ env.GitVersion_MajorMinorPatch }}
