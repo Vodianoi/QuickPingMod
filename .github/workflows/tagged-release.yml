@@ -88,6 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - uses: actions/checkout@v3
       - uses: Vodianoi/uploadMod@0.9.5
         with:
           mod-id: '2033' #Nexus
