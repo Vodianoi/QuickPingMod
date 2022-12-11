@@ -89,7 +89,7 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v3
-      - uses: Vodianoi/uploadMod@0.9.5
+      - uses: Vodianoi/uploadMod@0.9.6
         with:
           mod-id: '2033' #Nexus
           archive-file: 'QuickPing/QuickPing.zip'
