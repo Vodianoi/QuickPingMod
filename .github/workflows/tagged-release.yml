@@ -104,17 +104,17 @@ jobs:
         run: |
           echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
           
-      - uses: Vodianoi/uploadMod@0.9.11
+      - uses: Vodianoi/uploadMod@0.9.12
         with:
           mod-id: '2033' #Nexus
           archive-file: 'QuickPing/QuickPing.zip'
           file-name: 'QuickPing'
           version: ${{ steps.read-version.outputs.version }}
           category: 'Main' #Nexus
-          description: "\"Ping what you see and pin it on the map !\""
+          description: "Ping what you see and pin it on the map !"
           game: 'valheim'
           namespace: 'com.atopy.plugins.quickping'
-          tomlConfigPath: './thunderstore.toml'
+          tomlConfigPath: '.Quickping/thunderstore.toml'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXUSMOD_API_KEY: ${{ secrets.NEXUSMOD_API_KEY }}
           NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.NEXUSMOD_COOKIE_NEXUSID }}
