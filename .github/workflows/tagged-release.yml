@@ -104,13 +104,13 @@ jobs:
         run: |
           echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
           
-      - uses: Vodianoi/uploadMod@0.9.13
+      - uses: Vodianoi/uploadMod@0.9.14
         with:
           mod-id: '2033' #Nexus
           archive-file: 'QuickPing/QuickPing.zip'
           file-name: 'QuickPing'
           version: ${{ steps.read-version.outputs.version }}
-          category: 'Main' #Nexus
+          category: 'Main'
           description: "Ping what you see and pin it on the map !"
           game: valheim
           namespace: 'com.atopy.plugins.quickping'
