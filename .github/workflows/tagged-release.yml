@@ -111,7 +111,7 @@ jobs:
           file-name: 'QuickPing'
           version: ${{ steps.read-version.outputs.version }}
           category: 'Main' #Nexus
-          description: "My Mod Description"
+          description: "\"Ping what you see and pin it on the map !\""
           game: 'valheim'
           namespace: 'com.atopy.plugins.quickping'
           tomlConfigPath: './thunderstore.toml'
