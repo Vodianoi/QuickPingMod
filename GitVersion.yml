@@ -16,7 +16,7 @@ branches:
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
-    regex: ^release?[/-]
+    regex: ^release?[\/-]
     tracks-release-branches: false
     is-release-branch: true
     pre-release-weight: 1000
