@@ -12,7 +12,7 @@ namespace QuickPing
     {
         public const string PLUGIN_GUID = "com.atopy.plugins.quickping";
         public const string PLUGIN_NAME = "QuickPing";
-        public const string PLUGIN_VERSION = "1.5.2";
+        public const string PLUGIN_VERSION = "1.5.3";
     }
     public enum HoverType
     {
