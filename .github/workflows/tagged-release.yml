@@ -84,7 +84,7 @@ jobs:
         run: |
           msbuild.exe QuickPing.sln /p:platform="Any CPU" /p:configuration="Release"
           
-      - run: echo {{ env.GitVersion_MajorMinorPatch }} >> version.txt
+      - run: echo ${{ env.GitVersion_MajorMinorPatch }} >> version.txt
       - name: Upload Version for Publish
         uses: actions/upload-artifact@v2
         with:
@@ -112,9 +112,9 @@ jobs:
           version: ${{ steps.read-version.outputs.version }}
           category: 'Main' #Nexus
           description: "Ping what you see and pin it on the map !"
-          game: 'valheim'
+          game: valheim
           namespace: 'com.atopy.plugins.quickping'
-          tomlConfigPath: '.Quickping/thunderstore.toml'
+          tomlConfigPath: 'Quickping/thunderstore.toml'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXUSMOD_API_KEY: ${{ secrets.NEXUSMOD_API_KEY }}
           NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.NEXUSMOD_COOKIE_NEXUSID }}
