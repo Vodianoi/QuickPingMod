@@ -84,10 +84,10 @@ namespace QuickPing.Patches
             if (wt.m_type == Talker.Type.Shout || wt.m_type == Talker.Type.Ping)
             {
                 //"<color=#" + ColorUtility.ToHtmlStringRGBA(Settings.PlayerColor.Value) + ">" + user + "</color>: <color=#" + ColorUtility.ToHtmlStringRGBA(color) + ">" + text + "</color>";
-                text = "<color=#" + ColorUtility.ToHtmlStringRGBA(Settings.PlayerColor.Value) + ">" + wt.m_name + ": ";
+                text = "<color=#" + ColorUtility.ToHtmlStringRGBA(Settings.PlayerColor.Value) + ">" + wt.m_name + "</color>: ";
             }
 
-            text += "</color>: <color=#" + ColorUtility.ToHtmlStringRGBA(wt.m_textField.color) + ">" + wt.m_text + "</color>";
+            text += "<color=#" + ColorUtility.ToHtmlStringRGBA(wt.m_textField.color) + ">" + wt.m_text + "</color>";
             wt.m_textField.text = text;
 
             return false;
