@@ -104,7 +104,7 @@ jobs:
         run: |
           echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
           
-      - uses: Vodianoi/uploadMod@0.9.15
+      - uses: Vodianoi/uploadMod@0.9.16
         with:
           mod-id: '2033' #Nexus
           archive-file: 'QuickPing/QuickPing.zip'
