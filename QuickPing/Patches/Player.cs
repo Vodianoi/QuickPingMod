@@ -248,6 +248,7 @@ namespace QuickPing.Patches
             return hoverObj;
         }
 
+        // Check if Interface is type of HoverType
         private static HoverType CheckType(Transform root, out IDestructible destructible)
         {
             //Test IDestructible
@@ -264,8 +265,6 @@ namespace QuickPing.Patches
                 return HoverType.Location;
             }
 
-
-
             //Test Piece (check PieceType)
             if (root.GetComponent<Piece>())
             {
@@ -279,9 +278,6 @@ namespace QuickPing.Patches
         {
             return (bool)raycastHit.collider.attachedRigidbody && raycastHit.collider.attachedRigidbody.gameObject == Player.m_localPlayer.gameObject;
         }
-
-
-
 
         public static void SendPing(HoverObject ping) => SendPing(ping.pos, ping.Name);
         public static void SendPing(Vector3 position, string text, bool local = false)
