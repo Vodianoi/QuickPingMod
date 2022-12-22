@@ -103,7 +103,10 @@ jobs:
         id: read-version
         run: |
           echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
-          
+      
+      - name: Restore tools
+        run: dotnet tool install -g Digitalroot.OdinPlusModUploader
+      
       - name: Upload
         env:
           NEXUSMOD_API_KEY: ${{ secrets.NEXUSMOD_API_KEY }}
