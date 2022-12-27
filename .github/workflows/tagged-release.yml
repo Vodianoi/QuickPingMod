@@ -104,8 +104,8 @@ jobs:
         run: |
           echo "version=$(cat version.txt)" >> $GITHUB_OUTPUT
       
-      - name: Restore tools
-        run: dotnet tool install -g Digitalroot.OdinPlusModUploader
+     # - name: Restore tools
+     #   run: dotnet tool install -g Digitalroot.OdinPlusModUploader
       
      # - name: Upload
      #   env:
