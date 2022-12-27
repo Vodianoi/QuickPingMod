@@ -1,26 +1,72 @@
-name: "pre-release"
+name: "Pre-Release"
 
 on:
   push:
-    branches:
-      - "master"
+    branches: 
+      - '**'
+      - '!master'   # excludes master
+      - '!release-*'   # excludes release
+      - '!develop'   # excludes develop
+
 
 jobs:
-  pre-release:
-    name: "Pre Release"
-    runs-on: "ubuntu-latest"
-
+  build: 
+    name: "Build and Deploy"  
+    needs: generate-changelog
+    runs-on: windows-latest 
     steps:
-      # ...
+      # CHECKOUT
       - uses: actions/checkout@v3
-      - name: "Build & test"
-        run: |
-          echo "done!"
-
-      - uses: "maggie0002/actions/packages/automatic-releases@built-packages"
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "latest"
+          fetch-depth: 0
+      
+      # Setups
+      ##############
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v1.0.5
+      ##############
+        
+      # Add bepinex package source
+      - name: Add source
+        run: |
+            dotnet nuget add source "https://nuget.bepinex.dev/v3/index.json" --name baget 
+
+      # Useless?
+      - name: Navigate to Workspace
+        run: cd $GITHUB_WORKSPACE
+
+      - name: Restore Packages
+        run: nuget restore QuickPing.sln
+
+      - name: Build Solution
+        run: |
+          msbuild.exe QuickPing.sln /p:platform="Any CPU" /p:configuration="Release"
+
+      # - name: Allow Unsecure
+      #   run: |
+      #     echo "ACTIONS_ALLOW_UNSECURE_COMMANDS=true" >> $GITHUB_ENV          
+
+
+      # ##DOTNET SETUP 3.1.x
+      # - uses: actions/setup-dotnet@v3
+      #   with:
+      #     dotnet-version: '3.1.x'
+          
+
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v6
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: QuickPing/Package/plugins/*.dll
+          generateReleaseNotes: true
+          # bodyFile: QuickPing/Package/CHANGELOG.md
+          commit: ${{ steps.branch-name.outputs.current_branch }}
+          tag: "latest"
+          allowUpdated: true
+          updateOnlyUnreleased: true
+          name: "Pre-release: ${{ env.GitVersion_SemVer }}"
           prerelease: true
-          title: "Development Build"
-          files: ./QuickPing/Package/plugins/*
