@@ -116,7 +116,7 @@ jobs:
      #     opmu nx check
      #     opmu nx upload 2033 QuickPing/QuickPing.zip -v ${{ steps.read-version.outputs.version }} -d "Ping what you see and pin it on the map !" -t Main -f "QuickPing" -dmv
 
-      - uses: Vodianoi/uploadMod@0.9.37
+      - uses: Vodianoi/uploadMod@0.9.38
         with:
           mod-id: '2033' #Nexus
           archive-file: 'QuickPing/QuickPing.zip'
