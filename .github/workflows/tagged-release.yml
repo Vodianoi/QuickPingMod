@@ -107,31 +107,31 @@ jobs:
       - name: Restore tools
         run: dotnet tool install -g Digitalroot.OdinPlusModUploader
       
-      - name: Upload
-        env:
-          NEXUSMOD_API_KEY: ${{ secrets.NEXUSMOD_API_KEY }}
-          NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.NEXUSMOD_COOKIE_NEXUSID }}
-          NEXUSMOD_COOKIE_SID_DEVELOP: ${{ secrets.NEXUSMOD_COOKIE_SID_DEVELOP }}
-        run: |
-          opmu nx check
-          opmu nx upload 2033 QuickPing/QuickPing.zip -v ${{ steps.read-version.outputs.version }} -d "Ping what you see and pin it on the map !" -t Main -f "QuickPing" -dmv
-
-     # - uses: Vodianoi/uploadMod@0.9.18
-     #   with:
-     #     mod-id: '2033' #Nexus
-     #     archive-file: 'QuickPing/QuickPing.zip'
-     #     file-name: 'QuickPing'
-     #     version: ${{ steps.read-version.outputs.version }}
-     #     category: 'Main'
-     #     description: "Ping what you see and pin it on the map !"
-     #     game: valheim
-     #     namespace: 'com.atopy.plugins.quickping'
-     #     tomlConfigPath: './Quickping/thunderstore.toml'
-     #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+     # - name: Upload
+     #   env:
      #     NEXUSMOD_API_KEY: ${{ secrets.NEXUSMOD_API_KEY }}
      #     NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.NEXUSMOD_COOKIE_NEXUSID }}
      #     NEXUSMOD_COOKIE_SID_DEVELOP: ${{ secrets.NEXUSMOD_COOKIE_SID_DEVELOP }}
-     #     THUNDERSTORE_TOKEN: ${{ secrets.THUNDERSTORE_TOKEN }}` 
+     #   run: |
+     #     opmu nx check
+     #     opmu nx upload 2033 QuickPing/QuickPing.zip -v ${{ steps.read-version.outputs.version }} -d "Ping what you see and pin it on the map !" -t Main -f "QuickPing" -dmv
+
+      - uses: Vodianoi/uploadMod@0.9.18
+        with:
+          mod-id: '2033' #Nexus
+          archive-file: 'QuickPing/QuickPing.zip'
+          file-name: 'QuickPing'
+          version: ${{ steps.read-version.outputs.version }}
+          category: 'Main'
+          description: "Ping what you see and pin it on the map !"
+          game: valheim
+          namespace: 'com.atopy.plugins.quickping'
+          tomlConfigPath: './Quickping/thunderstore.toml'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEXUSMOD_API_KEY: ${{ secrets.NEXUSMOD_API_KEY }}
+          NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.NEXUSMOD_COOKIE_NEXUSID }}
+          NEXUSMOD_COOKIE_SID_DEVELOP: ${{ secrets.NEXUSMOD_COOKIE_SID_DEVELOP }}
+          THUNDERSTORE_TOKEN: ${{ secrets.THUNDERSTORE_TOKEN }}` 
 
 
       # Use checkout to publish the files in your repo
