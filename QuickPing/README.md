@@ -13,11 +13,11 @@ Ping position and markers will always work but must be installed on all clients 
 - Change already existing Portal pin by pinging the portal again, it will change the marker's name to portal tag.
 
 ## What's Changed
-* Removing jotunn dependency by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/21
-* 1.5.0 Fix bugs and optimization, remove unused dependencies by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/22
+* Hotfix 32 bug text color by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/33
+* Fixed #34 Player can ping while in menu, console etc. by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/35
 
 
-**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/v1.4.1...1.5.0
+**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.2...1.5.3
 
 ## Known issues and next patch ideas 
 You can find the github and contribute by adding an issue at: [Github](https://github.com/Vodianoi/QuickPingMod)

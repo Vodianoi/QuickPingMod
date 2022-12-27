@@ -17,7 +17,7 @@ namespace QuickPing.Patches
 
 
         /// <summary>
-        /// 
+        /// Check if an object can be pinned
         /// </summary>
         /// <param name="strID"></param>
         /// <returns></returns>
@@ -140,6 +140,8 @@ namespace QuickPing.Patches
                 //Check if there is another pin in range
 
                 //PORTAL :Check if an already existing pin is at pos
+
+
                 if (strID == "$piece_portal")
                 {
                     if (hover.TryGetComponent(out Hoverable hoverable))
@@ -155,7 +157,7 @@ namespace QuickPing.Patches
                         pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
 
                         //INFO
-                        QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+                        QuickPingPlugin.Log.LogInfo($"Add Portal Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
                     }
                 }
                 //OTHERS

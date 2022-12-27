@@ -21,36 +21,36 @@ namespace QuickPing.Patches
         [HarmonyPostfix]
         private static void Player_Update(Player __instance)
         {
-            if (Player.m_localPlayer == __instance)
+            //Check instance
+            if (!Player.m_localPlayer || Player.m_localPlayer != __instance) return;
+            //Check mod settings
+            if (!Settings.PingWhereLooking.Value) return;
+            //Check if player can use input (fix #34)
+            if (!Player.m_localPlayer.TakeInput()) return;
+            //Check ZInput instance 
+            if (ZInput.instance == null) return;
+
+            //Check Keys
+            if (Settings.PingKey.Value != KeyCode.None)
             {
-                if (!Settings.PingWhereLooking.Value)
+                if (ZInput.GetButtonDown(Settings.PingBtn.m_name))
                 {
-                    return;
+                    HoverObject ping = FindHoverObject(500f);
+
+                    ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
+
+
+                    ping.Name = Localization.instance.Localize(ping.Name);
+                    OnPlayerPing.Invoke(ping);
                 }
-                if (Player.m_localPlayer && ZInput.instance != null)
-                    if (Settings.PingKey.Value != KeyCode.None)
-                    {
-                        if (ZInput.GetButtonDown(Settings.PingBtn.m_name))
-                        {
-                            HoverObject ping = FindHoverObject(500f);
 
-                            ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
-
-
-                            ping.Name = Localization.instance.Localize(ping.Name);
-                            OnPlayerPing.Invoke(ping);
-                        }
-                    }
-                if (Settings.PingEverythingKey.Value != KeyCode.None)
+                if (ZInput.GetButtonDown(Settings.PingEverythingBtn.m_name))
                 {
-                    if (ZInput.GetButtonDown(Settings.PingEverythingBtn.m_name))
-                    {
-                        HoverObject ping = FindHoverObject(500f);
+                    HoverObject ping = FindHoverObject(500f);
 
-                        ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
-                        ping.Name = Localization.instance.Localize(ping.Name);
-                        OnPlayerForcePing.Invoke(ping);
-                    }
+                    ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
+                    ping.Name = Localization.instance.Localize(ping.Name);
+                    OnPlayerForcePing.Invoke(ping);
                 }
             }
         }
@@ -248,6 +248,7 @@ namespace QuickPing.Patches
             return hoverObj;
         }
 
+        // Check if Interface is type of HoverType
         private static HoverType CheckType(Transform root, out IDestructible destructible)
         {
             //Test IDestructible
@@ -264,8 +265,6 @@ namespace QuickPing.Patches
                 return HoverType.Location;
             }
 
-
-
             //Test Piece (check PieceType)
             if (root.GetComponent<Piece>())
             {
@@ -279,9 +278,6 @@ namespace QuickPing.Patches
         {
             return (bool)raycastHit.collider.attachedRigidbody && raycastHit.collider.attachedRigidbody.gameObject == Player.m_localPlayer.gameObject;
         }
-
-
-
 
         public static void SendPing(HoverObject ping) => SendPing(ping.pos, ping.Name);
         public static void SendPing(Vector3 position, string text, bool local = false)

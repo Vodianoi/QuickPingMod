@@ -81,10 +81,9 @@ namespace QuickPing
                 KeyCode.G,
                 "Add a pin on minimap to whatever you're looking at.");
 
-            AddInputs();
         }
 
-        private static void AddInputs()
+        public static void AddInputs(ZInput __instance)
         {
             PingBtn = new ZInput.ButtonDef
             {
@@ -101,10 +100,9 @@ namespace QuickPing
                 m_showHints = true,
 
             };
-            if (ZInput.instance == null)
-                ZInput.Initialize();
-            ZInput.instance.AddButton("Ping", PingKey.Value, showHints: true);
-            ZInput.instance.AddButton("PingEveything", PingEverythingKey.Value, showHints: true);
+
+            __instance.AddButton("Ping", PingKey.Value, showHints: true);
+            __instance.AddButton("PingEveything", PingEverythingKey.Value, showHints: true);
             //Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, PingBtn);
             //Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, PingEverythingBtn);
 
