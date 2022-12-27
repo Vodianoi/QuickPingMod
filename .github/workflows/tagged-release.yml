@@ -116,13 +116,13 @@ jobs:
      #     opmu nx check
      #     opmu nx upload 2033 QuickPing/QuickPing.zip -v ${{ steps.read-version.outputs.version }} -d "Ping what you see and pin it on the map !" -t Main -f "QuickPing" -dmv
 
-      - uses: Vodianoi/uploadMod@0.9.29
+      - uses: Vodianoi/uploadMod@0.9.30
         with:
           mod-id: '2033' #Nexus
           archive-file: 'QuickPing/QuickPing.zip'
           file-name: 'QuickPing'
           version: ${{ steps.read-version.outputs.version }}
-          category: 'Archive'
+          category: 'Archived'
           description: "Ping what you see and pin it on the map !"
           game: valheim
           namespace: 'com.atopy.plugins.quickping'
