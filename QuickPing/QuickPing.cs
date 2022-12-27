@@ -1,3 +1,10 @@
+using BepInEx;
+using BepInEx.Logging;
+using HarmonyLib;
+using QuickPing.Patches;
+using UnityEngine;
+
+
 namespace QuickPing
 {
     public enum HoverType
