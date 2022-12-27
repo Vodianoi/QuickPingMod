@@ -126,7 +126,7 @@ jobs:
           description: "Ping what you see and pin it on the map !"
           game: valheim
           namespace: 'com.atopy.plugins.quickping'
-          tomlConfigPath: './Quickping/thunderstore.toml'
+          tomlConfigPath: './thunderstore.toml'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXUSMOD_API_KEY: ${{ secrets.NEXUSMOD_API_KEY }}
           NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.NEXUSMOD_COOKIE_NEXUSID }}
