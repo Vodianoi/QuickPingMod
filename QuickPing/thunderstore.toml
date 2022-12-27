@@ -11,12 +11,12 @@ containsNsfwContent = false
 dependencies = {  }
 
 [build]
-icon = "QuickPing/Package/icon.png"
-readme = "QuickPing/Package/README.md"
+icon = "Package/icon.png"
+readme = "Package/README.md"
 outdir = "./build"
 
 [[build.copy]]
-source = "QuickPing/Package/plugins/QuickPing.dll"
+source = "Package/plugins/QuickPing.dll"
 target = "QuickPing.dll"
 
 [publish]
