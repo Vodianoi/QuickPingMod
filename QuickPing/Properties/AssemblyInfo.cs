@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-using System.Runtime.InteropServices;
-
+﻿
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
@@ -29,11 +27,6 @@ using System.Runtime.InteropServices;
 //      Revision
 //
 //JObject
-<<<<<<< HEAD
-//[assembly: AssemblyVersion("1.5.1.0")]
-//[assembly: AssemblyFileVersion("1.5.1.0")]
-=======
 [assembly: AssemblyVersion("1.5.3.0")]
 [assembly: AssemblyFileVersion("1.5.3.0")]
->>>>>>> origin/master
 //[assembly: AssemblyFileVersion("1.0.0.0")]
