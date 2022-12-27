@@ -101,7 +101,7 @@ jobs:
           generateReleaseNotes: true
           # bodyFile: QuickPing/Package/CHANGELOG.md
           commit: ${{ steps.branch-name.outputs.current_branch }}
-          tag: ${{ env.GitVersion_SemVer }
+          tag: ${{ env.GitVersion_SemVer }}
           updateOnlyUnreleased: true
           name: "Release: ${{ env.GitVersion_SemVer }}"
 
