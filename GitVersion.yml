@@ -13,7 +13,7 @@ branches:
   release:
     mode: ContinuousDelivery
     tag: beta
-    increment: Patch
+    increment: Inherit
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
     regex: ^release?[\/-]
@@ -23,7 +23,7 @@ branches:
   feature:
     mode: ContinuousDelivery
     tag: useBranchName
-    increment: Inherit
+    increment: Tag
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
     regex: ^features?[/-]
@@ -42,7 +42,7 @@ branches:
   hotfix:
     mode: ContinuousDelivery
     tag: beta
-    increment: Patch
+    increment: Tag
     prevent-increment-of-merged-branch-version: false
     track-merge-target: false
     regex: ^hotfix(es)?[/-]
@@ -51,7 +51,7 @@ branches:
   support:
     mode: ContinuousDelivery
     tag: ''
-    increment: Patch
+    increment: Tag
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
     regex: ^support[/-]
@@ -60,7 +60,7 @@ branches:
   develop:
     mode: ContinuousDelivery
     tag: unstable
-    increment: Minor
+    increment: Tag
     prevent-increment-of-merged-branch-version: false
     track-merge-target: true
     regex: ^dev(elop)?(ment)?$
