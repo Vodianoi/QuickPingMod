@@ -1,10 +1,10 @@
-name: "Release"
+name: "Upload to Thunderstore and NexusMods"
 
 on:
   release:
     types: [published]
     
-  
+jobs:
   publish-modpackage:
     runs-on: ubuntu-latest
     needs: build
