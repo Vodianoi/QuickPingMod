@@ -56,7 +56,6 @@ namespace QuickPing
             Harmony.CreateAndPatchAll(typeof(Destructible_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(ZNet_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(WearNTear_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(ZInput_Patch), MyPluginInfo.PLUGIN_GUID);
 
             Player_Patch.OnPlayerPing.AddListener(Player_Patch.SendPing);
             Player_Patch.OnPlayerPing.AddListener(Minimap_Patch.AddPin);
