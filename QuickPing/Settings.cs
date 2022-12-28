@@ -1,4 +1,6 @@
 ﻿using BepInEx.Configuration;
+using Jotunn.Configs;
+using Jotunn.Managers;
 using UnityEngine;
 
 namespace QuickPing
@@ -10,7 +12,7 @@ namespace QuickPing
         public static ConfigEntry<bool> PingWhereLooking { get; private set; }
         public static ConfigEntry<bool> AddPin { get; private set; }
         public static ConfigEntry<KeyCode> PingKey { get; private set; }
-        public static ConfigEntry<KeyCode> PingEverythingKey { get; internal set; }
+        public static ConfigEntry<KeyCode> PinEverythingKey { get; internal set; }
 
         public static ConfigEntry<Minimap.PinType> DefaultPinType { get; internal set; }
 
@@ -21,8 +23,8 @@ namespace QuickPing
         public static ConfigEntry<Color> DefaultColor { get; private set; }
         public static ConfigEntry<float> ClosestPinRange { get; private set; }
 
-        public static ZInput.ButtonDef PingBtn { get; private set; }
-        public static ZInput.ButtonDef PingEverythingBtn { get; private set; }
+        public static ButtonConfig PingBtn { get; private set; }
+        public static ButtonConfig PingEverythingBtn { get; private set; }
         public static void Init()
         {
             //GENERAL
@@ -76,35 +78,34 @@ namespace QuickPing
                 KeyCode.T,
                 "The keybind to trigger a ping where you are looking");
 
-            PingEverythingKey = QuickPingPlugin.Instance.Config.Bind("Bindings",
+            PinEverythingKey = QuickPingPlugin.Instance.Config.Bind("Bindings",
                 "PingEverythingInputKey",
                 KeyCode.G,
                 "Add a pin on minimap to whatever you're looking at.");
 
+            AddInputs();
         }
 
-        public static void AddInputs(ZInput __instance)
+        public static void AddInputs()
         {
-            PingBtn = new ZInput.ButtonDef
+            PingBtn = new ButtonConfig
             {
-                m_name = "Ping",
-                m_key = PingKey.Value,
-                m_showHints = true,
+                Name = "Ping",
+                Key = PingKey.Value,
+                Hint = "Ping where you are looking, and pin useful resources",
 
             };
 
-            PingEverythingBtn = new ZInput.ButtonDef
+            PingEverythingBtn = new ButtonConfig
             {
-                m_name = "PingEveything",
-                m_key = PingEverythingKey.Value,
-                m_showHints = true,
+                Name = "PinEverything",
+                Key = PinEverythingKey.Value,
+                Hint = "Pin on map everything you're looking at",
 
             };
 
-            __instance.AddButton("Ping", PingKey.Value, showHints: true);
-            __instance.AddButton("PingEveything", PingEverythingKey.Value, showHints: true);
-            //Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, PingBtn);
-            //Jotunn.Managers.InputManager.Instance.AddButton(MyPluginInfo.GUID, PingEverythingBtn);
+            InputManager.Instance.AddButton(MyPluginInfo.PLUGIN_GUID, PingBtn);
+            InputManager.Instance.AddButton(MyPluginInfo.PLUGIN_GUID, PingEverythingBtn);
 
         }
     }
