@@ -26,8 +26,8 @@ branches:
   release:
     regex: ^releases?[/-]
     mode: ContinuousDelivery
-    tag: beta
-    increment: Patch
+    label: beta
+    increment: None
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
     source-branches: [ 'develop', 'main', 'support', 'release' ]
@@ -36,11 +36,6 @@ branches:
     is-mainline: false
     pre-release-weight: 30000
   feature:
-    mode: ContinuousDelivery
-    tag: useBranchName
-    increment: Inherit
-    prevent-increment-of-merged-branch-version: false
-    track-merge-target: false
     regex: ^features?[/-]
     mode: ContinuousDelivery
     label: '{BranchName}'
@@ -58,32 +53,19 @@ branches:
   hotfix:
     regex: ^hotfix(es)?[/-]
     mode: ContinuousDelivery
-    tag: beta
-    increment: Patch
-    prevent-increment-of-merged-branch-version: false
-    track-merge-target: false
-    regex: ^hotfix(es)?[/-]
-    tracks-release-branches: false
-    is-release-branch: false
+    label: beta
+    increment: Inherit
+    source-branches: [ 'release', 'main', 'support', 'hotfix' ]
+    pre-release-weight: 30000
   support:
     regex: ^support[/-]
     mode: ContinuousDelivery
-    tag: ''
+    label: ''
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
     source-branches: [ 'main' ]
     tracks-release-branches: false
     is-release-branch: false
-  develop:
-    mode: ContinuousDelivery
-    tag: unstable
-    increment: Minor
-    prevent-increment-of-merged-branch-version: false
-    track-merge-target: true
-    regex: ^dev(elop)?(ment)?$
-    tracks-release-branches: true
-    is-release-branch: false
-ignore:
-  sha: []
-merge-message-formats: {}
+    is-mainline: true
+    pre-release-weight: 55000
