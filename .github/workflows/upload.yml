@@ -1,0 +1,28 @@
+name: "Release"
+
+on:
+  release:
+    types: [published]
+    
+  
+  publish-modpackage:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Vodianoi/uploadMod@0.9.40
+        with:
+          mod-id: '2033' #Nexus
+          archive-file: 'QuickPing/QuickPing.zip'
+          file-name: 'QuickPing'
+          version: $GITHUB_REF
+          category: 'Archived'
+          description: "Ping what you see and pin it on the map !"
+          game: valheim
+          namespace: 'com.atopy.plugins.quickping'
+          tomlConfigPath: 'QuickPing/thunderstore.toml'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEXUSMOD_API_KEY: ${{ secrets.NEXUSMOD_API_KEY }}
+          NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.NEXUSMOD_COOKIE_NEXUSID }}
+          NEXUSMOD_COOKIE_SID_DEVELOP: ${{ secrets.NEXUSMOD_COOKIE_SID_DEVELOP }}
+          THUNDERSTORE_TOKEN: ${{ secrets.THUNDERSTORE_TOKEN }}
