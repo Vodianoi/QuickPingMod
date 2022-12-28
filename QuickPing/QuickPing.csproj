@@ -91,13 +91,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BepInEx.BaseLib">
-      <Version>5.4.19</Version>
+      <Version>5.4.21</Version>
     </PackageReference>
     <PackageReference Include="Digitalroot.Valheim.Common.References">
-      <Version>0.212.11</Version>
+      <Version>0.212.16</Version>
     </PackageReference>
     <PackageReference Include="GitVersion.MsBuild">
-      <Version>6.0.0-alpha.1</Version>
+      <Version>5.11.1</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
