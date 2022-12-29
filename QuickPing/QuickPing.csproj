@@ -91,10 +91,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="BepInEx.BaseLib">
-      <Version>5.4.19</Version>
+      <Version>5.4.21</Version>
     </PackageReference>
     <PackageReference Include="Digitalroot.Valheim.Common.References">
-      <Version>0.212.11</Version>
+      <Version>0.212.16</Version>
     </PackageReference>
     <PackageReference Include="GitVersion.MsBuild">
       <Version>5.11.1</Version>
@@ -135,7 +135,8 @@
     <ItemGroup>
       <PackageFiles Include="$(TargetDir)$(AssemblyName).dll; $(TargetDir)$(AssemblyName).dll.mdb; $(TargetDir)$(AssemblyName).pdb;" />
     </ItemGroup>
-    <Message Text="$(TargetDir)$(AssemblyName).dll" Importance="High"> </Message>
+    <Message Text="$(TargetDir)$(AssemblyName).dll" Importance="High">
+    </Message>
     <MakeDir Directories="$(ModsPath)" />
     <Exec command="$(SolutionDir)libraries\Debug\pdb2mdb.exe $(TargetPath)" />
     <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(ModsPath)" />
@@ -164,7 +165,6 @@ namespace $(RootNamespace)
     </ItemGroup>
     <WriteLinesToFile Lines="$(GeneratedText)" File="$(GeneratedFilePath)" WriteOnlyWhenDifferent="true" Overwrite="true" />
   </Target>
-
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BuildDependsOn>
 
@@ -183,5 +183,4 @@ namespace $(RootNamespace)
 
     </BuildDependsOn>
   </PropertyGroup>
-
 </Project>
