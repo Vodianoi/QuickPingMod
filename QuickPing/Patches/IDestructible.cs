@@ -108,7 +108,11 @@ namespace QuickPing.Patches
 
             return false;
         }
+    }
 
+    [HarmonyPatch(typeof(Character))]
+    internal static class Character_Patch
+    {
         // Patch for Character to remove pin on death
         [HarmonyPatch(typeof(Character), nameof(Character.OnDeath))]
         [HarmonyPrefix]
@@ -124,7 +128,5 @@ namespace QuickPing.Patches
                 }
             }
         }
-
-
     }
 }
