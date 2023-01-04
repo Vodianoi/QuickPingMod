@@ -376,3 +376,5 @@ Environment.props
 /QuickPing/PinObject.cs
 QuickPing/Package/tcli.exe
 /QuickPing/tcli.exe
+/QuickPing/Package/plugins/QuickPing.dll
+/QuickPing/QuickPing.zip

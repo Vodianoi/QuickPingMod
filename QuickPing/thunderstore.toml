@@ -4,11 +4,11 @@ schemaVersion = "0.0.1"
 [package]
 namespace = "Atopy"
 name = "QuickPing"
-versionNumber = "1.5.1"
+versionNumber = "1.0.0"
 description = "Ping what you see and pin it on the map !"
 websiteUrl = "https://github.com/Vodianoi/QuickPingMod"
 containsNsfwContent = false
-dependencies = {  }
+dependencies = { ValheimModding-Jotunn-2.9.0 }
 
 [build]
 icon = "Package/icon.png"
