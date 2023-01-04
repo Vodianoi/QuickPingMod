@@ -9,6 +9,7 @@ namespace QuickPing.Patches
         [HarmonyPostfix]
         private static void LoadWorld(ZNet __instance)
         {
+            Minimap_Patch.PinnedObjects.Clear();
             var world = Traverse.Create(typeof(ZNet)).Field("m_world").GetValue() as World;
 
 
@@ -48,7 +49,6 @@ namespace QuickPing.Patches
 
             QuickPingPlugin.Log.LogInfo($"Cloud save : {cloudSaveFailed}");
 
-            Minimap_Patch.PinnedObjects.Clear();
 
         }
 

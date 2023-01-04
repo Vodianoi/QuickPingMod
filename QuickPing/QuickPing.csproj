@@ -128,6 +128,7 @@
     </ItemGroup>
     <MakeDir Directories="$(PackageDir)" />
     <MakeDir Directories="$(PackageDir)\plugins\" />
+    <Exec command="PowerShell -ExecutionPolicy RemoteSigned -File $(SolutionDir)version.ps1 -PackageDir $(PackageDir) -AssemblyVersion $(Major).$(Minor).$(Patch) " />
     <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFiles="$(PackageDir)plugins/$(AssemblyName).dll" />
     <Copy SourceFiles="../README.md; ../README.md" DestinationFiles="@(README)" />
   </Target>
@@ -146,16 +147,26 @@
       <BepInExPluginGuid Condition="'$(BepInExPluginGuid)' == ''">com.$(Company.ToLower()).plugins.$(AssemblyName.ToLower())</BepInExPluginGuid>
       <BepInExPluginName Condition="'$(BepInExPluginName)' == ''">$(AssemblyName)</BepInExPluginName>
       <BepInExPluginVersion Condition="'$(BepInExPluginVersion)' == ''">$(AssemblyVersion)</BepInExPluginVersion>
-      <GeneratedText>
-namespace $(RootNamespace)
-{
-    public static class MyPluginInfo
-    {
-        public const string PLUGIN_GUID = "$(BepInExPluginGuid)"%3B
-        public const string PLUGIN_NAME = "$(BepInExPluginName)"%3B
-        public const string PLUGIN_VERSION = "$(BepInExPluginVersion)"%3B
-    }
-}
+      <GeneratedText>
+
+namespace $(RootNamespace)
+
+{
+
+    public static class MyPluginInfo
+
+    {
+
+        public const string PLUGIN_GUID = "$(BepInExPluginGuid)"%3B
+
+        public const string PLUGIN_NAME = "$(BepInExPluginName)"%3B
+
+        public const string PLUGIN_VERSION = "$(BepInExPluginVersion)"%3B
+
+    }
+
+}
+
       </GeneratedText>
       <GeneratedFilePath>$(IntermediateOutputPath)MyPluginInfo.cs</GeneratedFilePath>
     </PropertyGroup>

@@ -155,6 +155,7 @@ namespace QuickPing.Patches
                         hoverObj.type = HoverType.Character;
                         hoverObj.Hover = character.gameObject;
                         hoverObj.center = character.transform.position;
+                        hoverObj.Destructible = character;
                     }
 
                     else if ((hoverObj.type = CheckType(raycastHit.collider.transform, out hoverObj.Destructible))
