@@ -103,6 +103,8 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: QuickPing/QuickPing.zip
+          removeArtifacts: true
+          replacesArtifacts: true
           generateReleaseNotes: true
           # bodyFile: QuickPing/Package/CHANGELOG.md
           commit: ${{ steps.branch-name.outputs.current_branch }}
