@@ -243,7 +243,7 @@ namespace QuickPing.Patches
         [HarmonyPatch(typeof(Minimap))]
         [HarmonyPatch(nameof(Minimap.RemovePin), new Type[] { typeof(Minimap.PinData) })]
         [HarmonyPrefix]
-        public static bool RemovePin(Minimap __instance, Minimap.PinData pin)
+        public static void RemovePin(Minimap __instance, Minimap.PinData pin)
         {
             foreach (var p in PinnedObjects)
             {
@@ -254,12 +254,7 @@ namespace QuickPing.Patches
                     break;
                 }
             }
-            if ((bool)pin.m_uiElement)
-            {
-                UnityEngine.Object.Destroy(pin.m_uiElement.gameObject);
-            }
-            __instance.m_pins.Remove(pin);
-            return false;
+
         }
 
     }

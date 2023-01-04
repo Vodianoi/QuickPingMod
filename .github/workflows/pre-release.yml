@@ -102,12 +102,12 @@ jobs:
         uses: tj-actions/branch-names@v6
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: QuickPing/QuickPing.zip
+          artifacts: QuickPing/Package/plugins/*.dll
           generateReleaseNotes: true
           # bodyFile: QuickPing/Package/CHANGELOG.md
           commit: ${{ steps.branch-name.outputs.current_branch }}
           tag: "latest"
-          allowUpdates: true
+          allowUpdated: true
           updateOnlyUnreleased: true
           name: "Pre-release: ${{ env.GitVersion_SemVer }}"
           prerelease: true
