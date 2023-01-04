@@ -131,6 +131,9 @@
     <Exec command="PowerShell -ExecutionPolicy RemoteSigned -File $(SolutionDir)version.ps1 -PackageDir $(PackageDir) -AssemblyVersion $(Major).$(Minor).$(Patch) " />
     <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFiles="$(PackageDir)plugins/$(AssemblyName).dll" />
     <Copy SourceFiles="../README.md; ../README.md" DestinationFiles="@(README)" />
+    <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="$(AssemblyName).zip" Overwrite="true" />
+
+
   </Target>
   <Target Name="PublishToThunderstorePath">
     <ItemGroup>
