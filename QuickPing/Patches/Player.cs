@@ -39,8 +39,6 @@ namespace QuickPing.Patches
 
                     ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
 
-
-                    ping.Name = Localization.instance.Localize(ping.Name);
                     OnPlayerPing.Invoke(ping);
                 }
 
@@ -49,7 +47,7 @@ namespace QuickPing.Patches
                     HoverObject ping = FindHoverObject(500f);
 
                     ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
-                    ping.Name = Localization.instance.Localize(ping.Name);
+
                     OnPlayerForcePing.Invoke(ping);
                 }
             }
@@ -280,7 +278,7 @@ namespace QuickPing.Patches
             return (bool)raycastHit.collider.attachedRigidbody && raycastHit.collider.attachedRigidbody.gameObject == Player.m_localPlayer.gameObject;
         }
 
-        public static void SendPing(HoverObject ping) => SendPing(ping.pos, ping.Name);
+        public static void SendPing(HoverObject ping) => SendPing(ping.pos, Localization.instance.Localize(ping.Name));
         public static void SendPing(Vector3 position, string text, bool local = false)
         {
 
