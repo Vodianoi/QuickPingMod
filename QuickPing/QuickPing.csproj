@@ -135,7 +135,7 @@
 
 
   </Target>
-  <Import Project="Environment.props" />
+  <Import Project="Environment.props" Condition="Exists('Environment.props')" />
   <Target Name="PublishToThunderstorePath">
     <ItemGroup>
       <PackageFiles Include="$(TargetDir)$(AssemblyName).dll; $(TargetDir)$(AssemblyName).dll.mdb; $(TargetDir)$(AssemblyName).pdb;" />
