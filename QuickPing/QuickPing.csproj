@@ -119,7 +119,7 @@
       <Version>$(Major).$(Minor).$(Patch)</Version>
       <PackageName>$(AssemblyName)</PackageName>
       <PackageDir>Package\</PackageDir>
-      <ModsPath>D:\Games\ThunderStoreModsStorage\Valheim\profiles\qFd9lRFKhh\BepInEx\plugins\$(AssemblyName)</ModsPath>
+      <!--<ModsPath>D:\Games\ThunderStoreModsStorage\Valheim\profiles\qFd9lRFKhh\BepInEx\plugins\$(AssemblyName)</ModsPath>-->
     </PropertyGroup>
   </Target>
   <Target Name="MakeThunderstorePackage">
@@ -135,16 +135,19 @@
 
 
   </Target>
+  <Import Project="Environment.props" />
   <Target Name="PublishToThunderstorePath">
     <ItemGroup>
       <PackageFiles Include="$(TargetDir)$(AssemblyName).dll; $(TargetDir)$(AssemblyName).dll.mdb; $(TargetDir)$(AssemblyName).pdb;" />
     </ItemGroup>
+    <Message Text="MOD_DEPLOYPATH: $(MOD_DEPLOYPATH)" Importance="high" />
     <Message Text="$(TargetDir)$(AssemblyName).dll" Importance="High">
     </Message>
-    <MakeDir Directories="$(ModsPath)" />
+    <MakeDir Directories="$(MOD_DEPLOYPATH)" />
     <Exec command="$(SolutionDir)libraries\Debug\pdb2mdb.exe $(TargetPath)" />
-    <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(ModsPath)" />
+    <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(MOD_DEPLOYPATH)\$(AssemblyName)" />
   </Target>
+  
   <Target Name="AddGeneratedFile" BeforeTargets="BeforeCompile;CoreCompile" Inputs="$(MSBuildAllProjects)" Outputs="$(IntermediateOutputPath)GeneratedFile.cs">
     <PropertyGroup>
       <BepInExPluginGuid Condition="'$(BepInExPluginGuid)' == ''">com.$(Company.ToLower()).plugins.$(AssemblyName.ToLower())</BepInExPluginGuid>
