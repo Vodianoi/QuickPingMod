@@ -122,33 +122,22 @@ namespace QuickPing.Patches
         /// <param name="force">Bypass filters</param>
         public static void AddPin(GameObject hover, IDestructible idestructible, string strID, Vector3 pos, bool force = false)
         {
-
-            if ((string.IsNullOrEmpty(strID) || !Settings.AddPin.Value || hover == null) && !force) { return; }
+            if (!Settings.AddPin.Value && !force) { return; }
 
             Minimap.PinData pinData = new Minimap.PinData
             {
                 m_type = IsPinable(strID)
             };
 
-
             Minimap.PinData closestPin = Minimap.instance.GetClosestPin(pos, Settings.ClosestPinRange.Value);
-            if (pinData.m_type != Minimap.PinType.None)
+
+            switch (strID)
             {
-
-                pinData.m_name ??= Localization.instance.Localize(strID);
-                pinData.m_pos = pos;
-                //Check if there is another pin in range
-
-                //PORTAL :Check if an already existing pin is at pos
-
-
-                if (strID == "$piece_portal")
-                {
+                case "$piece_portal":
                     if (hover.TryGetComponent(out Hoverable hoverable))
                     {
                         pinData.m_name = GetPortalTag(hoverable);
 
-                        //TODO CHECK BEFORE REMOVE
                         if (closestPin != null)
                         {
                             Minimap.instance.RemovePin(closestPin);
@@ -156,36 +145,27 @@ namespace QuickPing.Patches
 
                         pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
 
-                        //INFO
                         QuickPingPlugin.Log.LogInfo($"Add Portal Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
                     }
-                }
-                //OTHERS
-                else if (closestPin == null)
-                {
-                    pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                    break;
+                default:
+                    if (closestPin == null)
+                    {
+                        pinData.m_name ??= Localization.instance.Localize(strID);
+                        pinData.m_pos = pos;
+                        if (pinData.m_type == Minimap.PinType.None || force)
+                        {
+                            pinData.m_type = Settings.DefaultPinType.Value;
+                        }
+                        if (pinData.m_name == null || pinData.m_name == "")
+                        {
+                            pinData.m_name = Settings.DefaultPingText;
+                        }
+                        pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
 
-                    //INFO
-                    QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
-                }
-
-            }
-            else if (force && closestPin == null)
-            {
-                pinData.m_type = Settings.DefaultPinType.Value;
-                pinData.m_name ??= Localization.instance.Localize(strID);
-                pinData.m_pos = pos;
-                switch (pinData.m_name)
-                {
-                    case null:
-                    case "":
-                        pinData.m_name = Settings.DefaultPingText;
-                        break;
-                }
-                pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
-
-                //INFO
-                QuickPingPlugin.Log.LogInfo($"Force Add Pin : Name:{pinData.m_name} x:{pos.x}, y:{pos.y}, Type:{pinData.m_type}");
+                        QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+                    }
+                    break;
             }
 
             if (idestructible != null)
@@ -198,9 +178,14 @@ namespace QuickPing.Patches
                     QuickPingPlugin.Log.LogError($"Try adding {idestructible} but {netView} uid is null");
                 }
                 if (!PinnedObjects.ContainsKey(uid))
-                    PinnedObjects.Add(uid, pinData);
+                {
+                    PinnedObjects[uid] = pinData;
+                }
             }
         }
+
+
+
 
         private static string GetPortalTag(Hoverable hoverable)
         {
