@@ -11,6 +11,7 @@ namespace QuickPing
         public const string DefaultPingText = "PING !";
         public static ConfigEntry<bool> PingWhereLooking { get; private set; }
         public static ConfigEntry<bool> AddPin { get; private set; }
+        public static ConfigEntry<bool> AskForName { get; private set; }
         public static ConfigEntry<KeyCode> PingKey { get; private set; }
         public static ConfigEntry<KeyCode> PinEverythingKey { get; internal set; }
 
@@ -37,6 +38,11 @@ namespace QuickPing
                 "AddPinOnMap",
                 true,
                 "If true, add a pin when useful resources (copper, berries, campfire, portals etc.) are pinged.");
+
+            AskForName = QuickPingPlugin.Instance.Config.Bind("General",
+                "AskForName",
+                true,
+                "If true, ask for a name when you ping a location. It will be used for all pings of the same object.");
 
             ClosestPinRange = QuickPingPlugin.Instance.Config.Bind("General",
                 "ClosestPinRange",
