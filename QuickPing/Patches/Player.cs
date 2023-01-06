@@ -21,14 +21,20 @@ namespace QuickPing.Patches
         [HarmonyPostfix]
         private static void Player_Update(Player __instance)
         {
+            //Check ZInput instance 
+            if (ZInput.instance == null) return;
             //Check instance
             if (!Player.m_localPlayer || Player.m_localPlayer != __instance) return;
             //Check mod settings
             if (!Settings.PingWhereLooking.Value) return;
+
+            if (Minimap_Patch.IsNaming)
+            {
+                Minimap_Patch.UpdateNameInput();
+            }
+
             //Check if player can use input (fix #34)
             if (!Player.m_localPlayer.TakeInput()) return;
-            //Check ZInput instance 
-            if (ZInput.instance == null) return;
 
             //Check Keys
             if (Settings.PingKey.Value != KeyCode.None)
