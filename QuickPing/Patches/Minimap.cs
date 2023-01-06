@@ -281,13 +281,15 @@ namespace QuickPing.Patches
                 parent: GUIManager.CustomGUIFront.transform,
                 anchorMin: new Vector2(0.5f, 0.5f),
                 anchorMax: new Vector2(0.5f, 0.5f),
-                position: new Vector2(250f, -250f),
+                position: new Vector2(0, 0),
                 contentType: InputField.ContentType.Standard,
                 placeholderText: "Pin Name",
                 fontSize: 16,
                 width: 160f,
                 height: 30f
             );
+
+
         }
         #endregion
 
