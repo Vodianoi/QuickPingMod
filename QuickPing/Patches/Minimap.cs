@@ -1,10 +1,13 @@
 ﻿using HarmonyLib;
+using Jotunn.Managers;
 using QuickPing.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace QuickPing.Patches
 {
@@ -15,6 +18,9 @@ namespace QuickPing.Patches
     {
         public static Dictionary<ZDOID, Minimap.PinData> PinnedObjects = new();
 
+        private static GameObject nameInput;
+
+        public static bool IsNaming = false;
 
         /// <summary>
         /// Check if an object can be pinned
@@ -169,6 +175,15 @@ namespace QuickPing.Patches
                         {
                             pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
                             QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+
+                            //Check if Settings.AskForName.Value is true
+                            //if true ask for user input before adding pin
+                            if (Settings.AskForName.Value)
+                            {
+                                GUIManager.BlockInput(true);
+                                InitNameInput();
+                                Minimap.instance.ShowPinNameInput(pinData);
+                            }
                         }
                     }
                     break;
@@ -190,8 +205,78 @@ namespace QuickPing.Patches
             }
         }
 
+        #region NameInput
 
+        public static void UpdateNameInput()
+        {
+            if (Minimap.instance.m_namePin == null)
+            {
+                Minimap.instance.m_wasFocused = false;
+            }
+            if (Minimap.instance.m_namePin != null)
+            {
 
+                nameInput.SetActive(true);
+                var inputField = nameInput.GetComponent<InputField>();
+
+                if (!inputField.isFocused)
+                {
+                    EventSystem.current.SetSelectedGameObject(nameInput);
+                }
+                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+                {
+                    ValidateNameInput(inputField);
+
+                }
+                Minimap.instance.m_wasFocused = true;
+            }
+            else //reset
+            {
+                nameInput.gameObject.SetActive(value: false);
+                IsNaming = false;
+                GUIManager.BlockInput(false);
+            }
+        }
+
+        private static void ValidateNameInput(InputField inputField)
+        {
+            string text = inputField.text;
+            text = text.Replace('$', ' ');
+            text = text.Replace('<', ' ');
+            text = text.Replace('>', ' ');
+            Minimap.instance.m_namePin.m_name = text;
+            Minimap.instance.m_namePin = null;
+        }
+
+        private static void InitNameInput()
+        {
+            if (GUIManager.Instance == null)
+            {
+                QuickPingPlugin.Log.LogError("GUIManager instance is null");
+                return;
+            }
+
+            if (!GUIManager.CustomGUIFront)
+            {
+                QuickPingPlugin.Log.LogError("GUIManager CustomGUI is null");
+                return;
+            }
+
+            IsNaming = true;
+
+            nameInput = GUIManager.Instance.CreateInputField(
+                parent: GUIManager.CustomGUIFront.transform,
+                anchorMin: new Vector2(0.5f, 0.5f),
+                anchorMax: new Vector2(0.5f, 0.5f),
+                position: new Vector2(250f, -250f),
+                contentType: InputField.ContentType.Standard,
+                placeholderText: "Pin Name",
+                fontSize: 16,
+                width: 160f,
+                height: 30f
+            );
+        }
+        #endregion
 
         private static string GetPortalTag(Hoverable hoverable)
         {
@@ -201,6 +286,9 @@ namespace QuickPing.Patches
         }
 
 
+
+
+        #region Data Management
 
         /// <summary>
         /// Pack ZDOID, name, type and position in ZPackage and returns it.
@@ -230,6 +318,9 @@ namespace QuickPing.Patches
             cloudSaveFailed = Utilities.DataUtils.SaveData(world, zPackage);
 
         }
+        #endregion
+
+        #region Patches
 
         [HarmonyPatch(typeof(Minimap))]
         [HarmonyPatch(nameof(Minimap.RemovePin), new Type[] { typeof(Minimap.PinData) })]
@@ -259,6 +350,8 @@ namespace QuickPing.Patches
             __instance.m_pins.Remove(pin);
             return false;
         }
+
+        #endregion
 
     }
 
