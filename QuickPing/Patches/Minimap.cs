@@ -153,17 +153,23 @@ namespace QuickPing.Patches
                     {
                         pinData.m_name ??= Localization.instance.Localize(strID);
                         pinData.m_pos = pos;
-                        if (pinData.m_type == Minimap.PinType.None || force)
-                        {
-                            pinData.m_type = Settings.DefaultPinType.Value;
-                        }
                         if (pinData.m_name == null || pinData.m_name == "")
                         {
                             pinData.m_name = Settings.DefaultPingText;
                         }
-                        pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                        if (pinData.m_type == Minimap.PinType.None && force)
+                        {
+                            pinData.m_type = Settings.DefaultPinType.Value;
+                            pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                            QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+                            break;
+                        }
 
-                        QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+                        if (pinData.m_type != Minimap.PinType.None)
+                        {
+                            pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                            QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+                        }
                     }
                     break;
             }
@@ -230,6 +236,13 @@ namespace QuickPing.Patches
         [HarmonyPrefix]
         public static bool RemovePin(Minimap __instance, Minimap.PinData pin)
         {
+            //checks 
+            if (pin == null || pin.m_type == Minimap.PinType.None || pin.m_name == null || pin.m_name == "")
+            {
+                return true;
+            }
+
+
             foreach (var p in PinnedObjects)
             {
                 if (p.Value.Compare(pin))
