@@ -228,6 +228,10 @@ namespace QuickPing.Patches
                     ValidateNameInput(inputField);
 
                 }
+                else if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    CancelNameInput();
+                }
                 Minimap.instance.m_wasFocused = true;
             }
             else //reset
@@ -236,6 +240,15 @@ namespace QuickPing.Patches
                 IsNaming = false;
                 GUIManager.BlockInput(false);
             }
+        }
+
+        private static void CancelNameInput()
+        {
+            Minimap.instance.m_namePin = null;
+            Minimap.instance.m_wasFocused = false;
+            nameInput.gameObject.SetActive(value: false);
+            IsNaming = false;
+            GUIManager.BlockInput(false);
         }
 
         private static void ValidateNameInput(InputField inputField)
