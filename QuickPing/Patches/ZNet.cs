@@ -47,7 +47,7 @@ namespace QuickPing.Patches
             var world = Traverse.Create(typeof(ZNet)).Field("m_world").GetValue() as World;
             Minimap_Patch.SavePinnedDataToWorld(world, out bool cloudSaveFailed);
 
-            QuickPingPlugin.Log.LogInfo($"Cloud save : {cloudSaveFailed}");
+            QuickPingPlugin.Log.LogInfo($"Cloud save : {!cloudSaveFailed}");
 
 
         }
