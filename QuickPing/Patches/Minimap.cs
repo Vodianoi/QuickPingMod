@@ -135,6 +135,7 @@ namespace QuickPing.Patches
                 m_type = IsPinable(strID)
             };
 
+            bool pinned = false;
 
             Minimap.PinData closestPin = Minimap.instance.GetClosestPin(pos, Settings.ClosestPinRange.Value);
             if (pinData.m_type != Minimap.PinType.None)
@@ -161,6 +162,7 @@ namespace QuickPing.Patches
 
                         pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
 
+                        pinned = true;
                         //INFO
                         QuickPingPlugin.Log.LogInfo($"Add Portal Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
                     }
@@ -170,6 +172,7 @@ namespace QuickPing.Patches
                 {
                     pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
 
+                    pinned = true;
                     //INFO
                     QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
                 }
@@ -189,11 +192,12 @@ namespace QuickPing.Patches
                 }
                 pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
 
+                pinned = true;
                 //INFO
                 QuickPingPlugin.Log.LogInfo($"Force Add Pin : Name:{pinData.m_name} x:{pos.x}, y:{pos.y}, Type:{pinData.m_type}");
             }
 
-            if (idestructible != null)
+            if (idestructible != null && pinData.m_type != Minimap.PinType.None)
             {
                 FieldInfo fieldInfo = idestructible.GetType().GetField("m_nview", BindingFlags.Instance | BindingFlags.NonPublic);
                 ZNetView netView = fieldInfo.GetValue(idestructible) as ZNetView;
