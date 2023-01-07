@@ -17,6 +17,7 @@ namespace QuickPing.Patches
     internal static class Minimap_Patch
     {
         public static Dictionary<ZDOID, Minimap.PinData> PinnedObjects = new();
+        public static Dictionary<string, string> CustomNames = new();
 
         private static GameObject nameInput;
         private static GameObject toggleSaveName;
@@ -177,13 +178,20 @@ namespace QuickPing.Patches
                             pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
                             QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
 
-                            //Check if Settings.AskForName.Value is true
+                            //Check if Settings.AskForName.Value is true, and if CustomNames contains its name.
                             //if true ask for user input before adding pin
                             if (Settings.AskForName.Value)
                             {
-                                GUIManager.BlockInput(true);
-                                InitNameInput();
-                                Minimap.instance.ShowPinNameInput(pinData);
+                                if (CustomNames.ContainsKey(pinData.m_name))
+                                {
+                                    pinData.m_name = CustomNames[pinData.m_name];
+                                }
+                                else
+                                {
+                                    GUIManager.BlockInput(true);
+                                    InitNameInput();
+                                    Minimap.instance.ShowPinNameInput(pinData);
+                                }
                             }
                         }
                     }
@@ -259,9 +267,8 @@ namespace QuickPing.Patches
             text = text.Replace('$', ' ');
             text = text.Replace('<', ' ');
             text = text.Replace('>', ' ');
-            string originalText = text;
+            string originalText = Minimap.instance.m_namePin.m_name;
             Minimap.instance.m_namePin.m_name = text;
-            Minimap.instance.m_namePin = null;
 
             // Persistent save of text value for this pinned object
             if (on)
@@ -269,6 +276,9 @@ namespace QuickPing.Patches
                 QuickPingPlugin.Log.LogInfo($"Save name {originalText} for {Minimap.instance.m_namePin.m_name}");
                 SaveName(Minimap.instance.m_namePin.m_name, originalText);
             }
+            Minimap.instance.m_namePin = null;
+
+
         }
 
         /// <summary>
@@ -278,7 +288,7 @@ namespace QuickPing.Patches
         /// <param name="originalName"></param>
         private static void SaveName(string m_name, string originalName)
         {
-
+            CustomNames.Add(originalName, m_name);
         }
 
         private static void InitNameInput()
@@ -336,7 +346,7 @@ namespace QuickPing.Patches
         /// Pack ZDOID, name, type and position in ZPackage and returns it.
         /// </summary>
         /// <returns>ZPackage containing ZDOID, name, type and position</returns>
-        public static ZPackage PackData()
+        public static ZPackage PackPinnedObjects()
         {
             ZPackage zPackage = new ZPackage();
 
@@ -349,15 +359,45 @@ namespace QuickPing.Patches
         }
 
         /// <summary>
+        /// Pack originalName=name in ZPackage and returns it.
+        /// </summary>
+        /// <returns></returns>
+        public static ZPackage PackCustomNames()
+        {
+            ZPackage zPackage = new ZPackage();
+
+            foreach (var x in CustomNames)
+            {
+                if (x.Key is null or "") continue;
+                zPackage.Write(x.Key);
+                zPackage.Write(x.Value);
+            }
+
+            return zPackage;
+        }
+
+        internal static void UnpackCustomNames(ZPackage zPackage)
+        {
+            CustomNames.Clear();
+            while (zPackage.GetPos() < zPackage.Size())
+            {
+                string originalName = zPackage.ReadString();
+                string name = zPackage.ReadString();
+                if (originalName is not "" or null)
+                    CustomNames.Add(originalName, name);
+            }
+        }
+
+        /// <summary>
         /// Save all pinned into file (support SteamStorage cloud)
         /// </summary>
         /// <param name="world"></param>
         /// <param name="cloudSaveFailed"></param>
         public static void SavePinnedDataToWorld(World world, out bool cloudSaveFailed)
         {
-            ZPackage zPackage = PackData();
+            ZPackage zPackage = PackPinnedObjects();
 
-            cloudSaveFailed = Utilities.DataUtils.SaveData(world, zPackage);
+            cloudSaveFailed = Utilities.DataUtils.SaveWorldData(world, zPackage);
 
         }
         #endregion
@@ -392,6 +432,8 @@ namespace QuickPing.Patches
             __instance.m_pins.Remove(pin);
             return false;
         }
+
+
 
         #endregion
 
