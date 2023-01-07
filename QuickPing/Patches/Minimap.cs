@@ -19,6 +19,7 @@ namespace QuickPing.Patches
         public static Dictionary<ZDOID, Minimap.PinData> PinnedObjects = new();
 
         private static GameObject nameInput;
+        private static GameObject toggleSaveName;
 
         public static bool IsNaming = false;
 
@@ -217,15 +218,16 @@ namespace QuickPing.Patches
             {
 
                 nameInput.SetActive(true);
+                toggleSaveName.SetActive(true);
                 var inputField = nameInput.GetComponent<InputField>();
-
+                var toggle = toggleSaveName.GetComponent<Toggle>();
                 if (!inputField.isFocused)
                 {
                     EventSystem.current.SetSelectedGameObject(nameInput);
                 }
                 if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                 {
-                    ValidateNameInput(inputField);
+                    ValidateNameInput(inputField, toggle.isOn);
 
                 }
                 else if (Input.GetKeyDown(KeyCode.Escape))
@@ -251,14 +253,32 @@ namespace QuickPing.Patches
             GUIManager.BlockInput(false);
         }
 
-        private static void ValidateNameInput(InputField inputField)
+        private static void ValidateNameInput(InputField inputField, bool on)
         {
             string text = inputField.text;
             text = text.Replace('$', ' ');
             text = text.Replace('<', ' ');
             text = text.Replace('>', ' ');
+            string originalText = text;
             Minimap.instance.m_namePin.m_name = text;
             Minimap.instance.m_namePin = null;
+
+            // Persistent save of text value for this pinned object
+            if (on)
+            {
+                QuickPingPlugin.Log.LogInfo($"Save name {originalText} for {Minimap.instance.m_namePin.m_name}");
+                SaveName(Minimap.instance.m_namePin.m_name, originalText);
+            }
+        }
+
+        /// <summary>
+        /// Persistent save original name for this pinned object
+        /// </summary>
+        /// <param name="m_name"></param>
+        /// <param name="originalName"></param>
+        private static void SaveName(string m_name, string originalName)
+        {
+
         }
 
         private static void InitNameInput()
@@ -288,6 +308,13 @@ namespace QuickPing.Patches
                 width: 160f,
                 height: 30f
             );
+
+            toggleSaveName = GUIManager.Instance.CreateToggle(
+                parent: nameInput.transform,
+                width: 10f,
+                height: 10f
+                );
+
 
 
         }
