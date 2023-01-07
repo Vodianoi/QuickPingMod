@@ -72,7 +72,12 @@ namespace QuickPing.Patches
                         "$item_raspberries",
                         "$item_blueberries",
                         "$item_cloudberries",
-                        "$item_dragonegg"
+                        "$item_dragonegg",
+                        // fix #58 conflicts with PlantEverything
+                        "$peRaspberryBushName",
+                        "$peBlueberryBushName",
+                        "$peCloudberryBushName",
+
                     }
                 },
 
@@ -188,7 +193,7 @@ namespace QuickPing.Patches
                 QuickPingPlugin.Log.LogInfo($"Force Add Pin : Name:{pinData.m_name} x:{pos.x}, y:{pos.y}, Type:{pinData.m_type}");
             }
 
-            if (idestructible != null)
+            if (idestructible != null && pinData.m_type != Minimap.PinType.None)
             {
                 FieldInfo fieldInfo = idestructible.GetType().GetField("m_nview", BindingFlags.Instance | BindingFlags.NonPublic);
                 ZNetView netView = fieldInfo.GetValue(idestructible) as ZNetView;
