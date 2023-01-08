@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Let chatgpt comment on your PR.
     steps:
+      - uses: actions/checkout@v3
       - name: ChatGPT comment
         uses: kxxt/chatgpt-action@v0.3
         id: chatgpt
