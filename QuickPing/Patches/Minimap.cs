@@ -167,6 +167,9 @@ namespace QuickPing.Patches
                     {
 
                         pinData.m_name ??= Localization.instance.Localize(strID);
+                        if (CustomNames.ContainsKey(pinData.m_name))
+                            pinData.m_name = CustomNames[pinData.m_name];
+
                         pinData.m_pos = pos;
                         if (pinData.m_name == null || pinData.m_name == "")
                         {
