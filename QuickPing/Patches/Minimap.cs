@@ -298,7 +298,14 @@ namespace QuickPing.Patches
         /// <param name="originalName"></param>
         private static void SaveName(string m_name, string originalName)
         {
+            if (CustomNames.ContainsKey(originalName))
+            {
+                CustomNames[originalName] = m_name;
+            }
+            else
+            {
             CustomNames.Add(originalName, m_name);
+        }
         }
 
         private static void InitNameInput()
