@@ -171,8 +171,7 @@ namespace QuickPing.Utilities
         public static bool Compare(this Minimap.PinData x, Minimap.PinData y)
         {
             return x.m_pos == y.m_pos
-                && x.m_name == y.m_name
-                && x.m_type == y.m_type;
+                && x.m_name == y.m_name;
         }
 
 

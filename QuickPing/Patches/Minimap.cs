@@ -183,8 +183,8 @@ namespace QuickPing.Patches
                         if (pinData.m_type != Minimap.PinType.None)
                         {
                             if (closestPin == null)
-                            pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
-                            else if(rename)
+                                pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                            else if (rename)
                                 pinData = closestPin;
                             QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
 
@@ -198,9 +198,9 @@ namespace QuickPing.Patches
                                     break;
                                 }
 
-                                    GUIManager.BlockInput(true);
-                                    InitNameInput();
-                                    Minimap.instance.ShowPinNameInput(pinData);
+                                GUIManager.BlockInput(true);
+                                InitNameInput();
+                                Minimap.instance.ShowPinNameInput(pinData);
 
                             }
                         }
@@ -246,7 +246,6 @@ namespace QuickPing.Patches
                 if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                 {
                     ValidateNameInput(inputField, toggle.isOn);
-
                 }
                 else if (Input.GetKeyDown(KeyCode.Escape))
                 {
@@ -315,8 +314,8 @@ namespace QuickPing.Patches
             }
             else
             {
-            CustomNames.Add(originalName, m_name);
-        }
+                CustomNames.Add(originalName, m_name);
+            }
         }
 
         private static void InitNameInput()
@@ -438,7 +437,7 @@ namespace QuickPing.Patches
         public static bool RemovePin(Minimap __instance, Minimap.PinData pin)
         {
             //checks 
-            if (pin == null || pin.m_type == Minimap.PinType.None || pin.m_name == null || pin.m_name == "")
+            if (pin == null || pin.m_name == null || pin.m_name == "")
             {
                 return true;
             }
@@ -452,6 +451,7 @@ namespace QuickPing.Patches
                     PinnedObjects.Remove(PinnedObjects.FirstOrDefault((x) => x.Value.Compare(p.Value)).Key);
                     break;
                 }
+
             }
             if ((bool)pin.m_uiElement)
             {
@@ -460,6 +460,8 @@ namespace QuickPing.Patches
             __instance.m_pins.Remove(pin);
             return false;
         }
+
+
 
 
 
