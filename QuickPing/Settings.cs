@@ -14,6 +14,7 @@ namespace QuickPing
         public static ConfigEntry<bool> AskForName { get; private set; }
         public static ConfigEntry<KeyCode> PingKey { get; private set; }
         public static ConfigEntry<KeyCode> PinEverythingKey { get; internal set; }
+        public static ConfigEntry<KeyboardShortcut> RenameKey { get; internal set; }
 
         public static ConfigEntry<Minimap.PinType> DefaultPinType { get; internal set; }
 
@@ -26,6 +27,8 @@ namespace QuickPing
 
         public static ButtonConfig PingBtn { get; private set; }
         public static ButtonConfig PingEverythingBtn { get; private set; }
+        public static ButtonConfig RenameBtn { get; private set; }
+
         public static void Init()
         {
             //GENERAL
@@ -88,6 +91,10 @@ namespace QuickPing
                 "PingEverythingInputKey",
                 KeyCode.G,
                 "Add a pin on minimap to whatever you're looking at.");
+            RenameKey = QuickPingPlugin.Instance.Config.Bind("Bindings",
+                "RenameInputKey",
+                new KeyboardShortcut(PingKey.Value, KeyCode.LeftAlt), new ConfigDescription("" +
+                "The keybind to rename a ping"));
 
             AddInputs();
         }
@@ -97,7 +104,7 @@ namespace QuickPing
             PingBtn = new ButtonConfig
             {
                 Name = "Ping",
-                Key = PingKey.Value,
+                Config = PingKey,
                 Hint = "Ping where you are looking, and pin useful resources",
 
             };
@@ -105,11 +112,18 @@ namespace QuickPing
             PingEverythingBtn = new ButtonConfig
             {
                 Name = "PinEverything",
-                Key = PinEverythingKey.Value,
+                Config = PinEverythingKey,
                 Hint = "Pin on map everything you're looking at",
 
             };
+            // Supply your KeyboardShortcut configs to ShortcutConfig instead.
+            RenameBtn = new ButtonConfig
+            {
+                Name = "SecretShortcut",
+                ShortcutConfig = RenameKey,
+            };
 
+            InputManager.Instance.AddButton(MyPluginInfo.PLUGIN_GUID, RenameBtn);
             InputManager.Instance.AddButton(MyPluginInfo.PLUGIN_GUID, PingBtn);
             InputManager.Instance.AddButton(MyPluginInfo.PLUGIN_GUID, PingEverythingBtn);
 

@@ -16,6 +16,7 @@ namespace QuickPing.Patches
     {
         public static UnityEvent<HoverObject> OnPlayerPing = new UnityEvent<HoverObject>();
         public static UnityEvent<HoverObject> OnPlayerForcePing = new UnityEvent<HoverObject>();
+        public static UnityEvent<HoverObject> OnPlayerRename = new UnityEvent<HoverObject>();
 
 
         /// <summary>
@@ -44,6 +45,15 @@ namespace QuickPing.Patches
             //Check Keys
             if (Settings.PingKey.Value != KeyCode.None)
             {
+                if (ZInput.GetButtonDown(Settings.RenameBtn.Name))
+                {
+                    HoverObject ping = FindHoverObject(500f);
+
+                    ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
+
+                    OnPlayerRename.Invoke(ping);
+                }
+                else
                 if (ZInput.GetButtonDown(Settings.PingBtn.Name))
                 {
                     HoverObject ping = FindHoverObject(500f);
@@ -52,7 +62,7 @@ namespace QuickPing.Patches
 
                     OnPlayerPing.Invoke(ping);
                 }
-
+                else
                 if (ZInput.GetButtonDown(Settings.PingEverythingBtn.Name))
                 {
                     HoverObject ping = FindHoverObject(500f);
@@ -61,6 +71,7 @@ namespace QuickPing.Patches
 
                     OnPlayerForcePing.Invoke(ping);
                 }
+
             }
         }
 
@@ -336,8 +347,9 @@ namespace QuickPing.Patches
             return (bool)raycastHit.collider.attachedRigidbody && raycastHit.collider.attachedRigidbody.gameObject == Player.m_localPlayer.gameObject;
         }
 
+        internal static void SendRename(HoverObject ping) => SendPing(ping);
         public static void SendPing(HoverObject ping) => SendPing(ping.pos, Localization.instance.Localize(ping.Name));
-        public static void SendPing(Vector3 position, string text, bool local = false)
+        internal static void SendPing(Vector3 position, string text, bool local = false)
         {
 
             Player localPlayer = Player.m_localPlayer;
