@@ -31,7 +31,7 @@ namespace QuickPing.Patches
             //Check instance
             if (!Player.m_localPlayer || Player.m_localPlayer != __instance) return;
             //Check mod settings
-            if (!Settings.PingWhereLooking.Value) return;
+            if (!Settings.PingWhereLooking.Value && !Settings.AddPin.Value) return;
 
             if (Minimap_Patch.IsNaming)
             {
@@ -341,7 +341,7 @@ namespace QuickPing.Patches
         {
 
             Player localPlayer = Player.m_localPlayer;
-            if ((bool)localPlayer)
+            if ((bool)localPlayer && Settings.PingWhereLooking.Value)
             {
                 QuickPingPlugin.Log.LogInfo("SendPing : " + text);
                 ZRoutedRpc.instance.InvokeRoutedRPC(local ? Player.m_localPlayer.GetZDOID().userID : ZRoutedRpc.Everybody, "ChatMessage", position, 3, localPlayer.GetPlayerName(), text, 1);
