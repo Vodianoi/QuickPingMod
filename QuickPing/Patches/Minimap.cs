@@ -289,7 +289,7 @@ namespace QuickPing.Patches
             // Persistent save of text value for this pinned object
             if (on)
             {
-                QuickPingPlugin.Log.LogInfo($"Save name {originalText} for {Minimap.instance.m_namePin.m_name}");
+                QuickPingPlugin.Log.LogInfo($"Save name {Minimap.instance.m_namePin.m_name} for {originalText}");
                 SaveName(Minimap.instance.m_namePin.m_name, originalText);
             }
             Minimap.instance.m_namePin = null;
