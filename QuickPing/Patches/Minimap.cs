@@ -278,6 +278,17 @@ namespace QuickPing.Patches
             text = text.Replace('<', ' ');
             text = text.Replace('>', ' ');
             string originalText = Minimap.instance.m_namePin.m_name;
+            if (!CustomNames.ContainsKey(originalText))
+            {
+                foreach (var pair in CustomNames)
+                {
+                    if (Minimap.instance.m_namePin.m_name == pair.Value)
+                    {
+                        originalText = pair.Key;
+                    }
+                }
+            }
+
             Minimap.instance.m_namePin.m_name = text;
 
             // Persistent save of text value for this pinned object
