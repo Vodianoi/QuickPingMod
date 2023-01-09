@@ -193,18 +193,11 @@ namespace QuickPing.Patches
 
                             //Check if Settings.AskForName.Value is true, and if CustomNames contains its name.
                             //if true ask for user input before adding pin
-                            if (Settings.AskForName.Value || rename)
+                            if (rename)
                             {
-                                if (CustomNames.ContainsKey(pinData.m_name) && !rename)
-                                {
-                                    pinData.m_name = CustomNames[pinData.m_name];
-                                    break;
-                                }
-
                                 GUIManager.BlockInput(true);
                                 InitNameInput();
                                 Minimap.instance.ShowPinNameInput(pinData);
-
                             }
                         }
                     }
