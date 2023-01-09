@@ -83,8 +83,12 @@ namespace QuickPing.Patches
         [HarmonyPostfix]
         private static void Player_Save()
         {
-            ZPackage zPackage = Minimap_Patch.PackCustomNames();
-            DataUtils.SavePlayerData(zPackage);
+            if (Game.instance != null && Game.instance.GetPlayerProfile() != null)
+            {
+                ZPackage zPackage = Minimap_Patch.PackCustomNames();
+                DataUtils.SavePlayerData(zPackage);
+            }
+
         }
 
         /// <summary>
