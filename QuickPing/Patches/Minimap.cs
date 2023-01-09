@@ -110,6 +110,12 @@ namespace QuickPing.Patches
         }
 
         /// <summary>
+        /// Force rename pin
+        /// </summary>
+        /// <param name="obj"></param>
+        internal static void RenamePin(HoverObject obj) => AddPin(obj.Hover, obj.Destructible, obj.Name, obj.center, rename: true);
+
+        /// <summary>
         /// Add correct pin to map if Settings.
         /// </summary>
         /// <param name="obj"></param>
@@ -128,7 +134,7 @@ namespace QuickPing.Patches
         /// <param name="strID">Display Name of hover object</param>
         /// <param name="pos">Pinged position (last raycast point or hover center)</param>
         /// <param name="force">Bypass filters</param>
-        public static void AddPin(GameObject hover, IDestructible idestructible, string strID, Vector3 pos, bool force = false)
+        public static void AddPin(GameObject hover, IDestructible idestructible, string strID, Vector3 pos, bool force = false, bool rename = false)
         {
             if (!Settings.AddPin.Value && !force) { return; }
 
@@ -157,8 +163,9 @@ namespace QuickPing.Patches
                     }
                     break;
                 default:
-                    if (closestPin == null)
+                    if (closestPin == null || rename)
                     {
+
                         pinData.m_name ??= Localization.instance.Localize(strID);
                         pinData.m_pos = pos;
                         if (pinData.m_name == null || pinData.m_name == "")
@@ -175,23 +182,26 @@ namespace QuickPing.Patches
 
                         if (pinData.m_type != Minimap.PinType.None)
                         {
+                            if (closestPin == null)
                             pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                            else if(rename)
+                                pinData = closestPin;
                             QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
 
                             //Check if Settings.AskForName.Value is true, and if CustomNames contains its name.
                             //if true ask for user input before adding pin
-                            if (Settings.AskForName.Value)
+                            if (Settings.AskForName.Value || rename)
                             {
-                                if (CustomNames.ContainsKey(pinData.m_name))
+                                if (CustomNames.ContainsKey(pinData.m_name) && !rename)
                                 {
                                     pinData.m_name = CustomNames[pinData.m_name];
+                                    break;
                                 }
-                                else
-                                {
+
                                     GUIManager.BlockInput(true);
                                     InitNameInput();
                                     Minimap.instance.ShowPinNameInput(pinData);
-                                }
+
                             }
                         }
                     }
