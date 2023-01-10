@@ -26,6 +26,8 @@ namespace QuickPing.Patches
 
         public static bool IsNaming = false;
 
+        private static string tempOriginalText;
+
         /// <summary>
         /// Check if an object can be pinned
         /// </summary>
@@ -207,6 +209,7 @@ namespace QuickPing.Patches
                             {
                                 GUIManager.BlockInput(true);
                                 InitNameInput();
+                                tempOriginalText = strID;
                                 Minimap.instance.ShowPinNameInput(pinData);
                             }
                         }
@@ -264,10 +267,11 @@ namespace QuickPing.Patches
                 }
                 Minimap.instance.m_wasFocused = true;
             }
-            else //reset
+            else //end
             {
                 panel.gameObject.SetActive(value: false);
                 IsNaming = false;
+                tempOriginalText = null;
                 GUIManager.BlockInput(false);
                 DestroyGUI();
             }
@@ -279,6 +283,7 @@ namespace QuickPing.Patches
             Minimap.instance.m_wasFocused = false;
             panel.gameObject.SetActive(value: false);
             IsNaming = false;
+            tempOriginalText = null;
             GUIManager.BlockInput(false);
             DestroyGUI();
         }
@@ -296,17 +301,7 @@ namespace QuickPing.Patches
             text = text.Replace('$', ' ');
             text = text.Replace('<', ' ');
             text = text.Replace('>', ' ');
-            string originalText = Minimap.instance.m_namePin.m_name;
-            if (!CustomNames.ContainsKey(originalText))
-            {
-                foreach (var pair in CustomNames)
-                {
-                    if (Minimap.instance.m_namePin.m_name == pair.Value)
-                    {
-                        originalText = pair.Key;
-                    }
-                }
-            }
+            string originalText = tempOriginalText;
 
             Minimap.instance.m_namePin.m_name = text;
 
@@ -374,7 +369,6 @@ namespace QuickPing.Patches
                 QuickPingPlugin.Log.LogError("GUIManager CustomGUI is null");
                 return;
             }
-
 
 
             IsNaming = true;
