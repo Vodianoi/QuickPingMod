@@ -141,7 +141,7 @@ namespace QuickPing.Patches
                 center = Player.m_localPlayer.GetHeadPoint(),
                 Name = Settings.DefaultPingText
             };
-            LayerMask m_interactMask = LayerMask.GetMask("Default", "static_solid", "Default_small", "piece", "piece_nonsolid", "terrain", "character", "character_net", "character_ghost", "character_noenv", "vehicle");
+            LayerMask m_interactMask = LayerMask.GetMask("Default", "static_solid", "Default_small", "piece", "piece_nonsolid", "terrain", "character", "character_net", "character_ghost", "character_noenv", "vehicle", "item");
             RaycastHit[] array = Physics.RaycastAll(GameCamera.instance.transform.position, GameCamera.instance.transform.forward, range + 10, layerMask: m_interactMask);
             Array.Sort(array, (RaycastHit x, RaycastHit y) => x.distance.CompareTo(y.distance));
             RaycastHit[] array2 = array;

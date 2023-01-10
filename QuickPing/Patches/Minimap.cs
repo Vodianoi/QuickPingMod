@@ -84,10 +84,20 @@ namespace QuickPing.Patches
                         "$item_blueberries",
                         "$item_cloudberries",
                         "$item_dragonegg",
+                        "$item_dandelion",
+                        "$item_mushroomcommon",
+                        "$item_magecap",
+                        "$item_mushroomblue",
+                        "$item_thistle",
                         // fix #58 conflicts with PlantEverything
                         "$peRaspberryBushName",
                         "$peBlueberryBushName",
                         "$peCloudberryBushName",
+                        "$pePickableMushroomName",
+                        "$pePickableYellowMushroomName",
+                        "$pePickableBlueMushroomName",
+                        "$pePickableThistleName",
+                        "$pePickableDandelionName",
 
                     }
                 },
@@ -151,6 +161,8 @@ namespace QuickPing.Patches
             {
                 m_type = IsPinable(strID)
             };
+            if (hover && hover.GetComponent<ItemDrop>())
+                pinData.m_type = Minimap.PinType.None;
 
             Minimap.PinData closestPin = Minimap.instance.GetClosestPin(pos, Settings.ClosestPinRange.Value);
 
