@@ -139,6 +139,7 @@ namespace QuickPing.Patches
         public static void AddPin(GameObject hover, IDestructible idestructible, string strID, Vector3 pos, bool force = false, bool rename = false)
         {
             if (!Settings.AddPin.Value && !force) { return; }
+            bool pinned = false;
 
             Minimap.PinData pinData = new Minimap.PinData
             {
@@ -160,7 +161,7 @@ namespace QuickPing.Patches
                         }
 
                         pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
-
+                        pinned = true;
                         QuickPingPlugin.Log.LogInfo($"Add Portal Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
                     }
                     break;
@@ -183,6 +184,7 @@ namespace QuickPing.Patches
                         {
                             pinData.m_type = Settings.DefaultPinType.Value;
                             pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                            pinned = true;
                             QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
                             break;
                         }
@@ -190,7 +192,10 @@ namespace QuickPing.Patches
                         if (pinData.m_type != Minimap.PinType.None)
                         {
                             if (closestPin == null)
+                            {
                                 pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                                pinned = true;
+                            }
                             else if (rename)
                                 pinData = closestPin;
                             QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
@@ -208,7 +213,7 @@ namespace QuickPing.Patches
                     break;
             }
 
-            if (idestructible != null)
+            if (idestructible != null && pinned)
             {
                 FieldInfo fieldInfo = idestructible.GetType().GetField("m_nview", BindingFlags.Instance | BindingFlags.NonPublic);
                 ZNetView netView = fieldInfo.GetValue(idestructible) as ZNetView;
