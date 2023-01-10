@@ -84,7 +84,12 @@ namespace QuickPing.Patches
                         "$item_raspberries",
                         "$item_blueberries",
                         "$item_cloudberries",
-                        "$item_dragonegg"
+                        "$item_dragonegg",
+                        // fix #58 conflicts with PlantEverything
+                        "$peRaspberryBushName",
+                        "$peBlueberryBushName",
+                        "$peCloudberryBushName",
+
                     }
                 },
 
