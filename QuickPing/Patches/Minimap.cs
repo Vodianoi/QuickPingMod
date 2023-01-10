@@ -16,8 +16,7 @@ namespace QuickPing.Patches
     /// </summary>
     internal static class Minimap_Patch
     {
-        public static Dictionary<ZDOID, Minimap.PinData> PinnedObjects = new();
-        public static Dictionary<string, string> CustomNames = new();
+
 
         private static GameObject panel;
         private static GameObject nameInput;
@@ -179,9 +178,9 @@ namespace QuickPing.Patches
                         pinData.m_name ??= Localization.instance.Localize(strID);
 
                         // check for customnames
-                        bool customName = CustomNames.ContainsKey(strID);
+                        bool customName = DataManager.CustomNames.ContainsKey(strID);
                         if (customName)
-                            pinData.m_name = CustomNames[strID];
+                            pinData.m_name = DataManager.CustomNames[strID];
 
                         pinData.m_pos = pos;
                         if (pinData.m_name == null || pinData.m_name == "" && !customName)
@@ -236,9 +235,9 @@ namespace QuickPing.Patches
                 {
                     QuickPingPlugin.Log.LogError($"Try adding {idestructible} but {netView} uid is null");
                 }
-                if (!PinnedObjects.ContainsKey(uid))
+                if (!DataManager.PinnedObjects.ContainsKey(uid))
                 {
-                    PinnedObjects[uid] = pinData;
+                    DataManager.PinnedObjects[uid] = pinData;
                 }
             }
         }
@@ -351,13 +350,13 @@ namespace QuickPing.Patches
         /// <param name="originalName"></param>
         private static void SaveName(string m_name, string originalName)
         {
-            if (CustomNames.ContainsKey(originalName))
+            if (DataManager.CustomNames.ContainsKey(originalName))
             {
-                CustomNames[originalName] = m_name;
+                DataManager.CustomNames[originalName] = m_name;
             }
             else
             {
-                CustomNames.Add(originalName, m_name);
+                DataManager.CustomNames.Add(originalName, m_name);
             }
         }
 
@@ -449,67 +448,6 @@ namespace QuickPing.Patches
 
 
 
-        #region Data Management
-
-        /// <summary>
-        /// Pack ZDOID, name, type and position in ZPackage and returns it.
-        /// </summary>
-        /// <returns>ZPackage containing ZDOID, name, type and position</returns>
-        public static ZPackage PackPinnedObjects()
-        {
-            ZPackage zPackage = new ZPackage();
-
-            foreach (var x in PinnedObjects)
-            {
-                zPackage.Write(x.Key);
-                zPackage.Write(x.Value);
-            }
-            return zPackage;
-        }
-
-        /// <summary>
-        /// Pack originalName=name in ZPackage and returns it.
-        /// </summary>
-        /// <returns></returns>
-        public static ZPackage PackCustomNames()
-        {
-            ZPackage zPackage = new ZPackage();
-
-            foreach (var x in CustomNames)
-            {
-                if (x.Key is null or "") continue;
-                zPackage.Write(x.Key);
-                zPackage.Write(x.Value);
-            }
-
-            return zPackage;
-        }
-
-        internal static void UnpackCustomNames(ZPackage zPackage)
-        {
-            CustomNames.Clear();
-            while (zPackage.GetPos() < zPackage.Size())
-            {
-                string originalName = zPackage.ReadString();
-                string name = zPackage.ReadString();
-                if (originalName is not "" or null)
-                    CustomNames.Add(originalName, name);
-            }
-        }
-
-        /// <summary>
-        /// Save all pinned into file (support SteamStorage cloud)
-        /// </summary>
-        /// <param name="world"></param>
-        /// <param name="cloudSaveFailed"></param>
-        public static void SavePinnedDataToWorld(World world, out bool cloudSaveFailed)
-        {
-            ZPackage zPackage = PackPinnedObjects();
-
-            cloudSaveFailed = Utilities.DataUtils.SaveWorldData(world, zPackage);
-
-        }
-        #endregion
 
         #region Patches
 
@@ -525,12 +463,12 @@ namespace QuickPing.Patches
             }
 
 
-            foreach (var p in PinnedObjects)
+            foreach (var p in DataManager.PinnedObjects)
             {
                 if (p.Value.Compare(pin))
                 {
                     pin = __instance.GetClosestPin(p.Value.m_pos, Settings.ClosestPinRange.Value);
-                    PinnedObjects.Remove(PinnedObjects.FirstOrDefault((x) => x.Value.Compare(p.Value)).Key);
+                    DataManager.PinnedObjects.Remove(DataManager.PinnedObjects.FirstOrDefault((x) => x.Value.Compare(p.Value)).Key);
                     break;
                 }
 
