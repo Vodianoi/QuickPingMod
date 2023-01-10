@@ -19,8 +19,10 @@ namespace QuickPing.Patches
         public static Dictionary<ZDOID, Minimap.PinData> PinnedObjects = new();
         public static Dictionary<string, string> CustomNames = new();
 
+        private static GameObject panel;
         private static GameObject nameInput;
         private static GameObject toggleSaveName;
+        private static GameObject toggleSaveAll;
 
         public static bool IsNaming = false;
 
@@ -167,6 +169,8 @@ namespace QuickPing.Patches
                     {
 
                         pinData.m_name ??= Localization.instance.Localize(strID);
+
+                        // check for customnames
                         if (CustomNames.ContainsKey(pinData.m_name))
                             pinData.m_name = CustomNames[pinData.m_name];
 
@@ -230,7 +234,7 @@ namespace QuickPing.Patches
             }
             if (Minimap.instance.m_namePin != null)
             {
-
+                panel.SetActive(true);
                 nameInput.SetActive(true);
                 toggleSaveName.SetActive(true);
                 var inputField = nameInput.GetComponent<InputField>();
@@ -251,9 +255,10 @@ namespace QuickPing.Patches
             }
             else //reset
             {
-                nameInput.gameObject.SetActive(value: false);
+                panel.gameObject.SetActive(value: false);
                 IsNaming = false;
                 GUIManager.BlockInput(false);
+                DestroyGUI();
             }
         }
 
@@ -261,9 +266,18 @@ namespace QuickPing.Patches
         {
             Minimap.instance.m_namePin = null;
             Minimap.instance.m_wasFocused = false;
-            nameInput.gameObject.SetActive(value: false);
+            panel.gameObject.SetActive(value: false);
             IsNaming = false;
             GUIManager.BlockInput(false);
+            DestroyGUI();
+        }
+
+        private static void DestroyGUI()
+        {
+            GameObject.Destroy(nameInput);
+            GameObject.Destroy(panel);
+            GameObject.Destroy(toggleSaveName);
+            GameObject.Destroy(toggleSaveAll);
         }
 
         private static void ValidateNameInput(InputField inputField, bool on)
@@ -328,27 +342,67 @@ namespace QuickPing.Patches
                 return;
             }
 
+
+
             IsNaming = true;
 
-            nameInput = GUIManager.Instance.CreateInputField(
+            panel = GUIManager.Instance.CreateWoodpanel(
                 parent: GUIManager.CustomGUIFront.transform,
                 anchorMin: new Vector2(0.5f, 0.5f),
                 anchorMax: new Vector2(0.5f, 0.5f),
+                position: new Vector2(0f, 0f),
+                width: 200f,
+                height: 120f,
+                draggable: true);
+
+            // Add a vertical layout group to the panel
+            var verticalLayoutGroup = panel.gameObject.AddComponent<VerticalLayoutGroup>();
+
+            // Set the spacing between elements
+            verticalLayoutGroup.spacing = 10f;
+            verticalLayoutGroup.padding = new RectOffset(10, 10, 10, 10);
+            verticalLayoutGroup.childControlWidth = true;
+            verticalLayoutGroup.childControlHeight = true;
+
+
+            nameInput = GUIManager.Instance.CreateInputField(
+                parent: panel.transform,
+                anchorMin: new Vector2(0.5f, 0.9f),
+                anchorMax: new Vector2(0.5f, 0.9f),
                 position: new Vector2(0, 0),
                 contentType: InputField.ContentType.Standard,
                 placeholderText: "Pin Name",
                 fontSize: 16,
-                width: 160f,
+                width: 90f,
                 height: 30f
             );
+            nameInput.SetActive(IsNaming);
 
             toggleSaveName = GUIManager.Instance.CreateToggle(
-                parent: nameInput.transform,
-                width: 10f,
-                height: 10f
+                parent: panel.transform,
+                width: 20f,
+                height: 20f
                 );
 
+            Text saveNameText = toggleSaveName.transform.Find("Label").GetComponent<Text>();
+            saveNameText.color = Color.white;
+            saveNameText.text = "Save";
+            saveNameText.enabled = true;
+            toggleSaveName.SetActive(IsNaming);
+            toggleSaveName.transform.position += new Vector3(20f, 0, 0);
 
+
+            toggleSaveAll = GUIManager.Instance.CreateToggle(
+                parent: panel.transform,
+                width: 20f,
+                height: 20f
+                );
+            toggleSaveAll.transform.position += new Vector3(20f, 0, 0);
+            Text saveAllText = toggleSaveAll.transform.Find("Label").GetComponent<Text>();
+            saveAllText.color = Color.white;
+            saveAllText.text = "Update all pins.";
+            saveAllText.enabled = true;
+            toggleSaveAll.SetActive(IsNaming);
 
         }
         #endregion
