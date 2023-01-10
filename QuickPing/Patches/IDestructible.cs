@@ -96,8 +96,7 @@ namespace QuickPing.Patches
                     }
                 }
             }
-            else
-                if (Minimap_Patch.PinnedObjects.ContainsKey(id))
+            else if (Minimap_Patch.PinnedObjects.ContainsKey(id))
                 Minimap.instance.RemovePin(Minimap_Patch.PinnedObjects[id]);
 
             __instance.m_onDestroyed?.Invoke();
