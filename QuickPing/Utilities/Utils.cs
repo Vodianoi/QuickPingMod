@@ -48,7 +48,7 @@ namespace QuickPing.Utilities
                 return ms.ToArray();
             }
         }
-        public static bool SaveData(World world, ZPackage zPackage)
+        public static bool SaveWorldData(World world, ZPackage zPackage)
         {
             bool cloudSaveFailed;
             if (world.m_fileSource != FileHelpers.FileSource.Cloud)
@@ -75,6 +75,34 @@ namespace QuickPing.Utilities
             return cloudSaveFailed;
         }
 
+        public static bool SavePlayerData(ZPackage zPackage)
+        {
+            var playerProfile = Game.instance.GetPlayerProfile();
+            bool cloudSaveFailed;
+            if (playerProfile.m_fileSource != FileHelpers.FileSource.Cloud)
+            {
+                Directory.CreateDirectory(World.GetWorldSavePath(playerProfile.m_fileSource));
+            }
+
+            string metaPath = GetCustomNamesPath(playerProfile);
+            string text = metaPath + ".new";
+            string oldFile = metaPath + ".old";
+            byte[] array = zPackage.GetArray();
+            FileWriter fileWriter = new FileWriter(text, FileHelpers.FileHelperType.Binary, playerProfile.m_fileSource);
+            fileWriter.m_binary.Write(array.Length);
+            fileWriter.m_binary.Write(array);
+            fileWriter.Finish();
+
+
+            cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && playerProfile.m_fileSource == FileHelpers.FileSource.Cloud;
+            if (!cloudSaveFailed)
+            {
+                FileHelpers.ReplaceOldFile(metaPath, text, oldFile, playerProfile.m_fileSource);
+            }
+
+            return cloudSaveFailed;
+        }
+
         public static string GetPinnedPath(World world)
         {
             FileHelpers.SplitFilePath(world.GetDBPath(), out string directory, out string fileName, out string fileExtension);
@@ -82,6 +110,17 @@ namespace QuickPing.Utilities
             const string __MyExtension = ".mod.quickping.pinned";
 
 
+            //INFO
+            //QuickPingPlugin.Log.LogInfo("World .pinned save path: " + worldSavePath);
+
+            return worldSavePath + __MyExtension;
+        }
+
+        public static string GetCustomNamesPath(PlayerProfile playerProfile)
+        {
+            FileHelpers.SplitFilePath(playerProfile.GetPath(), out string directory, out string fileName, out string fileExtension);
+            var worldSavePath = directory + fileName;
+            const string __MyExtension = ".mod.quickping.customnames";
             //INFO
             //QuickPingPlugin.Log.LogInfo("World .pinned save path: " + worldSavePath);
 
@@ -132,9 +171,9 @@ namespace QuickPing.Utilities
         public static bool Compare(this Minimap.PinData x, Minimap.PinData y)
         {
             return x.m_pos == y.m_pos
-                && x.m_name == y.m_name
-                && x.m_type == y.m_type;
+                && x.m_name == y.m_name;
         }
+
 
     }
 }

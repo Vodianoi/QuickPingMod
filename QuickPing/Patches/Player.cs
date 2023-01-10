@@ -1,10 +1,14 @@
 ﻿using HarmonyLib;
+using QuickPing.Utilities;
 using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace QuickPing.Patches
 {
+
+    #region Patches
     /// <summary>
     /// Patch Player Class to add Ping Key and automatic pins
     /// </summary>
@@ -12,6 +16,8 @@ namespace QuickPing.Patches
     {
         public static UnityEvent<HoverObject> OnPlayerPing = new UnityEvent<HoverObject>();
         public static UnityEvent<HoverObject> OnPlayerForcePing = new UnityEvent<HoverObject>();
+        public static UnityEvent<HoverObject> OnPlayerRename = new UnityEvent<HoverObject>();
+
 
         /// <summary>
         /// Check for Key Input
@@ -21,18 +27,33 @@ namespace QuickPing.Patches
         [HarmonyPostfix]
         private static void Player_Update(Player __instance)
         {
+            //Check ZInput instance 
+            if (ZInput.instance == null) return;
             //Check instance
             if (!Player.m_localPlayer || Player.m_localPlayer != __instance) return;
             //Check mod settings
-            if (!Settings.PingWhereLooking.Value) return;
+            if (!Settings.PingWhereLooking.Value && !Settings.AddPin.Value) return;
+
+            if (Minimap_Patch.IsNaming)
+            {
+                Minimap_Patch.UpdateNameInput();
+            }
+
             //Check if player can use input (fix #34)
             if (!Player.m_localPlayer.TakeInput()) return;
-            //Check ZInput instance 
-            if (ZInput.instance == null) return;
 
             //Check Keys
             if (Settings.PingKey.Value != KeyCode.None)
             {
+                if (ZInput.GetButtonDown(Settings.RenameBtn.Name))
+                {
+                    HoverObject ping = FindHoverObject(500f);
+
+                    ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
+
+                    OnPlayerRename.Invoke(ping);
+                }
+                else
                 if (ZInput.GetButtonDown(Settings.PingBtn.Name))
                 {
                     HoverObject ping = FindHoverObject(500f);
@@ -41,7 +62,7 @@ namespace QuickPing.Patches
 
                     OnPlayerPing.Invoke(ping);
                 }
-
+                else
                 if (ZInput.GetButtonDown(Settings.PingEverythingBtn.Name))
                 {
                     HoverObject ping = FindHoverObject(500f);
@@ -50,9 +71,61 @@ namespace QuickPing.Patches
 
                     OnPlayerForcePing.Invoke(ping);
                 }
+
             }
         }
 
+        /// <summary>
+        /// Save custom names to file
+        /// </summary>
+        /// <param name="__instance"></param>
+        [HarmonyPatch(typeof(Player), nameof(Player.Save))]
+        [HarmonyPostfix]
+        private static void Player_Save()
+        {
+            if (Game.instance != null && Game.instance.GetPlayerProfile() != null)
+            {
+                ZPackage zPackage = Minimap_Patch.PackCustomNames();
+                DataUtils.SavePlayerData(zPackage);
+            }
+
+        }
+
+        /// <summary>
+        /// Save custom names to file
+        /// </summary>
+        [HarmonyPatch(typeof(Player), nameof(Player.Load))]
+        [HarmonyPostfix]
+        private static void Player_Load()
+        {
+            Minimap_Patch.CustomNames.Clear();
+
+            PlayerProfile playerProfile = Game.instance.GetPlayerProfile();
+            var customNamesPath = Utilities.DataUtils.GetCustomNamesPath(playerProfile);
+
+            FileReader fileReader = null;
+            try
+            {
+                fileReader = new FileReader(customNamesPath, playerProfile.m_fileSource);
+            }
+            catch
+            {
+                fileReader?.Dispose();
+                QuickPingPlugin.Log.LogError("  failed to load " + playerProfile.GetName());
+                return;
+            }
+
+
+            BinaryReader binary = fileReader.m_binary;
+            int count = binary.ReadInt32();
+            ZPackage zPackage = new ZPackage(binary.ReadBytes(count));
+
+            Minimap_Patch.UnpackCustomNames(zPackage);
+        }
+
+
+
+        #endregion
         private static string GetHoverName(string pingText, GameObject hover, HoverType type)
         {
             Hoverable hoverable;
@@ -278,12 +351,13 @@ namespace QuickPing.Patches
             return (bool)raycastHit.collider.attachedRigidbody && raycastHit.collider.attachedRigidbody.gameObject == Player.m_localPlayer.gameObject;
         }
 
+        internal static void SendRename(HoverObject ping) => SendPing(ping);
         public static void SendPing(HoverObject ping) => SendPing(ping.pos, Localization.instance.Localize(ping.Name));
-        public static void SendPing(Vector3 position, string text, bool local = false)
+        internal static void SendPing(Vector3 position, string text, bool local = false)
         {
 
             Player localPlayer = Player.m_localPlayer;
-            if ((bool)localPlayer)
+            if ((bool)localPlayer && Settings.PingWhereLooking.Value)
             {
                 QuickPingPlugin.Log.LogInfo("SendPing : " + text);
                 ZRoutedRpc.instance.InvokeRoutedRPC(local ? Player.m_localPlayer.GetZDOID().userID : ZRoutedRpc.Everybody, "ChatMessage", position, 3, localPlayer.GetPlayerName(), text, 1);

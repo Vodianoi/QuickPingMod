@@ -132,8 +132,6 @@
     <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFiles="$(PackageDir)plugins/$(AssemblyName).dll" />
     <Copy SourceFiles="../README.md; ../README.md" DestinationFiles="@(README)" />
     <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="$(AssemblyName).zip" Overwrite="true" />
-
-
   </Target>
   <Import Project="Environment.props" Condition="Exists('Environment.props')" />
   <Target Name="PublishToThunderstorePath">
@@ -147,7 +145,6 @@
     <Exec command="$(SolutionDir)libraries\Debug\pdb2mdb.exe $(TargetPath)" />
     <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(MOD_DEPLOYPATH)\$(AssemblyName)" />
   </Target>
-  
   <Target Name="AddGeneratedFile" BeforeTargets="BeforeCompile;CoreCompile" Inputs="$(MSBuildAllProjects)" Outputs="$(IntermediateOutputPath)GeneratedFile.cs">
     <PropertyGroup>
       <BepInExPluginGuid Condition="'$(BepInExPluginGuid)' == ''">com.$(Company.ToLower()).plugins.$(AssemblyName.ToLower())</BepInExPluginGuid>
