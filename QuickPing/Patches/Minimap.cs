@@ -216,6 +216,11 @@ namespace QuickPing.Patches
             if (idestructible != null && pinned)
             {
                 FieldInfo fieldInfo = idestructible.GetType().GetField("m_nview", BindingFlags.Instance | BindingFlags.NonPublic);
+                if (fieldInfo == null)
+                {
+                    QuickPingPlugin.Log.LogWarning($"Unable to link destructible {idestructible} to pin: {pinData.m_name}. (Is it a god?)");
+                    return;
+                }
                 ZNetView netView = fieldInfo.GetValue(idestructible) as ZNetView;
                 ZDOID uid = netView.GetZDO().m_uid;
                 if (uid == null)
