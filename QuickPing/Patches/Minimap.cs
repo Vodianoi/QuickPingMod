@@ -384,7 +384,7 @@ namespace QuickPing.Patches
                 anchorMax: new Vector2(0.5f, 0.5f),
                 position: new Vector2(0f, 0f),
                 width: 200f,
-                height: 120f,
+                height: 90f,
                 draggable: true);
 
             // Add a vertical layout group to the panel
