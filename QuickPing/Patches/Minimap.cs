@@ -238,14 +238,14 @@ namespace QuickPing.Patches
                 nameInput.SetActive(true);
                 toggleSaveName.SetActive(true);
                 var inputField = nameInput.GetComponent<InputField>();
-                var toggle = toggleSaveName.GetComponent<Toggle>();
+                var toggleSave = toggleSaveName.GetComponent<Toggle>();
                 if (!inputField.isFocused)
                 {
                     EventSystem.current.SetSelectedGameObject(nameInput);
                 }
                 if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                 {
-                    ValidateNameInput(inputField, toggle.isOn);
+                    ValidateNameInput(inputField, toggleSave.isOn);
                 }
                 else if (Input.GetKeyDown(KeyCode.Escape))
                 {
@@ -277,10 +277,9 @@ namespace QuickPing.Patches
             GameObject.Destroy(nameInput);
             GameObject.Destroy(panel);
             GameObject.Destroy(toggleSaveName);
-            GameObject.Destroy(toggleSaveAll);
         }
 
-        private static void ValidateNameInput(InputField inputField, bool on)
+        private static void ValidateNameInput(InputField inputField, bool save)
         {
             string text = inputField.text;
             text = text.Replace('$', ' ');
@@ -301,7 +300,7 @@ namespace QuickPing.Patches
             Minimap.instance.m_namePin.m_name = text;
 
             // Persistent save of text value for this pinned object
-            if (on)
+            if (save)
             {
                 QuickPingPlugin.Log.LogInfo($"Save name {Minimap.instance.m_namePin.m_name} for {originalText}");
                 SaveName(Minimap.instance.m_namePin.m_name, originalText);
@@ -310,6 +309,29 @@ namespace QuickPing.Patches
 
 
         }
+        /// <summary>
+        /// Save the name of a pinned object and update PinnedObjects list with new value
+        /// </summary>
+        /// <param name="originalText"></param>
+        /// <param name="newText"></param>
+        //private static void UpdatePinnedObject(string originalText)
+        //{
+
+        //    for (int i = 0; i < PinnedObjects.Count; i++)
+        //    {
+        //        var keyValuePair = PinnedObjects.ElementAt(i);
+        //        if (keyValuePair.Value.m_name == originalText)
+        //        {
+        //            // Modify the value here
+        //            keyValuePair.Value.m_name = CustomNames[originalText];
+        //            var pin = Minimap.instance.GetClosestPin(keyValuePair.Value.m_pos, Settings.ClosestPinRange.Value);
+        //            if (pin != null)
+        //                pin.m_name = CustomNames[originalText];
+        //            // Update the dictionary
+        //            PinnedObjects[keyValuePair.Key] = keyValuePair.Value;
+        //        }
+        //    }
+        //}
 
         /// <summary>
         /// Persistent save original name for this pinned object
@@ -392,17 +414,17 @@ namespace QuickPing.Patches
             toggleSaveName.transform.position += new Vector3(20f, 0, 0);
 
 
-            toggleSaveAll = GUIManager.Instance.CreateToggle(
-                parent: panel.transform,
-                width: 20f,
-                height: 20f
-                );
-            toggleSaveAll.transform.position += new Vector3(20f, 0, 0);
-            Text saveAllText = toggleSaveAll.transform.Find("Label").GetComponent<Text>();
-            saveAllText.color = Color.white;
-            saveAllText.text = "Update all pins.";
-            saveAllText.enabled = true;
-            toggleSaveAll.SetActive(IsNaming);
+            //toggleSaveAll = GUIManager.Instance.CreateToggle(
+            //    parent: panel.transform,
+            //    width: 20f,
+            //    height: 20f
+            //    );
+            //toggleSaveAll.transform.position += new Vector3(20f, 0, 0);
+            //Text saveAllText = toggleSaveAll.transform.Find("Label").GetComponent<Text>();
+            //saveAllText.color = Color.white;
+            //saveAllText.text = "Update all pins.";
+            //saveAllText.enabled = true;
+            //toggleSaveAll.GetComponent<Toggle>().interactable = false;
 
         }
         #endregion
