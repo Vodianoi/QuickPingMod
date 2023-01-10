@@ -172,11 +172,12 @@ namespace QuickPing.Patches
                         pinData.m_name ??= Localization.instance.Localize(strID);
 
                         // check for customnames
-                        if (CustomNames.ContainsKey(pinData.m_name))
-                            pinData.m_name = CustomNames[pinData.m_name];
+                        bool customName = CustomNames.ContainsKey(strID);
+                        if (customName)
+                            pinData.m_name = CustomNames[strID];
 
                         pinData.m_pos = pos;
-                        if (pinData.m_name == null || pinData.m_name == "")
+                        if (pinData.m_name == null || pinData.m_name == "" && !customName)
                         {
                             pinData.m_name = Settings.DefaultPingText;
                         }
