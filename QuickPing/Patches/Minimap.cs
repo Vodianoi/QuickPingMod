@@ -89,6 +89,7 @@ namespace QuickPing.Patches
                         "$item_magecap",
                         "$item_mushroomblue",
                         "$item_thistle",
+                        "$item_jotunpuffs",
                         // fix #58 conflicts with PlantEverything
                         "$peRaspberryBushName",
                         "$peBlueberryBushName",
@@ -112,6 +113,7 @@ namespace QuickPing.Patches
                         "Stone Henge",
                         "$location_sunkencrypt",
                         "$location_mountaincave",
+                        "$location_dvergrtown",
                         "$piece_portal"
                     }
                 }
