@@ -1,7 +1,5 @@
 ﻿using HarmonyLib;
-using QuickPing.Utilities;
 using System;
-using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -74,56 +72,6 @@ namespace QuickPing.Patches
 
             }
         }
-
-        /// <summary>
-        /// Save custom names to file
-        /// </summary>
-        /// <param name="__instance"></param>
-        [HarmonyPatch(typeof(Player), nameof(Player.Save))]
-        [HarmonyPostfix]
-        private static void Player_Save()
-        {
-            if (Game.instance != null && Game.instance.GetPlayerProfile() != null)
-            {
-                ZPackage zPackage = Minimap_Patch.PackCustomNames();
-                DataUtils.SavePlayerData(zPackage);
-            }
-
-        }
-
-        /// <summary>
-        /// Save custom names to file
-        /// </summary>
-        [HarmonyPatch(typeof(Player), nameof(Player.Load))]
-        [HarmonyPostfix]
-        private static void Player_Load()
-        {
-            Minimap_Patch.CustomNames.Clear();
-
-            PlayerProfile playerProfile = Game.instance.GetPlayerProfile();
-            var customNamesPath = Utilities.DataUtils.GetCustomNamesPath(playerProfile);
-
-            FileReader fileReader = null;
-            try
-            {
-                fileReader = new FileReader(customNamesPath, playerProfile.m_fileSource);
-            }
-            catch
-            {
-                fileReader?.Dispose();
-                QuickPingPlugin.Log.LogError("  failed to load " + playerProfile.GetName());
-                return;
-            }
-
-
-            BinaryReader binary = fileReader.m_binary;
-            int count = binary.ReadInt32();
-            ZPackage zPackage = new ZPackage(binary.ReadBytes(count));
-
-            Minimap_Patch.UnpackCustomNames(zPackage);
-        }
-
-
 
         #endregion
         private static string GetHoverName(string pingText, GameObject hover, HoverType type)
