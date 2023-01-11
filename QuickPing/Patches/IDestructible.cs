@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using QuickPing.Utilities;
 using UnityEngine;
 
 namespace QuickPing.Patches
@@ -15,9 +16,9 @@ namespace QuickPing.Patches
             if (__instance.m_nview)
             {
                 var id = __instance.m_nview.GetZDO().m_uid;
-                if (Minimap_Patch.PinnedObjects.ContainsKey(id))
+                if (DataManager.PinnedObjects.ContainsKey(id))
                 {
-                    Minimap.instance.RemovePin(Minimap_Patch.PinnedObjects[id]);
+                    Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
                     //Minimap_Patch.PinnedObjects.Remove(id);
                 }
             }
@@ -34,9 +35,9 @@ namespace QuickPing.Patches
             if ((bool)__instance.m_nview && __instance.m_nview.GetZDO() != null)
             {
                 var id = __instance.m_nview.GetZDO().m_uid;
-                if (Minimap_Patch.PinnedObjects.ContainsKey(id))
+                if (DataManager.PinnedObjects.ContainsKey(id))
                 {
-                    Minimap.instance.RemovePin(Minimap_Patch.PinnedObjects[id]);
+                    Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
                     //Minimap_Patch.PinnedObjects.Remove(id);
                 }
             }
@@ -82,23 +83,22 @@ namespace QuickPing.Patches
                 }
                 if (obj.TryGetComponent(out MineRock5 _))
                 {
-                    if (!Minimap_Patch.PinnedObjects.ContainsKey(component.GetZDO().m_uid)
-                        && Minimap_Patch.PinnedObjects.ContainsKey(id))
+                    if (!DataManager.PinnedObjects.ContainsKey(component.GetZDO().m_uid)
+                        && DataManager.PinnedObjects.ContainsKey(id))
                     {
                         ZDOID zdoid = component.GetZDO().m_uid;
-                        Minimap.PinData pinData = Minimap_Patch.PinnedObjects[id];
-                        Minimap_Patch.PinnedObjects.Add(zdoid, pinData);
-                        Minimap_Patch.PinnedObjects.Remove(id);
+                        Minimap.PinData pinData = DataManager.PinnedObjects[id];
+                        DataManager.PinnedObjects.Add(zdoid, pinData);
+                        DataManager.PinnedObjects.Remove(id);
                     }
-                    else if (Minimap_Patch.PinnedObjects.ContainsKey(id))
+                    else if (DataManager.PinnedObjects.ContainsKey(id))
                     {
-                        Minimap_Patch.PinnedObjects.Remove(id);
+                        DataManager.PinnedObjects.Remove(id);
                     }
                 }
             }
-            else
-                if (Minimap_Patch.PinnedObjects.ContainsKey(id))
-                Minimap.instance.RemovePin(Minimap_Patch.PinnedObjects[id]);
+            else if (DataManager.PinnedObjects.ContainsKey(id))
+                Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
 
             __instance.m_onDestroyed?.Invoke();
 
@@ -108,7 +108,26 @@ namespace QuickPing.Patches
 
             return false;
         }
-
-
     }
+
+    [HarmonyPatch(typeof(Character))]
+    internal static class Character_Patch
+    {
+        // Patch for Character to remove pin on death
+        [HarmonyPatch(typeof(Character), nameof(Character.OnDeath))]
+        [HarmonyPrefix]
+        public static void OnDeath(Character __instance)
+        {
+            if (__instance.m_nview)
+            {
+                var id = __instance.m_nview.GetZDO().m_uid;
+                if (DataManager.PinnedObjects.ContainsKey(id))
+                {
+                    Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
+                    //Minimap_Patch.PinnedObjects.Remove(id);
+                }
+            }
+        }
+    }
+
 }
