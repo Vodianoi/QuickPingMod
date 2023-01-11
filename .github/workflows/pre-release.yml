@@ -95,7 +95,11 @@ jobs:
       # - uses: actions/setup-dotnet@v3
       #   with:
       #     dotnet-version: '3.1.x'
-          
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+            name: changelog
+            path: QuickPing/Package
 
       - name: Get branch name
         id: branch-name
@@ -109,9 +113,9 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           artifacts: QuickPing/QuickPing.zip
+          bodyFile: QuickPing/Package/CHANGELOG.md
           removeArtifacts: true
           replacesArtifacts: true
-          generateReleaseNotes: true
           # bodyFile: QuickPing/Package/CHANGELOG.md
           commit: ${{ steps.branch-name.outputs.current_branch }}
           tag: "latest"
