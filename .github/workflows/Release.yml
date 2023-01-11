@@ -9,46 +9,6 @@ on:
 
 
 jobs:
-
-  generate-changelog:
-    name: "Generate Changelog"
-    if: github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
-    steps:
-    
-      ##CHECKOUT
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      ##CHANGELOG
-      - name: "✏️ Generate release changelog"
-        uses: heinrichreimer/github-changelog-generator-action@v2.3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }} 
-          output: QuickPing/Package/CHANGELOG.md
-          onlyLastTag: true
-          includeLabels: |
-                  "Bug"
-                  "Enhancement"
-                  "Breaking Change"
-                  "Feature"
-          excludeLabels: |
-                  "wontfix"
-                  "duplicate"
-                  "Question"
-                  "Good First Issue"
-                  "Documentation"
-                  "Help Wanted"
-                  "invalid"
-          breakingLabel: "Breaking Change"
-          enhancementLabel: "Enhancement"
-          bugsLabel: "Bug"
-          
-      - name: Archive changelog
-        uses: actions/upload-artifact@v3
-        with:
-          name: changelog
-          path: QuickPing/Package/CHANGELOG.md
         
   build: 
     name: "Build and Deploy"  
@@ -91,7 +51,7 @@ jobs:
         uses: tj-actions/branch-names@v6
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: QuickPing/Package/QuickPing.zip
+          artifacts: QuickPing/QuickPing.zip
           generateReleaseNotes: true
           # bodyFile: QuickPing/Package/CHANGELOG.md
           commit: ${{ steps.branch-name.outputs.current_branch }}
