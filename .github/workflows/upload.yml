@@ -16,7 +16,7 @@ jobs:
           archive-file: 'QuickPing/QuickPing.zip'
           file-name: 'QuickPing'
           version: $GITHUB_REF
-          category: 'Archived'
+          category: 'Main'
           description: "Ping what you see and pin it on the map !"
           game: valheim
           namespace: 'com.atopy.plugins.quickping'
