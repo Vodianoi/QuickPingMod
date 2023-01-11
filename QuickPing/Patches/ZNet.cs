@@ -10,10 +10,7 @@ namespace QuickPing.Patches
         private static void LoadWorld(ZNet __instance)
         {
             DataManager.Load(ZNet.m_world, Game.instance.GetPlayerProfile());
-
         }
-
-
 
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.SaveWorldThread))]
         [HarmonyPostfix]
@@ -23,9 +20,8 @@ namespace QuickPing.Patches
 
             QuickPingPlugin.Log.LogInfo($"cloud save : {!cloudSaveFailed}");
 
+            Minimap_Patch.PinnedObjects.Clear();
 
         }
-
     }
-
 }

@@ -91,7 +91,7 @@ jobs:
         uses: tj-actions/branch-names@v6
       - uses: ncipollo/release-action@v1
         with:
-          artifacts: QuickPing/Package/QuickPing.zip
+          artifacts: QuickPing/Package/plugins/*.dll
           generateReleaseNotes: true
           # bodyFile: QuickPing/Package/CHANGELOG.md
           commit: ${{ steps.branch-name.outputs.current_branch }}

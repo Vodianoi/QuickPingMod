@@ -1,6 +1,4 @@
 ﻿using BepInEx.Configuration;
-using Jotunn.Configs;
-using Jotunn.Managers;
 using UnityEngine;
 
 namespace QuickPing
@@ -81,7 +79,7 @@ namespace QuickPing
                 KeyCode.T,
                 "The keybind to trigger a ping where you are looking");
 
-            PinEverythingKey = QuickPingPlugin.Instance.Config.Bind("Bindings",
+            PingEverythingKey = QuickPingPlugin.Instance.Config.Bind("Bindings",
                 "PingEverythingInputKey",
                 KeyCode.G,
                 "Add a pin on minimap to whatever you're looking at.");
@@ -90,20 +88,18 @@ namespace QuickPing
                 new KeyboardShortcut(PingKey.Value, KeyCode.LeftAlt), new ConfigDescription("" +
                 "The keybind to rename a ping"));
 
-            AddInputs();
         }
 
-        public static void AddInputs()
+        public static void AddInputs(ZInput __instance)
         {
-            PingBtn = new ButtonConfig
+            PingBtn = new ZInput.ButtonDef
             {
                 Name = "Ping",
                 Config = PingKey,
                 Hint = "Ping where you are looking, and pin useful resources",
-
             };
 
-            PingEverythingBtn = new ButtonConfig
+            PingEverythingBtn = new ZInput.ButtonDef
             {
                 Name = "PinEverything",
                 Config = PinEverythingKey,

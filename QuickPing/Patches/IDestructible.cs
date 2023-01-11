@@ -108,7 +108,6 @@ namespace QuickPing.Patches
 
             return false;
         }
-    }
 
     [HarmonyPatch(typeof(Character))]
     internal static class Character_Patch
