@@ -12,7 +12,6 @@ jobs:
         
   build: 
     name: "Build and Deploy"  
-    needs: generate-changelog
     runs-on: windows-latest 
     steps:
       # CHECKOUT
@@ -51,11 +50,7 @@ jobs:
         uses: tj-actions/branch-names@v6
       - uses: ncipollo/release-action@v1
         with:
-
           artifacts: QuickPing/QuickPing.zip
-
-
-
           generateReleaseNotes: true
           # bodyFile: QuickPing/Package/CHANGELOG.md
           commit: ${{ steps.branch-name.outputs.current_branch }}
