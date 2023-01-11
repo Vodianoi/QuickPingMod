@@ -13,7 +13,7 @@ jobs:
         with:
           tag: "${{ github.ref_name }}"
           fileName: "QuickPing.zip"
-      - uses: Vodianoi/uploadMod@0.9.40
+      - uses: Vodianoi/uploadMod@0.9.41
         with:
           mod-id: '2033' #Nexus
           archive-file: QuickPing.zip
@@ -23,7 +23,6 @@ jobs:
           description: "Ping what you see and pin it on the map !"
           game: valheim
           namespace: 'com.atopy.plugins.quickping'
-          tomlConfigPath: 'QuickPing/thunderstore.toml'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXUSMOD_API_KEY: ${{ secrets.NEXUSMOD_API_KEY }}
           NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.NEXUSMOD_COOKIE_NEXUSID }}
