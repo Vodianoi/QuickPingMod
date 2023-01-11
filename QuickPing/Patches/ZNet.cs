@@ -19,9 +19,6 @@ namespace QuickPing.Patches
             bool cloudSaveFailed = DataManager.Save(ZNet.m_world, Game.instance.GetPlayerProfile());
 
             QuickPingPlugin.Log.LogInfo($"cloud save : {!cloudSaveFailed}");
-
-            Minimap_Patch.PinnedObjects.Clear();
-
         }
     }
 }

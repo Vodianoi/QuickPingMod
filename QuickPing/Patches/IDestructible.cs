@@ -108,25 +108,26 @@ namespace QuickPing.Patches
 
             return false;
         }
+    }
 
-        [HarmonyPatch(typeof(Character))]
-        internal static class Character_Patch
+    [HarmonyPatch(typeof(Character))]
+    internal static class Character_Patch
+    {
+        // Patch for Character to remove pin on death
+        [HarmonyPatch(typeof(Character), nameof(Character.OnDeath))]
+        [HarmonyPrefix]
+        public static void OnDeath(Character __instance)
         {
-            // Patch for Character to remove pin on death
-            [HarmonyPatch(typeof(Character), nameof(Character.OnDeath))]
-            [HarmonyPrefix]
-            public static void OnDeath(Character __instance)
+            if (__instance.m_nview)
             {
-                if (__instance.m_nview)
+                var id = __instance.m_nview.GetZDO().m_uid;
+                if (DataManager.PinnedObjects.ContainsKey(id))
                 {
-                    var id = __instance.m_nview.GetZDO().m_uid;
-                    if (DataManager.PinnedObjects.ContainsKey(id))
-                    {
-                        Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
-                        //Minimap_Patch.PinnedObjects.Remove(id);
-                    }
+                    Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
+                    //Minimap_Patch.PinnedObjects.Remove(id);
                 }
             }
         }
     }
+
 }
