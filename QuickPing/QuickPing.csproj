@@ -33,7 +33,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>&#xD;
+    <DefineConstants>
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -53,28 +53,14 @@
     <Company>Atopy</Company>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>&#xD;
+    <ApplicationIcon>
     </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject/>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <BuildDependsOn>&#xD;
-      $(BuildDependsOn);&#xD;
-	  GetAssemblyVersion;&#xD;
-	  MakeThunderstorePackage&#xD;
-	</BuildDependsOn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <BuildDependsOn>&#xD;
-      $(BuildDependsOn);&#xD;
-	  GetAssemblyVersion;&#xD;
-	  PublishToThunderstorePath&#xD;
-	</BuildDependsOn>
-  </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>&#xD;
+    <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
@@ -146,6 +132,7 @@
     <Exec command="PowerShell -ExecutionPolicy RemoteSigned -File $(SolutionDir)version.ps1 -PackageDir $(PackageDir) -AssemblyVersion $(Major).$(Minor).$(Patch) " />
     <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll" DestinationFiles="$(PackageDir)plugins/$(AssemblyName).dll" />
     <Copy SourceFiles="../README.md; ../README.md" DestinationFiles="@(README)" />
+    <Message Text="Package created at $(AssemblyName).zip" Importance="high" />
     <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="$(AssemblyName).zip" Overwrite="true" />
   </Target>
   <Import Project="Environment.props" Condition="Exists('Environment.props')" />
@@ -165,16 +152,16 @@
       <BepInExPluginGuid Condition="'$(BepInExPluginGuid)' == ''">com.$(Company.ToLower()).plugins.$(AssemblyName.ToLower())</BepInExPluginGuid>
       <BepInExPluginName Condition="'$(BepInExPluginName)' == ''">$(AssemblyName)</BepInExPluginName>
       <BepInExPluginVersion Condition="'$(BepInExPluginVersion)' == ''">$(AssemblyVersion)</BepInExPluginVersion>
-      <GeneratedText>&#xD;
-namespace $(RootNamespace)&#xD;
-{&#xD;
-    public static class MyPluginInfo&#xD;
-    {&#xD;
-        public const string PLUGIN_GUID = "$(BepInExPluginGuid)"%3B&#xD;
-        public const string PLUGIN_NAME = "$(BepInExPluginName)"%3B&#xD;
-        public const string PLUGIN_VERSION = "$(BepInExPluginVersion)"%3B&#xD;
-    }&#xD;
-}&#xD;
+      <GeneratedText>
+namespace $(RootNamespace)
+{
+    public static class MyPluginInfo
+    {
+        public const string PLUGIN_GUID = "$(BepInExPluginGuid)"%3B
+        public const string PLUGIN_NAME = "$(BepInExPluginName)"%3B
+        public const string PLUGIN_VERSION = "$(BepInExPluginVersion)"%3B
+    }
+}
       </GeneratedText>
       <GeneratedFilePath>$(IntermediateOutputPath)MyPluginInfo.cs</GeneratedFilePath>
     </PropertyGroup>
@@ -184,4 +171,18 @@ namespace $(RootNamespace)&#xD;
     </ItemGroup>
     <WriteLinesToFile Lines="$(GeneratedText)" File="$(GeneratedFilePath)" WriteOnlyWhenDifferent="true" Overwrite="true"/>
   </Target>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <BuildDependsOn>
+      $(BuildDependsOn);
+	    GetAssemblyVersion;
+	    MakeThunderstorePackage;
+	  </BuildDependsOn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <BuildDependsOn>
+      $(BuildDependsOn);
+	    GetAssemblyVersion;
+	    PublishToThunderstorePath;
+	  </BuildDependsOn>
+  </PropertyGroup>
 </Project>
