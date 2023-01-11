@@ -26,7 +26,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }} 
           output: QuickPing/Package/CHANGELOG.md
-          onlyLastTag: true
           includeLabels: |
                   "Bug"
                   "Enhancement"
