@@ -11,14 +11,14 @@ jobs:
       - uses: actions/checkout@v3
       - uses: robinraju/release-downloader@v1.7
         with:
-          tag: "${{ github.ref }}"
+          tag: "${{ github.ref_name }}"
           fileName: "QuickPing.zip"
       - uses: Vodianoi/uploadMod@0.9.40
         with:
           mod-id: '2033' #Nexus
           archive-file: QuickPing.zip
           file-name: 'QuickPing'
-          version: "${{ github.ref }}"
+          version: "${{ github.ref_name }}"
           category: 'Main'
           description: "Ping what you see and pin it on the map !"
           game: valheim
