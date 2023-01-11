@@ -13,7 +13,7 @@ jobs:
       - uses: Vodianoi/uploadMod@0.9.40
         with:
           mod-id: '2033' #Nexus
-          archive-file: 'QuickPing/QuickPing.zip'
+          archive-file: '$GITHUB_WORKSPACE/${{  (github.event.release.assets | toJson | fromJson | first(where(.name == "QuickPing.zip"))).name }}'
           file-name: 'QuickPing'
           version: $GITHUB_REF
           category: 'Main'
