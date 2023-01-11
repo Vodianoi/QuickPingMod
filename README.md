@@ -25,6 +25,28 @@ Ping position and markers will always work but must be installed on all clients 
 
 **Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.3...1.5.4
 
+## Configuration
+The settings for QuickPing can be accessed in the BepInEx config file located in the `Valheim/BepInEx/config` folder. The settings include:
+
+- **Bindings**
+  - **PingKey**: The keybind to trigger a ping where you are looking (default: T)
+  - **PingEverythingKey**: The keybind to add a pin on minimap to whatever you're looking at (default: G)
+  - **RenameKey**: The keybind to rename a ping (default: T + LeftAlt)
+
+- **General**
+  - **PingWhereLooking**: Create a ping where you are looking when you press the Ping key (default: true)
+  - **AddPinOnMap**: Add a marker on map when useful resources are pinged (ignored by G) (default: true)
+  - **ClosestPinRange**: Minimum distance between objects to pin/replace portal tag (default: 2)
+  - **DefaultPinType**: Default marker when forcing adding a pin on map (default: RandomEvent (!))
+  
+- **Colors**
+  - **PlayerColor**: Color for Player name in pings/messages (default: green)
+  - **ShoutColor**: Color for Shout ping (default: yellow)
+  - **WhisperColor**: Color for Whisper ping (default: white with 75% opacity)
+  - **PingColor**: Color for "Ping" ping (default: light blue)
+  - **DefaultColor**: Default color (default: white)
+  
+
 
 ## Known issues and next patch ideas 
 You can find the github and contribute by adding an issue at: [Github](https://github.com/Vodianoi/QuickPingMod)
