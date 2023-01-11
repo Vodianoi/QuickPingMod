@@ -48,8 +48,9 @@ The settings for QuickPing can be accessed in the BepInEx config file located in
   
 
 
-## Known issues and next patch ideas 
+## Known issues and ideas 
 You can find the github and contribute by adding an issue at: [Github](https://github.com/Vodianoi/QuickPingMod)
+Please report any bug !
 
 ## Downloads
 *___[Thunderstore](https://valheim.thunderstore.io/package/Atopy/QuickPing/)___*
