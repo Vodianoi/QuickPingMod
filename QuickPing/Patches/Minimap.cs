@@ -21,7 +21,6 @@ namespace QuickPing.Patches
         private static GameObject panel;
         private static GameObject nameInput;
         private static GameObject toggleSaveName;
-        private static GameObject toggleSaveAll;
 
         public static bool IsNaming = false;
 
