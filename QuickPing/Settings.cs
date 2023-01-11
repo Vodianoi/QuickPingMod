@@ -89,10 +89,11 @@ namespace QuickPing
                 "RenameInputKey",
                 new KeyboardShortcut(PingKey.Value, KeyCode.LeftAlt), new ConfigDescription("" +
                 "The keybind to rename a ping"));
+            AddInputs();
 
         }
 
-        public static void AddInputs(ZInput __instance)
+        public static void AddInputs()
         {
             PingBtn = new ButtonConfig
             {
@@ -108,10 +109,10 @@ namespace QuickPing
                 Hint = "Pin on map everything you're looking at",
 
             };
-            // Supply your KeyboardShortcut configs to ShortcutConfig instead.
+
             RenameBtn = new ButtonConfig
             {
-                Name = "SecretShortcut",
+                Name = "Rename",
                 ShortcutConfig = RenameKey,
             };
 
