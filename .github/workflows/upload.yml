@@ -20,11 +20,20 @@ jobs:
           file-name: 'QuickPing'
           version: "${{ github.ref_name }}"
           category: 'Main'
-          description: "Ping what you see and pin it on the map !"
+          description: Ping what you see and pin it on the map !
           game: valheim
           namespace: 'com.atopy.plugins.quickping'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NEXUSMOD_API_KEY: ${{ secrets.NEXUSMOD_API_KEY }}
           NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.NEXUSMOD_COOKIE_NEXUSID }}
           NEXUSMOD_COOKIE_SID_DEVELOP: ${{ secrets.NEXUSMOD_COOKIE_SID_DEVELOP }}
-          THUNDERSTORE_TOKEN: ${{ secrets.THUNDERSTORE_TOKEN }}
+          
+      - uses: GreenTF/upload-thunderstore-package@v3
+        with:
+          namespace: Atopy # the thunderstore 'team' to publish under
+          description: Ping what you see and pin it on the map ! 
+          token: ${{ secrets.THUNDERSTORE_TOKEN }}
+          name: QuickPing # the name of the package
+          version: ${{ github.ref_name }} # Use the tag as the package version
+          community: Valheim
+          file: QuickPing.zip
