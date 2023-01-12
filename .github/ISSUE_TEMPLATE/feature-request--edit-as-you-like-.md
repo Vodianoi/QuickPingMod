@@ -2,7 +2,7 @@
 name: Feature request (Edit as you like)
 about: Suggest an idea for the mod
 title: "[ENHANCEMENT]"
-labels: enhancement
+labels: Enhancement
 assignees: Vodianoi
 
 ---
