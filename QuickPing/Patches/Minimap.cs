@@ -179,6 +179,7 @@ namespace QuickPing.Patches
                             Minimap.instance.RemovePin(closestPin);
                         }
 
+                        pinData.m_pos = pos;
                         pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
                         pinned = true;
                         QuickPingPlugin.Log.LogInfo($"Add Portal Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
