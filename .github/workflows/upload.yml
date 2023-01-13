@@ -28,7 +28,7 @@ jobs:
           NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.NEXUSMOD_COOKIE_NEXUSID }}
           NEXUSMOD_COOKIE_SID_DEVELOP: ${{ secrets.NEXUSMOD_COOKIE_SID_DEVELOP }}
           
-      - uses: GreenTF/upload-thunderstore-package@v3
+      - uses: GreenTF/upload-thunderstore-package@latest
         with:
           namespace: Atopy # the thunderstore 'team' to publish under
           description: Ping what you see and pin it on the map ! 
