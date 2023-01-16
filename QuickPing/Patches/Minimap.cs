@@ -252,6 +252,11 @@ namespace QuickPing.Patches
                 if (!DataManager.PinnedObjects.ContainsKey(uid))
                 {
                     DataManager.PinnedObjects[uid] = pinData;
+                    if (!ZNet.m_isServer)
+                    {
+                        ZPackage package = DataManager.PackPinnedObject(uid, pinData);
+                        ZNet.instance.GetServerRPC().Invoke("OnClientAddPinnedObject", package);
+                    }
                 }
             }
         }
@@ -482,7 +487,11 @@ namespace QuickPing.Patches
                 if (p.Value.Compare(pin))
                 {
                     pin = __instance.GetClosestPin(p.Value.m_pos, Settings.ClosestPinRange.Value);
-                    DataManager.PinnedObjects.Remove(DataManager.PinnedObjects.FirstOrDefault((x) => x.Value.Compare(p.Value)).Key);
+
+                    KeyValuePair<ZDOID, Minimap.PinData> pinnedObject = DataManager.PinnedObjects.FirstOrDefault((x) => x.Value.Compare(p.Value));
+                    if (!ZNet.instance.IsServer())
+                        ZNet.instance.GetServerRPC().Invoke("OnClientRemovePinnedObject", DataManager.PackPinnedObject(pinnedObject));
+                    DataManager.PinnedObjects.Remove(pinnedObject.Key);
                     break;
                 }
 
@@ -494,10 +503,6 @@ namespace QuickPing.Patches
             __instance.m_pins.Remove(pin);
             return false;
         }
-
-
-
-
 
         #endregion
 
