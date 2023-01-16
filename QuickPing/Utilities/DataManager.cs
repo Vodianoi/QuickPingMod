@@ -14,12 +14,25 @@ namespace QuickPing.Utilities
         #region Private Fields
         #endregion
 
+        internal struct CustomName
+        {
+            public string Original;
+            public string Custom;
+        }
+
+        internal struct PinnedObject
+        {
+            public ZDOID ZDOID { get; set; }
+            public Minimap.PinData PinData { get; set; }
+        }
+
+
         #region Public Methods
         public static bool Save(World world, PlayerProfile playerProfile)
         {
             bool cloudSaveNamesFailed = SaveCustomNames(world, playerProfile);
             bool cloudSavePinsFailed = SavePinnedObjects(world, playerProfile);
-            return cloudSaveNamesFailed && cloudSavePinsFailed;
+            return cloudSaveNamesFailed || cloudSavePinsFailed;
         }
 
 
@@ -55,7 +68,7 @@ namespace QuickPing.Utilities
             int count = binary.ReadInt32();
             ZPackage zPackage = new ZPackage(binary.ReadBytes(count));
 
-            UnpackPinnedObjects(zPackage);
+            PinnedObjects = UnpackPinnedObjects(zPackage);
         }
         private static bool SavePinnedObjects(World world, PlayerProfile playerProfile)
         {
@@ -110,7 +123,7 @@ namespace QuickPing.Utilities
             int count = binary.ReadInt32();
             ZPackage zPackage = new ZPackage(binary.ReadBytes(count));
 
-            UnpackCustomNames(zPackage);
+            CustomNames = UnpackCustomNames(zPackage);
         }
 
         private static bool SaveCustomNames(World world, PlayerProfile playerProfile)
@@ -172,10 +185,18 @@ namespace QuickPing.Utilities
 
             foreach (var x in PinnedObjects)
             {
-                zPackage.Write(x.Key);
-                zPackage.Write(x.Value);
+                zPackage.Write(PackPinnedObject(x));
             }
             return zPackage;
+        }
+
+        public static ZPackage PackPinnedObject(ZDOID zdoid, Minimap.PinData pinData) => PackPinnedObject(new KeyValuePair<ZDOID, Minimap.PinData>(zdoid, pinData));
+        public static ZPackage PackPinnedObject(KeyValuePair<ZDOID, Minimap.PinData> x)
+        {
+            ZPackage res = new ZPackage();
+            res.Write(x.Key);
+            res.Write(x.Value);
+            return res;
         }
 
         /// <summary>
@@ -189,41 +210,71 @@ namespace QuickPing.Utilities
             foreach (var x in CustomNames)
             {
                 if (x.Key is null or "") continue;
-                zPackage.Write(x.Key);
-                zPackage.Write(x.Value);
+
+                zPackage.Write(PackCustomName(x));
             }
 
             return zPackage;
         }
 
-        private static void UnpackCustomNames(ZPackage zPackage)
+        private static ZPackage PackCustomName(KeyValuePair<string, string> x)
         {
-            CustomNames.Clear();
-            while (zPackage.GetPos() < zPackage.Size())
-            {
-                string originalName = zPackage.ReadString();
-                string name = zPackage.ReadString();
-                if (originalName is not "" or null)
-                    CustomNames.Add(originalName, name);
-            }
+            ZPackage res = new ZPackage();
+            res.Write(x.Key);
+            res.Write(x.Value);
+            return res;
         }
 
-        private static void UnpackPinnedObjects(ZPackage zPackage)
+        private static Dictionary<string, string> UnpackCustomNames(ZPackage zPackage)
+        {
+            Dictionary<string, string> res = new Dictionary<string, string>();
+            while (zPackage.GetPos() < zPackage.Size())
+            {
+                var data = UnpackCustomName(zPackage);
+                if (data.Original is not "" or null)
+                    res.Add(data.Original, data.Custom);
+            }
+            return res;
+        }
+
+        public static CustomName UnpackCustomName(ZPackage zPackage)
+        {
+            string originalName = zPackage.ReadString();
+            string name = zPackage.ReadString();
+            return new CustomName
+            {
+                Original = originalName,
+                Custom = name
+            };
+
+        }
+
+        public static Dictionary<ZDOID, Minimap.PinData> UnpackPinnedObjects(ZPackage zPackage)
         {
             Dictionary<ZDOID, Minimap.PinData> res = new Dictionary<ZDOID, Minimap.PinData>();
 
-            if (zPackage == null) return;
+            if (zPackage == null) return null;
 
             while (zPackage.GetPos() < zPackage.Size())
             {
-                ZDOID zdoid = zPackage.ReadZDOID();
-                Minimap.PinData pinData = zPackage.ReadPinData();
-                if (!res.ContainsKey(zdoid))
-                    res.Add(zdoid, pinData);
+                var data = UnpackPinnedObject(zPackage);
+                if (!res.ContainsKey(data.ZDOID))
+                    res.Add(data.ZDOID, data.PinData);
 
             }
 
-            PinnedObjects = res;
+            return res;
+        }
+
+        public static PinnedObject UnpackPinnedObject(ZPackage zPackage)
+        {
+            ZDOID zdoid = zPackage.ReadZDOID();
+            Minimap.PinData pinData = zPackage.ReadPinData();
+            return new PinnedObject
+            {
+                ZDOID = zdoid,
+                PinData = pinData
+            };
         }
 
         #endregion
@@ -239,15 +290,18 @@ namespace QuickPing.Utilities
 
         private static Minimap.PinData ReadPinData(this ZPackage package)
         {
-            return new()
+            Minimap.PinData pinData = new()
             {
                 m_name = package.ReadString(),
                 m_type = (Minimap.PinType)Enum.Parse(typeof(Minimap.PinType), package.ReadString()),
                 m_pos = package.ReadVector3()
             };
+            return pinData;
         }
         #endregion
 
 
     }
+
+
 }
