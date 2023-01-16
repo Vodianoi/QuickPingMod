@@ -60,7 +60,7 @@ branches:
   support:
     regex: ^support[/-]
     mode: ContinuousDelivery
-    tag: ''
+    tag: beta
     increment: Patch
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
