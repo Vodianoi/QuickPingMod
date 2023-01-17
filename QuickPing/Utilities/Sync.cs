@@ -21,10 +21,29 @@
         }
 
 
-        internal static void OnClientInitializeSync(ZRpc client, ZPackage pinData)
+        internal static void OnClientHandshake(ZRpc client, ZPackage _)
         {
+            QuickPingPlugin.Log.LogInfo($"OnClientHandshake : {client.m_socket.GetHostName()}");
+
             if (Settings.ServerSync.Value)
-                DataManager.PinnedObjects = DataManager.UnpackPinnedObjects(pinData);
+            {
+                foreach (var pinnedObject in DataManager.PinnedObjects)
+                {
+                    ZPackage pinData = DataManager.PackPinnedObject(pinnedObject);
+                    client.Invoke("OnServerAddPinnedObject", pinData);
+                }
+
+            }
+            client.Invoke("OnServerHandshake", null);
+        }
+
+
+
+        internal static void OnServerHandshake(ZRpc client, ZPackage _)
+        {
+            QuickPingPlugin.Log.LogInfo($"OnServerHandshake : {client.m_socket.GetHostName()}");
+
+
         }
 
         internal static void OnClientRemovePinnedObject(ZRpc client, ZPackage pinData)
