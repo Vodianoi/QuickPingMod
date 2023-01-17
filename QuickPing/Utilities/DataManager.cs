@@ -26,29 +26,47 @@ namespace QuickPing.Utilities
             public Minimap.PinData PinData { get; set; }
         }
 
-
-        #region Public Methods
-        public static bool Save(World world, PlayerProfile playerProfile)
+        internal enum Status
         {
-            bool cloudSaveNamesFailed = SaveCustomNames(world, playerProfile);
-            bool cloudSavePinsFailed = SavePinnedObjects(world, playerProfile);
-            return cloudSaveNamesFailed || cloudSavePinsFailed;
+            Success,
+            Failed,
+            NoData
         }
 
 
-        public static void Load(World world, PlayerProfile playerProfile)
+        #region Public Methods
+        public static Status Save(World world)
         {
-            LoadCustomNames(world, playerProfile);
-            LoadPinnedObjects(world, playerProfile);
+            Status status = SavePinnedObjects(world);
+            return status;
+        }
+
+        public static Status Save(PlayerProfile playerProfile)
+        {
+            Status status = SaveCustomNames(playerProfile);
+            return status;
+        }
+
+
+        public static Status Load(PlayerProfile playerProfile)
+        {
+            Status status = LoadCustomNames(playerProfile);
+            return status;
+        }
+
+        public static Status Load(World world)
+        {
+            Status status = LoadPinnedObjects(world);
+            return status;
         }
         #endregion
 
         #region Private Methods
-        private static void LoadPinnedObjects(World world, PlayerProfile playerProfile)
+        private static Status LoadPinnedObjects(World world)
         {
             PinnedObjects.Clear();
 
-            var pinnedPath = GetPath(world, playerProfile, "pinned");
+            var pinnedPath = GetPath(world);
 
             FileReader fileReader = null;
             try
@@ -58,9 +76,8 @@ namespace QuickPing.Utilities
             catch
             {
                 fileReader?.Dispose();
-                QuickPingPlugin.Log.LogWarning($"Failed to load pinned objects. World: {world.m_name} - Profile: {playerProfile.m_playerName}");
-                //return new World(__name, loadError: true, versionError: false, __fileSource);
-                return;
+                QuickPingPlugin.Log.LogWarning($"Failed to load pinned objects. World: {world.m_name}");
+                return Status.NoData;
             }
 
 
@@ -69,53 +86,55 @@ namespace QuickPing.Utilities
             ZPackage zPackage = new ZPackage(binary.ReadBytes(count));
 
             PinnedObjects = UnpackPinnedObjects(zPackage);
+            return Status.Success;
         }
-        private static bool SavePinnedObjects(World world, PlayerProfile playerProfile)
+        private static Status SavePinnedObjects(World world)
         {
 
             ZPackage zPackage = PackPinnedObjects();
-
+            var fileSource = world.m_fileSource;
 
             bool cloudSaveFailed;
-            if (world.m_fileSource != FileHelpers.FileSource.Cloud)
+            if (fileSource != FileHelpers.FileSource.Cloud)
             {
-                Directory.CreateDirectory(World.GetWorldSavePath(world.m_fileSource));
+                Directory.CreateDirectory(World.GetWorldSavePath(fileSource));
             }
 
-            string metaPath = GetPath(world, playerProfile, "pinned");
+            string metaPath = GetPath(world);
             string text = metaPath + ".new";
             string oldFile = metaPath + ".old";
             byte[] array = zPackage.GetArray();
-            FileWriter fileWriter = new FileWriter(text, FileHelpers.FileHelperType.Binary, world.m_fileSource);
+            FileWriter fileWriter = new FileWriter(text, FileHelpers.FileHelperType.Binary, fileSource);
             fileWriter.m_binary.Write(array.Length);
             fileWriter.m_binary.Write(array);
             fileWriter.Finish();
 
 
-            cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && world.m_fileSource == FileHelpers.FileSource.Cloud;
+            cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && fileSource == FileHelpers.FileSource.Cloud;
             if (!cloudSaveFailed)
             {
-                FileHelpers.ReplaceOldFile(metaPath, text, oldFile, world.m_fileSource);
+                FileHelpers.ReplaceOldFile(metaPath, text, oldFile, fileSource);
             }
 
-            return cloudSaveFailed;
+            return cloudSaveFailed && fileSource == FileHelpers.FileSource.Cloud ? Status.Failed : Status.Success;
         }
 
-        private static void LoadCustomNames(World world, PlayerProfile playerProfile)
+        private static Status LoadCustomNames(PlayerProfile playerProfile)
         {
             CustomNames.Clear();
-            var customNamesPath = GetPath(world, playerProfile, "customNames");
+            var customNamesPath = GetPath(playerProfile);
+            var fileSource = playerProfile.m_fileSource;
 
             FileReader fileReader = null;
             try
             {
-                fileReader = new FileReader(customNamesPath, world.m_fileSource);
+                fileReader = new FileReader(customNamesPath, fileSource);
             }
             catch
             {
                 fileReader?.Dispose();
-                QuickPingPlugin.Log.LogWarning($"Failed to load custom names. World: {world.m_name} - Profile: {playerProfile.m_playerName}");
-                return;
+                QuickPingPlugin.Log.LogWarning($"Failed to load custom names. Profile: {playerProfile.m_playerName}");
+                return Status.NoData;
             }
 
 
@@ -124,50 +143,75 @@ namespace QuickPing.Utilities
             ZPackage zPackage = new ZPackage(binary.ReadBytes(count));
 
             CustomNames = UnpackCustomNames(zPackage);
+            return Status.Success;
         }
 
-        private static bool SaveCustomNames(World world, PlayerProfile playerProfile)
+        private static Status SaveCustomNames(PlayerProfile playerProfile)
         {
 
             ZPackage zPackage = PackCustomNames();
-
+            var fileSource = playerProfile.m_fileSource;
             bool cloudSaveFailed;
-            if (world.m_fileSource != FileHelpers.FileSource.Cloud)
+            if (fileSource != FileHelpers.FileSource.Cloud)
             {
-                Directory.CreateDirectory(World.GetWorldSavePath(world.m_fileSource));
+                Directory.CreateDirectory(World.GetWorldSavePath(fileSource));
             }
 
-            string metaPath = GetPath(world, playerProfile, "customNames");
+            string metaPath = GetPath(playerProfile);
             string text = metaPath + ".new";
             string oldFile = metaPath + ".old";
             byte[] array = zPackage.GetArray();
-            FileWriter fileWriter = new FileWriter(text, FileHelpers.FileHelperType.Binary, world.m_fileSource);
+            FileWriter fileWriter = new FileWriter(text, FileHelpers.FileHelperType.Binary, fileSource);
             fileWriter.m_binary.Write(array.Length);
             fileWriter.m_binary.Write(array);
             fileWriter.Finish();
 
 
-            cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && world.m_fileSource == FileHelpers.FileSource.Cloud;
+            cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && fileSource == FileHelpers.FileSource.Cloud;
             if (!cloudSaveFailed)
             {
-                FileHelpers.ReplaceOldFile(metaPath, text, oldFile, world.m_fileSource);
+                FileHelpers.ReplaceOldFile(metaPath, text, oldFile, fileSource);
             }
 
-            return cloudSaveFailed;
+            return cloudSaveFailed && fileSource == FileHelpers.FileSource.Cloud ? Status.Failed : Status.Success;
         }
 
 
-        private static string GetPath(World world, PlayerProfile playerProfile, string extension)
+        private static string GetPath(World world)
         {
             FileHelpers.SplitFilePath(world.GetDBPath(), out string directory, out string fileName, out string fileExtension);
             var worldSavePath = directory + fileName;
-            string __MyExtension = $".{playerProfile.m_playerName}.mod.quickping.{extension}";
+            string __MyExtension = ".mod.quickping.pinned";
 
-
-            //INFO
-            //QuickPingPlugin.Log.LogInfo("World .pinned save path: " + worldSavePath);
 
             return worldSavePath + __MyExtension;
+        }
+
+        public static string GetPath(PlayerProfile playerProfile)
+        {
+            FileHelpers.SplitFilePath(playerProfile.GetFilename(), out string directory, out string fileName, out string fileExtension);
+            var worldSavePath = directory + fileName;
+            string __MyExtension = $".mod.quickping.custom_names";
+
+            return worldSavePath + __MyExtension;
+        }
+
+        public static void StatusCheck(Status status)
+        {
+            switch (status)
+            {
+                case Status.Success:
+                    QuickPingPlugin.Log.LogInfo("Save/Load successful");
+                    break;
+                case Status.Failed:
+                    QuickPingPlugin.Log.LogWarning("Save/Load failed");
+                    break;
+                case Status.NoData:
+                    QuickPingPlugin.Log.LogWarning("No data to save/load");
+                    break;
+                default:
+                    break;
+            }
         }
 
         #endregion

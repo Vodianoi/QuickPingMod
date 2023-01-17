@@ -6,20 +6,22 @@ namespace QuickPing.Patches
 {
     public class ZNet_Patch
     {
-        [HarmonyPatch(typeof(ZNet), nameof(ZNet.Start))]
+        [HarmonyPatch(typeof(ZNet), nameof(ZNet.LoadWorld))]
         [HarmonyPostfix]
-        private static void Start()
+        private static void LoadWorld()
         {
-            DataManager.Load(ZNet.m_world, Game.instance.GetPlayerProfile());
+            DataManager.Status status = DataManager.Load(ZNet.m_world);
+
+            DataManager.StatusCheck(status);
         }
 
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.Save))]
         [HarmonyPostfix]
         private static void Save()
         {
-            bool cloudSaveFailed = DataManager.Save(ZNet.m_world, Game.instance.GetPlayerProfile());
+            DataManager.Status status = DataManager.Save(ZNet.m_world);
 
-            QuickPingPlugin.Log.LogInfo($"cloud save : {!cloudSaveFailed}");
+            DataManager.StatusCheck(status);
         }
 
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection))]
@@ -31,7 +33,7 @@ namespace QuickPing.Patches
             if (__instance.IsServer())
             {
                 //Init for clients
-                peer.m_rpc.Register("OnClientInitializeSync", new Action<ZRpc, ZPackage>(Sync.OnClientInitializeSync));
+                peer.m_rpc.Register("OnClientHandshake", new Action<ZRpc, ZPackage>(Sync.OnClientHandshake));
                 //PinnedObjects
                 peer.m_rpc.Register("OnClientAddPinnedObject", new Action<ZRpc, ZPackage>(Sync.OnClientAddPinnedObject));
                 peer.m_rpc.Register("OnClientRemovePinnedObject", new Action<ZRpc, ZPackage>(Sync.OnClientRemovePinnedObject));
@@ -40,17 +42,12 @@ namespace QuickPing.Patches
             }
             else
             {
+                //Init for server
+                peer.m_rpc.Register("OnServerHandshake", new Action<ZRpc, ZPackage>(Sync.OnServerHandshake));
                 //PinnedObjects
                 peer.m_rpc.Register("OnServerAddPinnedObject", new Action<ZRpc, ZPackage>(Sync.OnServerAddPinnedObject));
                 peer.m_rpc.Register("OnServerRemovePinnedObject", new Action<ZRpc, ZPackage>(Sync.OnServerRemovePinnedObject));
             }
-        }
-
-        [HarmonyPatch(typeof(ZNet), nameof(ZNet.Disconnect))]
-        [HarmonyPostfix]
-        private static void Disconnect(ZNetPeer peer, ZNet __instance)
-        {
-            DataManager.Save(ZNet.m_world, Game.instance.GetPlayerProfile());
         }
     }
 }
