@@ -50,9 +50,9 @@ namespace QuickPing
             Harmony.CreateAndPatchAll(typeof(ZNet_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(WearNTear_Patch), MyPluginInfo.PLUGIN_GUID);
 
-            OnPingEvent.AddListener(RPC_Ping);
-            OnPingEverythingEvent.AddListener(RPC_PingEverything);
-            OnRenameEvent.AddListener(RPC_PingRename);
+            OnPingEvent.AddListener(Ping);
+            OnPingEverythingEvent.AddListener(PingEverything);
+            OnRenameEvent.AddListener(Rename);
 
             // To learn more about Jotunn's features, go to
             // https://valheim-modding.github.io/Jotunn/tutorials/overview.html
@@ -63,19 +63,19 @@ namespace QuickPing
             Harmony.UnpatchID(MyPluginInfo.PLUGIN_GUID);
         }
 
-        private static void RPC_Ping(DataManager.PinnedObject pinnedObject)
+        private static void Ping(DataManager.PinnedObject pinnedObject)
         {
             Player_Patch.SendPing(pinnedObject);
             Minimap_Patch.AddPin(pinnedObject);
         }
 
-        private static void RPC_PingEverything(DataManager.PinnedObject pinnedObject)
+        private static void PingEverything(DataManager.PinnedObject pinnedObject)
         {
             Player_Patch.SendPing(pinnedObject);
             Minimap_Patch.ForceAddPin(pinnedObject);
         }
 
-        private static void RPC_PingRename(DataManager.PinnedObject pinnedObject)
+        private static void Rename(DataManager.PinnedObject pinnedObject)
         {
             Minimap_Patch.RenamePin(pinnedObject);
         }
