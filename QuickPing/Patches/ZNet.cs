@@ -8,8 +8,9 @@ namespace QuickPing.Patches
     {
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.LoadWorld))]
         [HarmonyPostfix]
-        private static void LoadWorld()
+        private static void LoadWorld(ZNet __instance)
         {
+            if (!__instance.IsServer()) return;
             DataManager.Status status = DataManager.Load(ZNet.m_world);
 
             DataManager.StatusCheck(status);
@@ -17,8 +18,9 @@ namespace QuickPing.Patches
 
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.Save))]
         [HarmonyPostfix]
-        private static void Save()
+        private static void Save(ZNet __instance)
         {
+            if (!__instance.IsServer()) return;
             DataManager.Status status = DataManager.Save(ZNet.m_world);
 
             DataManager.StatusCheck(status);
