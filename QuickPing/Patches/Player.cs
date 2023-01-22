@@ -45,29 +45,23 @@ namespace QuickPing.Patches
             {
                 if (ZInput.GetButtonDown(Settings.RenameBtn.Name))
                 {
-                    HoverObject ping = FindHoverObject(500f);
+                    DataManager.PinnedObject ping = TypeManager.GetPinnedObject(500f);
 
-                    ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
-
-                    OnPlayerRename.Invoke(ping);
+                    QuickPingPlugin.OnRenameEvent.Invoke(ping);
                 }
                 else
                 if (ZInput.GetButtonDown(Settings.PingBtn.Name))
                 {
-                    HoverObject ping = FindHoverObject(500f);
+                    DataManager.PinnedObject ping = TypeManager.GetPinnedObject(500f);
 
-                    ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
-
-                    OnPlayerPing.Invoke(ping);
+                    QuickPingPlugin.OnPingEvent.Invoke(ping);
                 }
                 else
                 if (ZInput.GetButtonDown(Settings.PingEverythingBtn.Name))
                 {
-                    HoverObject ping = FindHoverObject(500f);
+                    DataManager.PinnedObject ping = TypeManager.GetPinnedObject(500f);
 
-                    ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
-
-                    OnPlayerForcePing.Invoke(ping);
+                    QuickPingPlugin.OnPingEverythingEvent.Invoke(ping);
                 }
 
             }
