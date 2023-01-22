@@ -2,8 +2,8 @@ using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using QuickPing.Patches;
-using UnityEngine;
-
+using QuickPing.Utilities;
+using UnityEngine.Events;
 
 namespace QuickPing
 {
@@ -14,16 +14,6 @@ namespace QuickPing
         Hoverable,
         Piece,
         Location
-    }
-    public class HoverObject : MonoBehaviour
-    {
-        public string Name { get; set; }
-        public GameObject Hover;
-        public IDestructible Destructible;
-        public Vector3 pos;
-        public Vector3 center;
-        public HoverType type;
-        public bool pinable;
     }
 
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
