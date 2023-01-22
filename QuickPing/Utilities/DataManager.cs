@@ -20,8 +20,13 @@ namespace QuickPing.Utilities
             public string Custom;
         }
 
-        internal struct PinnedObject
+        public class PinnedObject
         {
+            public PinnedObject()
+            {
+                ZDOID = ZDOID.None;
+                PinData = new Minimap.PinData();
+            }
             public ZDOID ZDOID { get; set; }
             public Minimap.PinData PinData { get; set; }
         }
@@ -229,19 +234,23 @@ namespace QuickPing.Utilities
 
             foreach (var x in PinnedObjects)
             {
-                zPackage.Write(PackPinnedObject(x));
+                zPackage.Write(PackPinnedObject(new PinnedObject
+                {
+                    ZDOID = x.Key,
+                    PinData = x.Value
+                }));
             }
             return zPackage;
         }
 
-        public static ZPackage PackPinnedObject(ZDOID zdoid, Minimap.PinData pinData) => PackPinnedObject(new KeyValuePair<ZDOID, Minimap.PinData>(zdoid, pinData));
-        public static ZPackage PackPinnedObject(KeyValuePair<ZDOID, Minimap.PinData> x)
+        public static ZPackage PackPinnedObject(PinnedObject pinnedObject)
         {
             ZPackage res = new ZPackage();
-            res.Write(x.Key);
-            res.Write(x.Value);
+            res.Write(pinnedObject.ZDOID);
+            res.Write(pinnedObject.PinData);
             return res;
         }
+
 
         /// <summary>
         /// Pack originalName=name in ZPackage and returns it.

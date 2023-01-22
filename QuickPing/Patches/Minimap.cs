@@ -4,7 +4,7 @@ using QuickPing.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -128,134 +128,114 @@ namespace QuickPing.Patches
             return Minimap.PinType.None;
         }
 
-        /// <summary>
-        /// Force rename pin
-        /// </summary>
-        /// <param name="obj"></param>
-        internal static void RenamePin(HoverObject obj) => AddPin(obj.Hover, obj.Destructible, obj.Name, obj.center, rename: true);
+        public static void ForceAddPin(DataManager.PinnedObject pinnedObject) => AddPin(pinnedObject, force: true);
 
-        /// <summary>
-        /// Add correct pin to map if Settings.
-        /// </summary>
-        /// <param name="obj"></param>
-        public static void AddPin(HoverObject obj) => AddPin(obj.Hover, obj.Destructible, obj.Name, obj.center);
-        /// <summary>
-        /// Add correct pin to map if Settings and bypass filters.
-        /// </summary>
-        /// <param name="obj"></param>
-        public static void ForceAddPin(HoverObject obj) => AddPin(obj.Hover, obj.Destructible, obj.Name, obj.center, true);
+        public static void RenamePin(DataManager.PinnedObject pinnedObject) => AddPin(pinnedObject, rename: true);
 
-        /// <summary>
-        /// Add correct pin to map if Settings.
-        /// </summary>
-        /// <param name="hover">Pinged object</param>
-        /// <param name="idestructible">IDestructible interface found in "hover"</param>
-        /// <param name="strID">Display Name of hover object</param>
-        /// <param name="pos">Pinged position (last raycast point or hover center)</param>
-        /// <param name="force">Bypass filters</param>
-        public static void AddPin(GameObject hover, IDestructible idestructible, string strID, Vector3 pos, bool force = false, bool rename = false)
+        public static void AddPin(DataManager.PinnedObject pinnedObject, bool force = false, bool rename = false)
         {
             if (!Settings.AddPin.Value && !force) { return; }
             bool pinned = false;
+
+            string strID = pinnedObject.PinData.m_name;
+
+
 
             Minimap.PinData pinData = new Minimap.PinData
             {
                 m_type = IsPinable(strID)
             };
-            if (hover && hover.GetComponent<ItemDrop>())
-                pinData.m_type = Minimap.PinType.None;
 
-            Minimap.PinData closestPin = Minimap.instance.GetClosestPin(pos, Settings.ClosestPinRange.Value);
+            //TODO ignore itemdrops
+            //if (hover && hover.GetComponent<ItemDrop>())
+            //    pinData.m_type = Minimap.PinType.None;
 
-            switch (strID)
+            Minimap.PinData closestPin = Minimap.instance.GetClosestPin(pinnedObject.PinData.m_pos, Settings.ClosestPinRange.Value);
+
+            //Check portal 
+            if (strID != null && strID != "" && Regex.IsMatch(strID, "piece_portal"))
             {
-                case "$piece_portal":
-                    if (hover.TryGetComponent(out Hoverable hoverable))
+                pinData.m_name = strID.Split(':')[1];
+                if (closestPin != null)
+                {
+                    Minimap.instance.RemovePin(closestPin);
+                }
+
+                pinData.m_pos = pinnedObject.PinData.m_pos;
+                pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                pinned = true;
+                QuickPingPlugin.Log.LogInfo($"Add Portal Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+
+            }
+            else if (closestPin == null || rename)
+            {
+
+                pinData.m_name ??= Localization.instance.Localize(strID);
+
+                // check for customnames
+                bool customName = DataManager.CustomNames.ContainsKey(strID);
+                if (customName)
+                    pinData.m_name = DataManager.CustomNames[strID];
+
+                pinData.m_pos = pinnedObject.PinData.m_pos;
+                if (pinData.m_name == null || pinData.m_name == "" && !customName)
+                {
+                    pinData.m_name = Settings.DefaultPingText;
+                }
+                if (pinData.m_type == Minimap.PinType.None && force)
+                {
+                    pinData.m_type = Settings.DefaultPinType.Value;
+                    pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                    pinned = true;
+                    QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+
+                }
+
+                if (pinData.m_type != Minimap.PinType.None)
+                {
+                    if (closestPin == null)
                     {
-                        pinData.m_name = GetPortalTag(hoverable);
-
-                        if (closestPin != null)
-                        {
-                            Minimap.instance.RemovePin(closestPin);
-                        }
-
-                        pinData.m_pos = pos;
                         pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
                         pinned = true;
-                        QuickPingPlugin.Log.LogInfo($"Add Portal Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
                     }
-                    break;
-                default:
-                    if (closestPin == null || rename)
+                    else if (rename)
+                        pinData = closestPin;
+                    QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+
+                    //Check if Settings.AskForName.Value is true, and if CustomNames contains its name.
+                    //if true ask for user input before adding pin
+                    if (rename)
                     {
-
-                        pinData.m_name ??= Localization.instance.Localize(strID);
-
-                        // check for customnames
-                        bool customName = DataManager.CustomNames.ContainsKey(strID);
-                        if (customName)
-                            pinData.m_name = DataManager.CustomNames[strID];
-
-                        pinData.m_pos = pos;
-                        if (pinData.m_name == null || pinData.m_name == "" && !customName)
-                        {
-                            pinData.m_name = Settings.DefaultPingText;
-                        }
-                        if (pinData.m_type == Minimap.PinType.None && force)
-                        {
-                            pinData.m_type = Settings.DefaultPinType.Value;
-                            pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
-                            pinned = true;
-                            QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
-                            break;
-                        }
-
-                        if (pinData.m_type != Minimap.PinType.None)
-                        {
-                            if (closestPin == null)
-                            {
-                                pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
-                                pinned = true;
-                            }
-                            else if (rename)
-                                pinData = closestPin;
-                            QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
-
-                            //Check if Settings.AskForName.Value is true, and if CustomNames contains its name.
-                            //if true ask for user input before adding pin
-                            if (rename)
-                            {
-                                GUIManager.BlockInput(true);
-                                InitNameInput();
-                                tempOriginalText = strID;
-                                Minimap.instance.ShowPinNameInput(pinData);
-                            }
-                        }
+                        GUIManager.BlockInput(true);
+                        InitNameInput();
+                        tempOriginalText = strID;
+                        Minimap.instance.ShowPinNameInput(pinData);
                     }
-                    break;
+                }
+
             }
 
-            if (idestructible != null && pinned)
+            if (pinnedObject.ZDOID != ZDOID.None && pinned)
             {
-                FieldInfo fieldInfo = idestructible.GetType().GetField("m_nview", BindingFlags.Instance | BindingFlags.NonPublic);
-                if (fieldInfo == null)
+                GameObject obj = ZNetScene.instance.FindInstance(pinnedObject.ZDOID);
+                IDestructible idestructible = obj.GetComponent<IDestructible>();
+
+                if (idestructible != null)
                 {
-                    QuickPingPlugin.Log.LogWarning($"Unable to link destructible {idestructible} to pin: {pinData.m_name}. (Is it a god?)");
-                    return;
-                }
-                ZNetView netView = fieldInfo.GetValue(idestructible) as ZNetView;
-                ZDOID uid = netView.GetZDO().m_uid;
-                if (uid == null)
-                {
-                    QuickPingPlugin.Log.LogError($"Try adding {idestructible} but {netView} uid is null");
-                }
-                if (!DataManager.PinnedObjects.ContainsKey(uid))
-                {
-                    DataManager.PinnedObjects[uid] = pinData;
-                    if (!ZNet.m_isServer)
+
+
+                    if (!DataManager.PinnedObjects.ContainsKey(pinnedObject.ZDOID))
                     {
-                        ZPackage package = DataManager.PackPinnedObject(uid, pinData);
-                        ZNet.instance.GetServerRPC().Invoke("OnClientAddPinnedObject", package);
+                        DataManager.PinnedObjects[pinnedObject.ZDOID] = pinData;
+                        if (!ZNet.m_isServer)
+                        {
+                            ZPackage package = DataManager.PackPinnedObject(new DataManager.PinnedObject
+                            {
+                                PinData = pinData,
+                                ZDOID = pinnedObject.ZDOID
+                            });
+                            ZNet.instance.GetServerRPC().Invoke("OnClientAddPinnedObject", package);
+                        }
                     }
                 }
             }
@@ -457,12 +437,7 @@ namespace QuickPing.Patches
         }
         #endregion
 
-        private static string GetPortalTag(Hoverable hoverable)
-        {
-            string portalText = hoverable.GetHoverText();
-            string tag = portalText.Split('"')[1];
-            return tag;
-        }
+
 
 
 
@@ -490,7 +465,11 @@ namespace QuickPing.Patches
 
                     KeyValuePair<ZDOID, Minimap.PinData> pinnedObject = DataManager.PinnedObjects.FirstOrDefault((x) => x.Value.Compare(p.Value));
                     if (!ZNet.instance.IsServer())
-                        ZNet.instance.GetServerRPC().Invoke("OnClientRemovePinnedObject", DataManager.PackPinnedObject(pinnedObject));
+                        ZNet.instance.GetServerRPC().Invoke("OnClientRemovePinnedObject", DataManager.PackPinnedObject(new DataManager.PinnedObject
+                        {
+                            ZDOID = pinnedObject.Key,
+                            PinData = pinnedObject.Value
+                        }));
                     DataManager.PinnedObjects.Remove(pinnedObject.Key);
                     break;
                 }

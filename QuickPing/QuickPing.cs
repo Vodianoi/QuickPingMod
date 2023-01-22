@@ -32,6 +32,9 @@ namespace QuickPing
 
         public static QuickPingPlugin Instance { get; set; }
 
+        public static UnityEvent<DataManager.PinnedObject> OnPingEvent = new();
+        public static UnityEvent<DataManager.PinnedObject> OnPingEverythingEvent = new();
+        public static UnityEvent<DataManager.PinnedObject> OnRenameEvent = new();
 
         public static ManualLogSource Log { get; private set; }
 
@@ -57,15 +60,34 @@ namespace QuickPing
             Harmony.CreateAndPatchAll(typeof(ZNet_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(WearNTear_Patch), MyPluginInfo.PLUGIN_GUID);
 
-            Player_Patch.OnPlayerPing.AddListener(Player_Patch.SendPing);
-            Player_Patch.OnPlayerPing.AddListener(Minimap_Patch.AddPin);
-            Player_Patch.OnPlayerForcePing.AddListener(Player_Patch.SendPing);
-            Player_Patch.OnPlayerForcePing.AddListener(Minimap_Patch.ForceAddPin);
-            Player_Patch.OnPlayerRename.AddListener(Player_Patch.SendRename);
-            Player_Patch.OnPlayerRename.AddListener(Minimap_Patch.RenamePin);
+            OnPingEvent.AddListener(RPC_Ping);
+            OnPingEverythingEvent.AddListener(RPC_PingEverything);
+            OnRenameEvent.AddListener(RPC_PingRename);
 
             // To learn more about Jotunn's features, go to
             // https://valheim-modding.github.io/Jotunn/tutorials/overview.html
+        }
+
+        private void OnDestroy()
+        {
+            Harmony.UnpatchID(MyPluginInfo.PLUGIN_GUID);
+        }
+
+        private static void RPC_Ping(DataManager.PinnedObject pinnedObject)
+        {
+            Player_Patch.SendPing(pinnedObject);
+            Minimap_Patch.AddPin(pinnedObject);
+        }
+
+        private static void RPC_PingEverything(DataManager.PinnedObject pinnedObject)
+        {
+            Player_Patch.SendPing(pinnedObject);
+            Minimap_Patch.ForceAddPin(pinnedObject);
+        }
+
+        private static void RPC_PingRename(DataManager.PinnedObject pinnedObject)
+        {
+            Minimap_Patch.RenamePin(pinnedObject);
         }
     }
 }

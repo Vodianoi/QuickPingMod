@@ -29,7 +29,11 @@
             {
                 foreach (var pinnedObject in DataManager.PinnedObjects)
                 {
-                    ZPackage pinData = DataManager.PackPinnedObject(pinnedObject);
+                    ZPackage pinData = DataManager.PackPinnedObject(new DataManager.PinnedObject
+                    {
+                        ZDOID = pinnedObject.Key,
+                        PinData = pinnedObject.Value
+                    });
                     client.Invoke("OnServerAddPinnedObject", pinData);
                 }
 
