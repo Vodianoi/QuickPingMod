@@ -50,6 +50,9 @@ namespace QuickPing.Patches
                 peer.m_rpc.Register("OnServerAddPinnedObject", new Action<ZRpc, ZPackage>(Sync.OnServerAddPinnedObject));
                 peer.m_rpc.Register("OnServerRemovePinnedObject", new Action<ZRpc, ZPackage>(Sync.OnServerRemovePinnedObject));
             }
+
         }
+
+
     }
 }
