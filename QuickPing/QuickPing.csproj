@@ -76,6 +76,8 @@
     <Compile Include="QuickPing.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Utilities\DataManager.cs" />
+    <Compile Include="Utilities\TextManager.cs" />
+    <Compile Include="Utilities\TypeManager.cs" />
     <Compile Include="Utilities\Utils.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -141,8 +143,7 @@
       <PackageFiles Include="$(TargetDir)$(AssemblyName).dll; $(TargetDir)$(AssemblyName).dll.mdb; $(TargetDir)$(AssemblyName).pdb;" />
     </ItemGroup>
     <Message Text="MOD_DEPLOYPATH: $(MOD_DEPLOYPATH)" Importance="high" />
-    <Message Text="$(TargetDir)$(AssemblyName).dll" Importance="High">
-    </Message>
+    <Message Text="MOD_SERVER_DEPLOYPATH: $(MOD_SERVER_DEPLOYPATH)" Importance="high" />
     <MakeDir Directories="$(MOD_DEPLOYPATH)" />
     <Exec command="$(SolutionDir)libraries\Debug\pdb2mdb.exe $(TargetPath)" />
     <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(MOD_DEPLOYPATH)\$(AssemblyName)" />
