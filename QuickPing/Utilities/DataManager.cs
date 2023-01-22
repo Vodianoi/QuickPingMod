@@ -336,6 +336,7 @@ namespace QuickPing.Utilities
         #region Extensions
         private static void Write(this ZPackage zPackage, Minimap.PinData pinData)
         {
+            pinData.m_name ??= "";
             zPackage.Write(pinData.m_name);
             zPackage.Write(pinData.m_type.ToString());
             zPackage.Write(pinData.m_pos);
