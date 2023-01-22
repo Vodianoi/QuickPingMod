@@ -4,7 +4,7 @@ using System.IO;
 
 namespace QuickPing.Utilities
 {
-    internal static class DataManager
+    public static class DataManager
     {
         #region Public Fields
         public static Dictionary<ZDOID, Minimap.PinData> PinnedObjects = new();
@@ -14,7 +14,7 @@ namespace QuickPing.Utilities
         #region Private Fields
         #endregion
 
-        internal struct CustomName
+        public struct CustomName
         {
             public string Original;
             public string Custom;
@@ -31,7 +31,7 @@ namespace QuickPing.Utilities
             public Minimap.PinData PinData { get; set; }
         }
 
-        internal enum Status
+        public enum Status
         {
             Success,
             Failed,
