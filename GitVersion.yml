@@ -61,7 +61,7 @@ branches:
     regex: ^support[/-]
     mode: ContinuousDelivery
     tag: beta
-    increment: Patch
+    increment: Inherit
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
     source-branches: [ 'main' ]
