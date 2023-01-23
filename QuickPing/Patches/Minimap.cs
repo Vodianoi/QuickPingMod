@@ -457,8 +457,12 @@ namespace QuickPing.Patches
                 {
                     pin = __instance.GetClosestPin(p.Value.m_pos, Settings.ClosestPinRange.Value);
 
-                    KeyValuePair<ZDOID, Minimap.PinData> pinnedObject = DataManager.PinnedObjects.FirstOrDefault((x) => x.Value.Compare(p.Value));
-                    DataManager.PinnedObjects.Remove(pinnedObject.Key);
+                    KeyValuePair<ZDOID, Minimap.PinData> pair = DataManager.PinnedObjects.FirstOrDefault((x) => x.Value.Compare(p.Value));
+                    DataManager.PinnedObject pinnedObject = new();
+                    pinnedObject.ZDOID = pair.Key;
+                    pinnedObject.PinData = pair.Value;
+                    DataManager.PinnedObjects.Remove(pinnedObject.ZDOID);
+                    QuickPingPlugin.Instance.RPC_RemovePinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), DataManager.PackPinnedObject(pinnedObject));
                     break;
                 }
 

@@ -18,7 +18,7 @@ namespace QuickPing.Patches
                 var id = __instance.m_nview.GetZDO().m_uid;
                 if (DataManager.PinnedObjects.ContainsKey(id))
                 {
-                    QuickPingPlugin.Instance.RPC_RemovePinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), DataManager.PackPinnedObject(id));
+                    Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
                 }
             }
         }
@@ -36,7 +36,7 @@ namespace QuickPing.Patches
                 var id = __instance.m_nview.GetZDO().m_uid;
                 if (DataManager.PinnedObjects.ContainsKey(id))
                 {
-                    QuickPingPlugin.Instance.RPC_RemovePinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), DataManager.PackPinnedObject(id));
+                    Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
                 }
             }
         }
@@ -86,23 +86,21 @@ namespace QuickPing.Patches
                     {
                         ZDOID zdoid = component.GetZDO().m_uid;
                         Minimap.PinData pinData = DataManager.PinnedObjects[id];
-                        var pinnedObject = new DataManager.PinnedObject
-                        {
-                            ZDOID = zdoid,
-                            PinData = pinData
-                        };
-                        QuickPingPlugin.Instance.RPC_AddPinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), DataManager.PackPinnedObject(id));
+
                         QuickPingPlugin.Instance.RPC_RemovePinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), DataManager.PackPinnedObject(id));
+                        QuickPingPlugin.Instance.RPC_AddPinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), DataManager.PackPinnedObject(id));
+                        DataManager.PinnedObjects.Add(zdoid, pinData);
+                        DataManager.PinnedObjects.Remove(id);
                     }
                     else if (DataManager.PinnedObjects.ContainsKey(id))
                     {
-                        QuickPingPlugin.Instance.RPC_RemovePinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), DataManager.PackPinnedObject(id));
+                        Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
                     }
                 }
             }
             else if (DataManager.PinnedObjects.ContainsKey(id))
             {
-                QuickPingPlugin.Instance.RPC_RemovePinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), DataManager.PackPinnedObject(id));
+                Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
             }
 
             __instance.m_onDestroyed?.Invoke();
@@ -128,7 +126,7 @@ namespace QuickPing.Patches
                 var id = __instance.m_nview.GetZDO().m_uid;
                 if (DataManager.PinnedObjects.ContainsKey(id))
                 {
-                    QuickPingPlugin.Instance.RPC_RemovePinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), DataManager.PackPinnedObject(id));
+                    Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
                 }
             }
         }
