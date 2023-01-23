@@ -106,7 +106,7 @@ namespace QuickPing
 
             LogLevel = QuickPingPlugin.Instance.Config.Bind("Debug",
                 "LogLevel",
-                BepInEx.Logging.LogLevel.Debug,
+                BepInEx.Logging.LogLevel.Info,
                 "Log level for debug messages.");
 
 
