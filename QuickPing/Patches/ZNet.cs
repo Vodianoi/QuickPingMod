@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using QuickPing.Utilities;
-using System;
 
 namespace QuickPing.Patches
 {
@@ -28,29 +27,9 @@ namespace QuickPing.Patches
 
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection))]
         [HarmonyPostfix]
-        private static void OnNewConnection(ZNetPeer peer, ZNet __instance)
+        private static void OnNewConnection(ZNetPeer peer)
         {
-
-            QuickPingPlugin.Log.LogInfo($"New connection : {peer.m_socket.GetHostName()}");
-            if (__instance.IsServer())
-            {
-                //Init for clients
-                peer.m_rpc.Register("OnClientHandshake", new Action<ZRpc, ZPackage>(Sync.OnClientHandshake));
-                //PinnedObjects
-                peer.m_rpc.Register("OnClientAddPinnedObject", new Action<ZRpc, ZPackage>(Sync.OnClientAddPinnedObject));
-                peer.m_rpc.Register("OnClientRemovePinnedObject", new Action<ZRpc, ZPackage>(Sync.OnClientRemovePinnedObject));
-
-
-            }
-            else
-            {
-                //Init for server
-                peer.m_rpc.Register("OnServerHandshake", new Action<ZRpc, ZPackage>(Sync.OnServerHandshake));
-                //PinnedObjects
-                peer.m_rpc.Register("OnServerAddPinnedObject", new Action<ZRpc, ZPackage>(Sync.OnServerAddPinnedObject));
-                peer.m_rpc.Register("OnServerRemovePinnedObject", new Action<ZRpc, ZPackage>(Sync.OnServerRemovePinnedObject));
-            }
-
+            QuickPingPlugin.Instance.RPC_Handshake.SendPackage(peer.m_uid, DataManager.PackPinnedObjects());
         }
 
 

@@ -226,16 +226,15 @@ namespace QuickPing.Patches
 
                     if (!DataManager.PinnedObjects.ContainsKey(pinnedObject.ZDOID))
                     {
-                        DataManager.PinnedObjects[pinnedObject.ZDOID] = pinData;
-                        if (!ZNet.m_isServer)
+                        DataManager.PinnedObjects.Add(pinnedObject.ZDOID, pinData);
+                        ZPackage package = DataManager.PackPinnedObject(new DataManager.PinnedObject
                         {
-                            ZPackage package = DataManager.PackPinnedObject(new DataManager.PinnedObject
-                            {
-                                PinData = pinData,
-                                ZDOID = pinnedObject.ZDOID
-                            });
-                            ZNet.instance.GetServerRPC().Invoke("OnClientAddPinnedObject", package);
-                        }
+                            PinData = pinData,
+                            ZDOID = pinnedObject.ZDOID
+                        });
+                        QuickPingPlugin.Instance.RPC_AddPinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
+
+
                     }
                 }
             }
@@ -464,12 +463,6 @@ namespace QuickPing.Patches
                     pin = __instance.GetClosestPin(p.Value.m_pos, Settings.ClosestPinRange.Value);
 
                     KeyValuePair<ZDOID, Minimap.PinData> pinnedObject = DataManager.PinnedObjects.FirstOrDefault((x) => x.Value.Compare(p.Value));
-                    if (!ZNet.instance.IsServer())
-                        ZNet.instance.GetServerRPC().Invoke("OnClientRemovePinnedObject", DataManager.PackPinnedObject(new DataManager.PinnedObject
-                        {
-                            ZDOID = pinnedObject.Key,
-                            PinData = pinnedObject.Value
-                        }));
                     DataManager.PinnedObjects.Remove(pinnedObject.Key);
                     break;
                 }

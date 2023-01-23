@@ -1,6 +1,8 @@
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using Jotunn.Entities;
+using Jotunn.Managers;
 using QuickPing.Patches;
 using QuickPing.Utilities;
 using UnityEngine.Events;
@@ -25,6 +27,12 @@ namespace QuickPing
         public static UnityEvent<DataManager.PinnedObject> OnPingEvent = new();
         public static UnityEvent<DataManager.PinnedObject> OnPingEverythingEvent = new();
         public static UnityEvent<DataManager.PinnedObject> OnRenameEvent = new();
+
+        public CustomRPC RPC_Handshake { get; private set; }
+        public CustomRPC RPC_AddPinnedObject { get; private set; }
+        public CustomRPC RPC_RemovePinnedObject { get; private set; }
+
+
 
         public static ManualLogSource Log { get; private set; }
 
@@ -53,6 +61,11 @@ namespace QuickPing
             OnPingEvent.AddListener(Ping);
             OnPingEverythingEvent.AddListener(PingEverything);
             OnRenameEvent.AddListener(Rename);
+
+
+            RPC_Handshake = NetworkManager.Instance.AddRPC("OnHandshake", Sync.OnServerHandshake, Sync.OnClientHandshake);
+            RPC_AddPinnedObject = NetworkManager.Instance.AddRPC("OnAddPin", Sync.OnServerAddPinnedObject, Sync.OnClientAddPinnedObject);
+            RPC_RemovePinnedObject = NetworkManager.Instance.AddRPC("OnRemovePin", Sync.OnServerRemovePinnedObject, Sync.OnClientRemovePinnedObject);
 
             // To learn more about Jotunn's features, go to
             // https://valheim-modding.github.io/Jotunn/tutorials/overview.html
