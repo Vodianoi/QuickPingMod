@@ -127,6 +127,7 @@ namespace QuickPing.Utilities
                 {
                     type = HoverType.Character;
                     obj = character.gameObject;
+                    destructible = character;
                 }
                 else
                 {
@@ -172,6 +173,7 @@ namespace QuickPing.Utilities
             {
                 pinnedObject.PinData.m_pos = pinnedObject.PinData.m_pos;
             }
+            pinnedObject.PinData.m_name = TextManager.GetHoverName(obj, type, pinnedObject.PinData.m_name);
 
             if (destructible != null)
             {
@@ -179,13 +181,11 @@ namespace QuickPing.Utilities
                 if (fieldInfo == null)
                 {
                     QuickPingPlugin.Log.LogWarning($"Unable to link destructible {destructible} to pin: {pinnedObject.PinData.m_name}. (Is it a god?)");
-                    pinnedObject.ZDOID = ZDOID.None;
                     return pinnedObject;
                 }
                 ZNetView netView = fieldInfo.GetValue(destructible) as ZNetView;
                 pinnedObject.ZDOID = netView.GetZDO().m_uid;
             }
-            pinnedObject.PinData.m_name = TextManager.GetHoverName(obj, type, pinnedObject.PinData.m_name);
             return pinnedObject;
         }
 
