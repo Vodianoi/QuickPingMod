@@ -1,9 +1,11 @@
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using Jotunn.Entities;
+using Jotunn.Managers;
 using QuickPing.Patches;
-using UnityEngine;
-
+using QuickPing.Utilities;
+using UnityEngine.Events;
 
 namespace QuickPing
 {
@@ -15,22 +17,21 @@ namespace QuickPing
         Piece,
         Location
     }
-    public class HoverObject : MonoBehaviour
-    {
-        public string Name { get; set; }
-        public GameObject Hover;
-        public IDestructible Destructible;
-        public Vector3 pos;
-        public Vector3 center;
-        public HoverType type;
-        public bool pinable;
-    }
 
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     public class QuickPingPlugin : BaseUnityPlugin
     {
 
         public static QuickPingPlugin Instance { get; set; }
+
+        public static UnityEvent<DataManager.PinnedObject> OnPingEvent = new();
+        public static UnityEvent<DataManager.PinnedObject> OnPingEverythingEvent = new();
+        public static UnityEvent<DataManager.PinnedObject> OnRenameEvent = new();
+
+        public CustomRPC RPC_Handshake { get; private set; }
+        public CustomRPC RPC_AddPinnedObject { get; private set; }
+        public CustomRPC RPC_RemovePinnedObject { get; private set; }
+
 
 
         public static ManualLogSource Log { get; private set; }
@@ -49,23 +50,48 @@ namespace QuickPing
 
             Settings.Init();
             Harmony.CreateAndPatchAll(typeof(Player_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(ChatPing_Patch), MyPluginInfo.PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(Chat_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(Minimap_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(Terminal_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(MineRock5_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(Destructible_Patch), MyPluginInfo.PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(Character_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(ZNet_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(WearNTear_Patch), MyPluginInfo.PLUGIN_GUID);
 
-            Player_Patch.OnPlayerPing.AddListener(Player_Patch.SendPing);
-            Player_Patch.OnPlayerPing.AddListener(Minimap_Patch.AddPin);
-            Player_Patch.OnPlayerForcePing.AddListener(Player_Patch.SendPing);
-            Player_Patch.OnPlayerForcePing.AddListener(Minimap_Patch.ForceAddPin);
-            Player_Patch.OnPlayerRename.AddListener(Player_Patch.SendRename);
-            Player_Patch.OnPlayerRename.AddListener(Minimap_Patch.RenamePin);
+            OnPingEvent.AddListener(Ping);
+            OnPingEverythingEvent.AddListener(PingEverything);
+            OnRenameEvent.AddListener(Rename);
+
+
+            RPC_Handshake = NetworkManager.Instance.AddRPC("OnHandshake", Sync.OnClientHandshake, Sync.OnServerHandshake);
+            RPC_AddPinnedObject = NetworkManager.Instance.AddRPC("OnAddPin", Sync.OnClientAddPinnedObject, Sync.OnServerAddPinnedObject);
+            RPC_RemovePinnedObject = NetworkManager.Instance.AddRPC("OnRemovePin", Sync.OnClientRemovePinnedObject, Sync.OnServerRemovePinnedObject);
 
             // To learn more about Jotunn's features, go to
             // https://valheim-modding.github.io/Jotunn/tutorials/overview.html
+        }
+
+        private void OnDestroy()
+        {
+            Harmony.UnpatchID(MyPluginInfo.PLUGIN_GUID);
+        }
+
+        private static void Ping(DataManager.PinnedObject pinnedObject)
+        {
+            Player_Patch.SendPing(pinnedObject);
+            Minimap_Patch.AddPin(pinnedObject);
+        }
+
+        private static void PingEverything(DataManager.PinnedObject pinnedObject)
+        {
+            Player_Patch.SendPing(pinnedObject);
+            Minimap_Patch.ForceAddPin(pinnedObject);
+        }
+
+        private static void Rename(DataManager.PinnedObject pinnedObject)
+        {
+            Minimap_Patch.RenamePin(pinnedObject);
         }
     }
 }

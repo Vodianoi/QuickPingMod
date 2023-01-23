@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace QuickPing.Patches
 {
 
-    public class ChatPing_Patch
+    public class Chat_Patch
     {
         /// <summary>
         /// 
@@ -92,11 +92,6 @@ namespace QuickPing.Patches
 
             return false;
         }
-
-
-
-
-
 
     }
 

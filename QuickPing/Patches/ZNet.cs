@@ -9,16 +9,53 @@ namespace QuickPing.Patches
         [HarmonyPostfix]
         private static void LoadWorld(ZNet __instance)
         {
-            DataManager.Load(ZNet.m_world, Game.instance.GetPlayerProfile());
+            if (!__instance.IsServer()) return;
+            DataManager.Status worldSaveStatus = DataManager.Load(ZNet.m_world);
+            DataManager.Status playerSaveStatus = DataManager.Load(Game.instance.GetPlayerProfile());
+
+            LogManager.Log(worldSaveStatus);
+            LogManager.Log(playerSaveStatus);
         }
 
-        [HarmonyPatch(typeof(ZNet), nameof(ZNet.SaveWorldThread))]
+        [HarmonyPatch(typeof(ZNet), nameof(ZNet.Save))]
         [HarmonyPostfix]
-        private static void SaveWorldThread()
+        private static void Save(ZNet __instance)
         {
-            bool cloudSaveFailed = DataManager.Save(ZNet.m_world, Game.instance.GetPlayerProfile());
+            if (!__instance.IsServer()) return;
+            DataManager.Status worldLoadStatus = DataManager.Save(ZNet.m_world);
+            DataManager.Status playerLoadStatus = DataManager.Save(Game.instance.GetPlayerProfile());
 
-            QuickPingPlugin.Log.LogInfo($"cloud save : {!cloudSaveFailed}");
+
+            LogManager.Log(worldLoadStatus);
+            LogManager.Log(playerLoadStatus);
         }
+
+        [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection))]
+        [HarmonyPostfix]
+        private static void OnNewConnection(ZNetPeer peer)
+        {
+            if (peer.IsReady())
+            {
+                QuickPingPlugin.Instance.RPC_Handshake.SendPackage(peer.m_uid, DataManager.PackPinnedObjects());
+
+                PlayerProfile playerProfile = Game.instance.GetPlayerProfile();
+                DataManager.Status status = DataManager.Load(playerProfile);
+                LogManager.Log($"Loading player data {playerProfile.m_playerName}");
+                LogManager.Log(status);
+            }
+        }
+
+        [HarmonyPatch(typeof(ZNet), nameof(ZNet.Disconnect))]
+        [HarmonyPostfix]
+        private static void Disconnect()
+        {
+            PlayerProfile playerProfile = Game.instance.GetPlayerProfile();
+            DataManager.Status status = DataManager.Save(playerProfile);
+            LogManager.Log($"Saving player data {playerProfile.m_playerName}");
+            LogManager.Log(status);
+        }
+
+
+
     }
 }

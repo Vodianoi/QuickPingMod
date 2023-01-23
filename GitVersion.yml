@@ -60,8 +60,8 @@ branches:
   support:
     regex: ^support[/-]
     mode: ContinuousDelivery
-    tag: ''
-    increment: Patch
+    tag: beta
+    increment: Inherit
     prevent-increment-of-merged-branch-version: true
     track-merge-target: false
     source-branches: [ 'main' ]

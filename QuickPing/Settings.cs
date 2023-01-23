@@ -11,6 +11,9 @@ namespace QuickPing
         public const string DefaultPingText = "PING !";
         public static ConfigEntry<bool> PingWhereLooking { get; private set; }
         public static ConfigEntry<bool> AddPin { get; private set; }
+        public static ConfigEntry<bool> ServerSync { get; private set; }
+        public static ConfigEntry<bool> Logging { get; private set; }
+        public static ConfigEntry<BepInEx.Logging.LogLevel> LogLevel { get; private set; }
         public static ConfigEntry<KeyCode> PingKey { get; private set; }
         public static ConfigEntry<KeyCode> PinEverythingKey { get; internal set; }
         public static ConfigEntry<KeyboardShortcut> RenameKey { get; internal set; }
@@ -32,14 +35,19 @@ namespace QuickPing
         {
             //GENERAL
             PingWhereLooking = QuickPingPlugin.Instance.Config.Bind("General",
-            "PingWhereLooking",
-            true,
-            "Create a ping where you are looking when you press <PingKey>");
+                "PingWhereLooking",
+                true,
+                "Create a ping where you are looking when you press <PingKey>");
 
             AddPin = QuickPingPlugin.Instance.Config.Bind("General",
                 "AddPinOnMap",
                 true,
                 "If true, add a pin when useful resources (copper, berries, campfire, portals etc.) are pinged.");
+
+            ServerSync = QuickPingPlugin.Instance.Config.Bind("General",
+                "ServerSync",
+                true,
+                "If true, destroyable pinned objects will be sharedz.");
 
             ClosestPinRange = QuickPingPlugin.Instance.Config.Bind("General",
                 "ClosestPinRange",
@@ -89,6 +97,19 @@ namespace QuickPing
                 "RenameInputKey",
                 new KeyboardShortcut(PingKey.Value, KeyCode.LeftAlt), new ConfigDescription("" +
                 "The keybind to rename a ping"));
+
+            //DEBUG
+            Logging = QuickPingPlugin.Instance.Config.Bind("Debug",
+                "Logging",
+                false,
+                "If true, log debug messages.");
+
+            LogLevel = QuickPingPlugin.Instance.Config.Bind("Debug",
+                "LogLevel",
+                BepInEx.Logging.LogLevel.Info,
+                "Log level for debug messages.");
+
+
             AddInputs();
 
         }

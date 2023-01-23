@@ -3,6 +3,7 @@
 
 ## Install Instruction
 Ping position and markers will always work but must be installed on all clients if you want everyone able to see pinged object's name display.
+Needs [Jotunn](https://valheim.thunderstore.io/package/ValheimModding/Jotunn/) to work
 
 ## Features
 - Use T (by default, see config) to **ping what you point**, name of pointed object/creature is displayed in the world and on the minimap to all players.
@@ -23,7 +24,11 @@ Ping position and markers will always work but must be installed on all clients 
 * All data is now saved in {World}.{PlayerProfileName}.mod.quickping.{extension}. Unique for every Character, per world. https://github.com/Vodianoi/QuickPingMod/pull/66
 
 
+* Hotfix/93 bug portal pins not on the right location by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/94
+
+
 **Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.3...1.5.4
+**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.5...1.5.6
 
 ## Configuration
 The settings for QuickPing can be accessed in the BepInEx config file located in the `Valheim/BepInEx/config` folder. The settings include:
@@ -48,8 +53,9 @@ The settings for QuickPing can be accessed in the BepInEx config file located in
   
 
 
-## Known issues and next patch ideas 
+## Known issues and ideas 
 You can find the github and contribute by adding an issue at: [Github](https://github.com/Vodianoi/QuickPingMod)
+Please report any bug !
 
 ## Downloads
 *___[Thunderstore](https://valheim.thunderstore.io/package/Atopy/QuickPing/)___*

@@ -19,7 +19,6 @@ namespace QuickPing.Patches
                 if (DataManager.PinnedObjects.ContainsKey(id))
                 {
                     Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
-                    //Minimap_Patch.PinnedObjects.Remove(id);
                 }
             }
         }
@@ -38,7 +37,6 @@ namespace QuickPing.Patches
                 if (DataManager.PinnedObjects.ContainsKey(id))
                 {
                     Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
-                    //Minimap_Patch.PinnedObjects.Remove(id);
                 }
             }
         }
@@ -88,17 +86,22 @@ namespace QuickPing.Patches
                     {
                         ZDOID zdoid = component.GetZDO().m_uid;
                         Minimap.PinData pinData = DataManager.PinnedObjects[id];
+
+                        QuickPingPlugin.Instance.RPC_RemovePinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), DataManager.PackPinnedObject(id));
+                        QuickPingPlugin.Instance.RPC_AddPinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), DataManager.PackPinnedObject(id));
                         DataManager.PinnedObjects.Add(zdoid, pinData);
                         DataManager.PinnedObjects.Remove(id);
                     }
                     else if (DataManager.PinnedObjects.ContainsKey(id))
                     {
-                        DataManager.PinnedObjects.Remove(id);
+                        Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
                     }
                 }
             }
             else if (DataManager.PinnedObjects.ContainsKey(id))
+            {
                 Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
+            }
 
             __instance.m_onDestroyed?.Invoke();
 
@@ -124,7 +127,6 @@ namespace QuickPing.Patches
                 if (DataManager.PinnedObjects.ContainsKey(id))
                 {
                     Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
-                    //Minimap_Patch.PinnedObjects.Remove(id);
                 }
             }
         }

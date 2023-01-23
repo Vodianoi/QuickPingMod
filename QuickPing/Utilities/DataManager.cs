@@ -4,7 +4,7 @@ using System.IO;
 
 namespace QuickPing.Utilities
 {
-    internal static class DataManager
+    public static class DataManager
     {
         #region Public Fields
         public static Dictionary<ZDOID, Minimap.PinData> PinnedObjects = new();
@@ -14,28 +14,65 @@ namespace QuickPing.Utilities
         #region Private Fields
         #endregion
 
-        #region Public Methods
-        public static bool Save(World world, PlayerProfile playerProfile)
+        public struct CustomName
         {
-            bool cloudSaveNamesFailed = SaveCustomNames(world, playerProfile);
-            bool cloudSavePinsFailed = SavePinnedObjects(world, playerProfile);
-            return cloudSaveNamesFailed && cloudSavePinsFailed;
+            public string Original;
+            public string Custom;
+        }
+
+        public class PinnedObject
+        {
+            public PinnedObject()
+            {
+                ZDOID = ZDOID.None;
+                PinData = new Minimap.PinData();
+                PinData.m_name = Settings.DefaultPingText;
+            }
+            public ZDOID ZDOID { get; set; }
+            public Minimap.PinData PinData { get; set; }
+        }
+
+        public enum Status
+        {
+            Success,
+            Failed,
+            NoData
         }
 
 
-        public static void Load(World world, PlayerProfile playerProfile)
+        #region Public Methods
+        public static Status Save(World world)
         {
-            LoadCustomNames(world, playerProfile);
-            LoadPinnedObjects(world, playerProfile);
+            Status status = SavePinnedObjects(world);
+            return status;
+        }
+
+        public static Status Save(PlayerProfile playerProfile)
+        {
+            Status status = SaveCustomNames(playerProfile);
+            return status;
+        }
+
+
+        public static Status Load(PlayerProfile playerProfile)
+        {
+            Status status = LoadCustomNames(playerProfile);
+            return status;
+        }
+
+        public static Status Load(World world)
+        {
+            Status status = LoadPinnedObjects(world);
+            return status;
         }
         #endregion
 
         #region Private Methods
-        private static void LoadPinnedObjects(World world, PlayerProfile playerProfile)
+        private static Status LoadPinnedObjects(World world)
         {
             PinnedObjects.Clear();
 
-            var pinnedPath = GetPath(world, playerProfile, "pinned");
+            var pinnedPath = GetPath(world);
 
             FileReader fileReader = null;
             try
@@ -45,9 +82,7 @@ namespace QuickPing.Utilities
             catch
             {
                 fileReader?.Dispose();
-                QuickPingPlugin.Log.LogWarning($"Failed to load pinned objects. World: {world.m_name} - Profile: {playerProfile.m_playerName}");
-                //return new World(__name, loadError: true, versionError: false, __fileSource);
-                return;
+                return Status.NoData;
             }
 
 
@@ -55,54 +90,55 @@ namespace QuickPing.Utilities
             int count = binary.ReadInt32();
             ZPackage zPackage = new ZPackage(binary.ReadBytes(count));
 
-            UnpackPinnedObjects(zPackage);
+            PinnedObjects = UnpackPinnedObjects(zPackage);
+            return Status.Success;
         }
-        private static bool SavePinnedObjects(World world, PlayerProfile playerProfile)
+        private static Status SavePinnedObjects(World world)
         {
 
             ZPackage zPackage = PackPinnedObjects();
-
+            var fileSource = world.m_fileSource;
 
             bool cloudSaveFailed;
-            if (world.m_fileSource != FileHelpers.FileSource.Cloud)
+            if (fileSource != FileHelpers.FileSource.Cloud)
             {
-                Directory.CreateDirectory(World.GetWorldSavePath(world.m_fileSource));
+                Directory.CreateDirectory(World.GetWorldSavePath(fileSource));
             }
 
-            string metaPath = GetPath(world, playerProfile, "pinned");
+            string metaPath = GetPath(world);
             string text = metaPath + ".new";
             string oldFile = metaPath + ".old";
             byte[] array = zPackage.GetArray();
-            FileWriter fileWriter = new FileWriter(text, FileHelpers.FileHelperType.Binary, world.m_fileSource);
+            FileWriter fileWriter = new FileWriter(text, FileHelpers.FileHelperType.Binary, fileSource);
             fileWriter.m_binary.Write(array.Length);
             fileWriter.m_binary.Write(array);
             fileWriter.Finish();
 
 
-            cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && world.m_fileSource == FileHelpers.FileSource.Cloud;
+            cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && fileSource == FileHelpers.FileSource.Cloud;
             if (!cloudSaveFailed)
             {
-                FileHelpers.ReplaceOldFile(metaPath, text, oldFile, world.m_fileSource);
+                FileHelpers.ReplaceOldFile(metaPath, text, oldFile, fileSource);
             }
 
-            return cloudSaveFailed;
+            return cloudSaveFailed && fileSource == FileHelpers.FileSource.Cloud ? Status.Failed : Status.Success;
         }
 
-        private static void LoadCustomNames(World world, PlayerProfile playerProfile)
+        private static Status LoadCustomNames(PlayerProfile playerProfile)
         {
             CustomNames.Clear();
-            var customNamesPath = GetPath(world, playerProfile, "customNames");
+            var customNamesPath = GetPath(playerProfile);
+            var fileSource = playerProfile.m_fileSource;
 
             FileReader fileReader = null;
             try
             {
-                fileReader = new FileReader(customNamesPath, world.m_fileSource);
+                fileReader = new FileReader(customNamesPath, fileSource);
             }
             catch
             {
                 fileReader?.Dispose();
-                QuickPingPlugin.Log.LogWarning($"Failed to load custom names. World: {world.m_name} - Profile: {playerProfile.m_playerName}");
-                return;
+                return Status.NoData;
             }
 
 
@@ -110,53 +146,59 @@ namespace QuickPing.Utilities
             int count = binary.ReadInt32();
             ZPackage zPackage = new ZPackage(binary.ReadBytes(count));
 
-            UnpackCustomNames(zPackage);
+            CustomNames = UnpackCustomNames(zPackage);
+            return Status.Success;
         }
 
-        private static bool SaveCustomNames(World world, PlayerProfile playerProfile)
+        private static Status SaveCustomNames(PlayerProfile playerProfile)
         {
 
             ZPackage zPackage = PackCustomNames();
-
+            var fileSource = playerProfile.m_fileSource;
             bool cloudSaveFailed;
-            if (world.m_fileSource != FileHelpers.FileSource.Cloud)
+            if (fileSource != FileHelpers.FileSource.Cloud)
             {
-                Directory.CreateDirectory(World.GetWorldSavePath(world.m_fileSource));
+                Directory.CreateDirectory(World.GetWorldSavePath(fileSource));
             }
 
-            string metaPath = GetPath(world, playerProfile, "customNames");
+            string metaPath = GetPath(playerProfile);
             string text = metaPath + ".new";
             string oldFile = metaPath + ".old";
             byte[] array = zPackage.GetArray();
-            FileWriter fileWriter = new FileWriter(text, FileHelpers.FileHelperType.Binary, world.m_fileSource);
+            FileWriter fileWriter = new FileWriter(text, FileHelpers.FileHelperType.Binary, fileSource);
             fileWriter.m_binary.Write(array.Length);
             fileWriter.m_binary.Write(array);
             fileWriter.Finish();
 
 
-            cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && world.m_fileSource == FileHelpers.FileSource.Cloud;
+            cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && fileSource == FileHelpers.FileSource.Cloud;
             if (!cloudSaveFailed)
             {
-                FileHelpers.ReplaceOldFile(metaPath, text, oldFile, world.m_fileSource);
+                FileHelpers.ReplaceOldFile(metaPath, text, oldFile, fileSource);
             }
 
-            return cloudSaveFailed;
+            return cloudSaveFailed && fileSource == FileHelpers.FileSource.Cloud ? Status.Failed : Status.Success;
         }
 
 
-        private static string GetPath(World world, PlayerProfile playerProfile, string extension)
+        private static string GetPath(World world)
         {
             FileHelpers.SplitFilePath(world.GetDBPath(), out string directory, out string fileName, out string fileExtension);
             var worldSavePath = directory + fileName;
-            string __MyExtension = $".{playerProfile.m_playerName}.mod.quickping.{extension}";
+            string __MyExtension = ".mod.quickping.pinned";
 
-
-            //INFO
-            //QuickPingPlugin.Log.LogInfo("World .pinned save path: " + worldSavePath);
 
             return worldSavePath + __MyExtension;
         }
 
+        public static string GetPath(PlayerProfile playerProfile)
+        {
+            FileHelpers.SplitFilePath(playerProfile.GetFilename(), out string directory, out string fileName, out string fileExtension);
+            var worldSavePath = directory + fileName;
+            string __MyExtension = $".mod.quickping.custom_names";
+
+            return worldSavePath + __MyExtension;
+        }
         #endregion
 
 
@@ -166,7 +208,7 @@ namespace QuickPing.Utilities
         /// Pack ZDOID, name, type and position in ZPackage and returns it.
         /// </summary>
         /// <returns>ZPackage containing ZDOID, name, type and position</returns>
-        private static ZPackage PackPinnedObjects()
+        public static ZPackage PackPinnedObjects()
         {
             ZPackage zPackage = new ZPackage();
 
@@ -177,6 +219,16 @@ namespace QuickPing.Utilities
             }
             return zPackage;
         }
+
+        public static ZPackage PackPinnedObject(ZDOID id) => PackPinnedObject(new PinnedObject { ZDOID = id, PinData = PinnedObjects[id] });
+        public static ZPackage PackPinnedObject(PinnedObject pinnedObject)
+        {
+            ZPackage res = new ZPackage();
+            res.Write(pinnedObject.ZDOID);
+            res.Write(pinnedObject.PinData);
+            return res;
+        }
+
 
         /// <summary>
         /// Pack originalName=name in ZPackage and returns it.
@@ -189,41 +241,70 @@ namespace QuickPing.Utilities
             foreach (var x in CustomNames)
             {
                 if (x.Key is null or "") continue;
-                zPackage.Write(x.Key);
-                zPackage.Write(x.Value);
+
+                zPackage.Write(PackCustomName(x));
             }
 
             return zPackage;
         }
 
-        private static void UnpackCustomNames(ZPackage zPackage)
+        private static ZPackage PackCustomName(KeyValuePair<string, string> x)
         {
-            CustomNames.Clear();
-            while (zPackage.GetPos() < zPackage.Size())
-            {
-                string originalName = zPackage.ReadString();
-                string name = zPackage.ReadString();
-                if (originalName is not "" or null)
-                    CustomNames.Add(originalName, name);
-            }
+            ZPackage res = new ZPackage();
+            res.Write(x.Key);
+            res.Write(x.Value);
+            return res;
         }
 
-        private static void UnpackPinnedObjects(ZPackage zPackage)
+        private static Dictionary<string, string> UnpackCustomNames(ZPackage zPackage)
+        {
+            Dictionary<string, string> res = new Dictionary<string, string>();
+            while (zPackage.GetPos() < zPackage.Size())
+            {
+                var data = UnpackCustomName(zPackage);
+                if (data.Original is not "" or null)
+                    res.Add(data.Original, data.Custom);
+            }
+            return res;
+        }
+
+        public static CustomName UnpackCustomName(ZPackage zPackage)
+        {
+            string originalName = zPackage.ReadString();
+            string name = zPackage.ReadString();
+            return new CustomName
+            {
+                Original = originalName,
+                Custom = name
+            };
+
+        }
+
+        public static Dictionary<ZDOID, Minimap.PinData> UnpackPinnedObjects(ZPackage zPackage)
         {
             Dictionary<ZDOID, Minimap.PinData> res = new Dictionary<ZDOID, Minimap.PinData>();
 
-            if (zPackage == null) return;
+            if (zPackage == null) return null;
 
             while (zPackage.GetPos() < zPackage.Size())
             {
-                ZDOID zdoid = zPackage.ReadZDOID();
-                Minimap.PinData pinData = zPackage.ReadPinData();
-                if (!res.ContainsKey(zdoid))
-                    res.Add(zdoid, pinData);
+                var data = UnpackPinnedObject(zPackage);
+                if (!res.ContainsKey(data.ZDOID))
+                    res.Add(data.ZDOID, data.PinData);
 
             }
 
-            PinnedObjects = res;
+            return res;
+        }
+
+        public static PinnedObject UnpackPinnedObject(ZPackage zPackage)
+        {
+            ZDOID zdoid = zPackage.ReadZDOID();
+            Minimap.PinData pinData = zPackage.ReadPinData();
+            PinnedObject pinnedObject = new PinnedObject();
+            pinnedObject.ZDOID = zdoid;
+            pinnedObject.PinData = pinData;
+            return pinnedObject;
         }
 
         #endregion
@@ -232,6 +313,7 @@ namespace QuickPing.Utilities
         #region Extensions
         private static void Write(this ZPackage zPackage, Minimap.PinData pinData)
         {
+            pinData.m_name ??= "";
             zPackage.Write(pinData.m_name);
             zPackage.Write(pinData.m_type.ToString());
             zPackage.Write(pinData.m_pos);
@@ -239,15 +321,18 @@ namespace QuickPing.Utilities
 
         private static Minimap.PinData ReadPinData(this ZPackage package)
         {
-            return new()
+            Minimap.PinData pinData = new()
             {
                 m_name = package.ReadString(),
                 m_type = (Minimap.PinType)Enum.Parse(typeof(Minimap.PinType), package.ReadString()),
                 m_pos = package.ReadVector3()
             };
+            return pinData;
         }
         #endregion
 
 
     }
+
+
 }
