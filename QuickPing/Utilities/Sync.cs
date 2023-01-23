@@ -31,15 +31,6 @@ namespace QuickPing.Utilities
         }
 
 
-
-        internal static IEnumerator OnServerHandshake(long id, ZPackage pinnedObjects)
-        {
-            QuickPingPlugin.Log.LogInfo($"OnServerHandshake : {id}");
-            DataManager.PinnedObjects = DataManager.UnpackPinnedObjects(pinnedObjects);
-
-            yield return pinnedObjects;
-        }
-
         internal static IEnumerator OnClientRemovePinnedObject(long id, ZPackage package)
         {
             QuickPingPlugin.Log.LogInfo($"OnClientRemovePinnedObject : {id}");
@@ -84,13 +75,14 @@ namespace QuickPing.Utilities
             DataManager.PinnedObjects.Remove(pinnedObject.ZDOID);
             yield return package;
         }
+
+        internal static IEnumerator OnServerHandshake(long id, ZPackage pinnedObjects)
+        {
+            QuickPingPlugin.Log.LogInfo($"OnServerHandshake : {id}");
+            DataManager.PinnedObjects = DataManager.UnpackPinnedObjects(pinnedObjects);
+
+            yield return pinnedObjects;
+        }
         #endregion
-
-
-
-
-
-
-
     }
 }
