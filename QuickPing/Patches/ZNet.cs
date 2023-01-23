@@ -10,9 +10,11 @@ namespace QuickPing.Patches
         private static void LoadWorld(ZNet __instance)
         {
             if (!__instance.IsServer()) return;
-            DataManager.Status status = DataManager.Load(ZNet.m_world);
+            DataManager.Status worldSaveStatus = DataManager.Load(ZNet.m_world);
+            DataManager.Status playerSaveStatus = DataManager.Load(Game.instance.GetPlayerProfile());
 
-            LogManager.Log(status);
+            LogManager.Log(worldSaveStatus);
+            LogManager.Log(playerSaveStatus);
         }
 
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.Save))]
@@ -20,9 +22,12 @@ namespace QuickPing.Patches
         private static void Save(ZNet __instance)
         {
             if (!__instance.IsServer()) return;
-            DataManager.Status status = DataManager.Save(ZNet.m_world);
+            DataManager.Status worldLoadStatus = DataManager.Save(ZNet.m_world);
+            DataManager.Status playerLoadStatus = DataManager.Save(Game.instance.GetPlayerProfile());
 
-            LogManager.Log(status);
+
+            LogManager.Log(worldLoadStatus);
+            LogManager.Log(playerLoadStatus);
         }
 
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection))]
