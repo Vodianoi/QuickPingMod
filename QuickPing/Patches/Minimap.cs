@@ -190,17 +190,16 @@ namespace QuickPing.Patches
                     QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
 
                 }
-
-                if (pinData.m_type != Minimap.PinType.None)
+                else if (pinData.m_type != Minimap.PinType.None)
                 {
                     if (closestPin == null)
                     {
                         pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                        QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
                         pinned = true;
                     }
                     else if (rename)
                         pinData = closestPin;
-                    QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
 
                     //Check if Settings.AskForName.Value is true, and if CustomNames contains its name.
                     //if true ask for user input before adding pin
@@ -227,14 +226,10 @@ namespace QuickPing.Patches
                     if (!DataManager.PinnedObjects.ContainsKey(pinnedObject.ZDOID))
                     {
                         DataManager.PinnedObjects.Add(pinnedObject.ZDOID, pinData);
-                        ZPackage package = DataManager.PackPinnedObject(new DataManager.PinnedObject
-                        {
-                            PinData = pinData,
-                            ZDOID = pinnedObject.ZDOID
-                        });
+                        pinnedObject.PinData = pinData;
+
+                        ZPackage package = DataManager.PackPinnedObject(pinnedObject);
                         QuickPingPlugin.Instance.RPC_AddPinnedObject.SendPackage(ZRoutedRpc.instance.GetServerPeerID(), package);
-
-
                     }
                 }
             }

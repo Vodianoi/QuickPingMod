@@ -48,6 +48,8 @@ namespace QuickPing.Utilities
 
         public static IEnumerator OnServerAddPinnedObject(long id, ZPackage package)
         {
+            if (ZRoutedRpc.instance.GetServerPeerID() == id)
+                yield break;
             QuickPingPlugin.Log.LogInfo($"OnServerAddPinnedObject : {id}");
             var pinnedObject = DataManager.UnpackPinnedObject(package);
             ZDOID zDOID = pinnedObject.ZDOID;
