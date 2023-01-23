@@ -228,7 +228,7 @@ namespace QuickPing.Utilities
         /// Pack ZDOID, name, type and position in ZPackage and returns it.
         /// </summary>
         /// <returns>ZPackage containing ZDOID, name, type and position</returns>
-        private static ZPackage PackPinnedObjects()
+        public static ZPackage PackPinnedObjects()
         {
             ZPackage zPackage = new ZPackage();
 
@@ -243,6 +243,7 @@ namespace QuickPing.Utilities
             return zPackage;
         }
 
+        public static ZPackage PackPinnedObject(ZDOID id) => PackPinnedObject(new PinnedObject { ZDOID = id, PinData = PinnedObjects[id] });
         public static ZPackage PackPinnedObject(PinnedObject pinnedObject)
         {
             ZPackage res = new ZPackage();
