@@ -10,22 +10,40 @@ namespace QuickPing.Utilities
     internal static class LogManager
     {
         private static readonly ManualLogSource Logger = QuickPingPlugin.Log;
+
+        private static bool CanLog(LogLevel level)
+        {
+            return (level <= Settings.LogLevel.Value) && Settings.Logging.Value;
+        }
+
         public static void Log(string message, LogLevel level = LogLevel.Info)
         {
-            if (level > Settings.LogLevel.Value) return;
+            if (!CanLog(level))
+                return;
             switch (level)
             {
-                case LogLevel.Debug:
-                    Logger.LogDebug(message);
+                case LogLevel.None:
                     break;
-                case LogLevel.Info:
-                    Logger.LogInfo(message);
+                case LogLevel.Fatal:
+                    Logger.LogError(message);
+                    break;
+                case LogLevel.Error:
+                    Logger.LogError(message);
                     break;
                 case LogLevel.Warning:
                     Logger.LogWarning(message);
                     break;
-                case LogLevel.Error:
-                    Logger.LogError(message);
+                case LogLevel.Message:
+                    Logger.LogMessage(message);
+                    break;
+                case LogLevel.Info:
+                    Logger.LogInfo(message);
+                    break;
+                case LogLevel.Debug:
+                    Logger.LogDebug(message);
+                    break;
+                case LogLevel.All:
+                    Logger.LogInfo(message);
                     break;
             }
         }
@@ -90,21 +108,18 @@ namespace QuickPing.Utilities
             return $"PinData: \n\t pos: {pinData.m_pos} \n\tlabel: {pinData.m_name} \n\ttype: {pinData.m_type} \n\ticon: {pinData.m_icon}";
         }
 
-        public static void ToString(this Status status)
+        public static string ToString(this Status status)
         {
             switch (status)
             {
                 case Status.Success:
-                    Log("Save/Load successful");
-                    break;
+                    return "Save/Load successful";
                 case Status.Failed:
-                    Log("Save/Load failed", BepInEx.Logging.LogLevel.Warning);
-                    break;
+                    return "Save/Load failed";
                 case Status.NoData:
-                    Log("No data to save/load", BepInEx.Logging.LogLevel.Warning);
-                    break;
+                    return "No data to save/load";
                 default:
-                    break;
+                    return "Unknown status";
             }
         }
 
