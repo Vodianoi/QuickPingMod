@@ -78,7 +78,7 @@ namespace QuickPing.Patches
             Player localPlayer = Player.m_localPlayer;
             if ((bool)localPlayer && Settings.PingWhereLooking.Value)
             {
-                QuickPingPlugin.Log.LogInfo("SendPing : " + text);
+                LogManager.Log("SendPing : " + text);
                 ZRoutedRpc.instance.InvokeRoutedRPC(local ? Player.m_localPlayer.GetZDOID().userID : ZRoutedRpc.Everybody, "ChatMessage", position, 3, localPlayer.GetPlayerName(), text, 1);
                 if (Player.m_debugMode && Console.instance != null && Console.instance.IsCheatsEnabled() && Console.instance != null)
                 {

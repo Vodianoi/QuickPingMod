@@ -164,7 +164,7 @@ namespace QuickPing.Patches
                 pinData.m_pos = pinnedObject.PinData.m_pos;
                 pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
                 pinned = true;
-                QuickPingPlugin.Log.LogInfo($"Add Portal Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+                LogManager.Log($"Add Portal Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
 
             }
             else if (closestPin == null || rename)
@@ -187,7 +187,7 @@ namespace QuickPing.Patches
                     pinData.m_type = Settings.DefaultPinType.Value;
                     pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
                     pinned = true;
-                    QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+                    LogManager.Log($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
 
                 }
                 else if (pinData.m_type != Minimap.PinType.None)
@@ -195,7 +195,7 @@ namespace QuickPing.Patches
                     if (closestPin == null)
                     {
                         pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
-                        QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+                        LogManager.Log($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
                         pinned = true;
                     }
                     else if (rename)
@@ -305,7 +305,7 @@ namespace QuickPing.Patches
             // Persistent save of text value for this pinned object
             if (save)
             {
-                QuickPingPlugin.Log.LogInfo($"Save name {Minimap.instance.m_namePin.m_name} for {originalText}");
+                LogManager.Log($"Save name {Minimap.instance.m_namePin.m_name} for {originalText}");
                 SaveName(Minimap.instance.m_namePin.m_name, originalText);
             }
             Minimap.instance.m_namePin = null;
@@ -357,13 +357,13 @@ namespace QuickPing.Patches
         {
             if (GUIManager.Instance == null)
             {
-                QuickPingPlugin.Log.LogError("GUIManager instance is null");
+                LogManager.Log("GUIManager instance is null", BepInEx.Logging.LogLevel.Error);
                 return;
             }
 
             if (!GUIManager.CustomGUIFront)
             {
-                QuickPingPlugin.Log.LogError("GUIManager CustomGUI is null");
+                LogManager.Log("GUIManager CustomGUI is null", BepInEx.Logging.LogLevel.Error);
                 return;
             }
 

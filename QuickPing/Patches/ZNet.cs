@@ -12,7 +12,7 @@ namespace QuickPing.Patches
             if (!__instance.IsServer()) return;
             DataManager.Status status = DataManager.Load(ZNet.m_world);
 
-            DataManager.StatusCheck(status);
+            LogManager.Log(status);
         }
 
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.Save))]
@@ -22,7 +22,7 @@ namespace QuickPing.Patches
             if (!__instance.IsServer()) return;
             DataManager.Status status = DataManager.Save(ZNet.m_world);
 
-            DataManager.StatusCheck(status);
+            LogManager.Log(status);
         }
 
         [HarmonyPatch(typeof(ZNet), nameof(ZNet.OnNewConnection))]

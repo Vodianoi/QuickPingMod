@@ -12,6 +12,8 @@ namespace QuickPing
         public static ConfigEntry<bool> PingWhereLooking { get; private set; }
         public static ConfigEntry<bool> AddPin { get; private set; }
         public static ConfigEntry<bool> ServerSync { get; private set; }
+        public static ConfigEntry<bool> Logging { get; private set; }
+        public static ConfigEntry<BepInEx.Logging.LogLevel> LogLevel { get; private set; }
         public static ConfigEntry<KeyCode> PingKey { get; private set; }
         public static ConfigEntry<KeyCode> PinEverythingKey { get; internal set; }
         public static ConfigEntry<KeyboardShortcut> RenameKey { get; internal set; }
@@ -95,6 +97,19 @@ namespace QuickPing
                 "RenameInputKey",
                 new KeyboardShortcut(PingKey.Value, KeyCode.LeftAlt), new ConfigDescription("" +
                 "The keybind to rename a ping"));
+
+            //DEBUG
+            Logging = QuickPingPlugin.Instance.Config.Bind("Debug",
+                "Logging",
+                false,
+                "If true, log debug messages.");
+
+            LogLevel = QuickPingPlugin.Instance.Config.Bind("Debug",
+                "LogLevel",
+                BepInEx.Logging.LogLevel.Debug,
+                "Log level for debug messages.");
+
+
             AddInputs();
 
         }

@@ -82,7 +82,6 @@ namespace QuickPing.Utilities
             catch
             {
                 fileReader?.Dispose();
-                QuickPingPlugin.Log.LogWarning($"Failed to load pinned objects. World: {world.m_name}");
                 return Status.NoData;
             }
 
@@ -139,7 +138,6 @@ namespace QuickPing.Utilities
             catch
             {
                 fileReader?.Dispose();
-                QuickPingPlugin.Log.LogWarning($"Failed to load custom names. Profile: {playerProfile.m_playerName}");
                 return Status.NoData;
             }
 
@@ -201,25 +199,6 @@ namespace QuickPing.Utilities
 
             return worldSavePath + __MyExtension;
         }
-
-        public static void StatusCheck(Status status)
-        {
-            switch (status)
-            {
-                case Status.Success:
-                    QuickPingPlugin.Log.LogInfo("Save/Load successful");
-                    break;
-                case Status.Failed:
-                    QuickPingPlugin.Log.LogWarning("Save/Load failed");
-                    break;
-                case Status.NoData:
-                    QuickPingPlugin.Log.LogWarning("No data to save/load");
-                    break;
-                default:
-                    break;
-            }
-        }
-
         #endregion
 
 

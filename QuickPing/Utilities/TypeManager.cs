@@ -167,7 +167,7 @@ namespace QuickPing.Utilities
             {
                 pinnedObject.PinData.m_pos = obj.transform.position;
 
-                Log(obj, type, destructible);
+                LogManager.Log(obj, type, destructible);
             }
             else
             {
@@ -180,7 +180,7 @@ namespace QuickPing.Utilities
                 FieldInfo fieldInfo = destructible.GetType().GetField("m_nview", BindingFlags.Instance | BindingFlags.NonPublic);
                 if (fieldInfo == null)
                 {
-                    QuickPingPlugin.Log.LogWarning($"Unable to link destructible {destructible} to pin: {pinnedObject.PinData.m_name}. (Is it a god?)");
+                    LogManager.Log($"Unable to link destructible {destructible} to pin: {pinnedObject.PinData.m_name}. (Is it a god?)");
                     return pinnedObject;
                 }
                 ZNetView netView = fieldInfo.GetValue(destructible) as ZNetView;
@@ -189,42 +189,7 @@ namespace QuickPing.Utilities
             return pinnedObject;
         }
 
-        private static void Log(GameObject obj, HoverType type, IDestructible destructible)
-        {
-#if DEBUG
-            //DEBUG
 
-            switch (type)
-            {
-                case HoverType.GameObject:
-                    QuickPingPlugin.Log.LogWarning($"Ping ! : {obj} (GameObject)");
-                    break;
-                case HoverType.Hoverable:
-                    if (obj.TryGetComponent(out Hoverable hoverable))
-                        QuickPingPlugin.Log.LogWarning($"Ping ! : {hoverable} (Hoverable) -> Name: {hoverable.GetHoverName()}");
-                    break;
-                case HoverType.Piece:
-                    if (obj.TryGetComponent(out Piece piece))
-                        QuickPingPlugin.Log.LogWarning($"Ping ! : {piece} (Piece) -> Name: {piece.name} -> Trad: {Localization.instance.Localize(piece.name)}");
-                    break;
-                case HoverType.Location:
-                    if (obj.TryGetComponent(out Location location))
-                        QuickPingPlugin.Log.LogWarning($"Ping ! : {location} (Location) -> Name: {location.name} -> Trad: {Localization.instance.Localize(location.name)}");
-
-                    break;
-                case HoverType.Character:
-                    if (obj.TryGetComponent(out Character hoverCreature))
-                        QuickPingPlugin.Log.LogWarning($"Ping ! : {hoverCreature} (Character) ->  Name: {hoverCreature.m_name} -> Trad: {hoverCreature.GetHoverName()}");
-
-                    break;
-
-            }
-            if (destructible != null)
-            {
-                QuickPingPlugin.Log.LogWarning($"Ping ! : {destructible} (Destructible) -> Type: {destructible.GetDestructibleType()}");
-            }
-#endif
-        }
     }
 
 
