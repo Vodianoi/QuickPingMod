@@ -64,9 +64,9 @@ namespace QuickPing
             OnRenameEvent.AddListener(Rename);
 
 
-            RPC_Handshake = NetworkManager.Instance.AddRPC("OnHandshake", Sync.OnServerHandshake, Sync.OnClientHandshake);
-            RPC_AddPinnedObject = NetworkManager.Instance.AddRPC("OnAddPin", Sync.OnServerAddPinnedObject, Sync.OnClientAddPinnedObject);
-            RPC_RemovePinnedObject = NetworkManager.Instance.AddRPC("OnRemovePin", Sync.OnServerRemovePinnedObject, Sync.OnClientRemovePinnedObject);
+            RPC_Handshake = NetworkManager.Instance.AddRPC("OnHandshake", Sync.OnClientHandshake, Sync.OnServerHandshake);
+            RPC_AddPinnedObject = NetworkManager.Instance.AddRPC("OnAddPin", Sync.OnClientAddPinnedObject, Sync.OnServerAddPinnedObject);
+            RPC_RemovePinnedObject = NetworkManager.Instance.AddRPC("OnRemovePin", Sync.OnClientRemovePinnedObject, Sync.OnServerRemovePinnedObject);
 
             // To learn more about Jotunn's features, go to
             // https://valheim-modding.github.io/Jotunn/tutorials/overview.html
