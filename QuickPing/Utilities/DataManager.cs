@@ -26,6 +26,7 @@ namespace QuickPing.Utilities
             {
                 ZDOID = ZDOID.None;
                 PinData = new Minimap.PinData();
+                PinData.m_name = Settings.DefaultPingText;
             }
             public ZDOID ZDOID { get; set; }
             public Minimap.PinData PinData { get; set; }
