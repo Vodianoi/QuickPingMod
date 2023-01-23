@@ -234,11 +234,8 @@ namespace QuickPing.Utilities
 
             foreach (var x in PinnedObjects)
             {
-                zPackage.Write(PackPinnedObject(new PinnedObject
-                {
-                    ZDOID = x.Key,
-                    PinData = x.Value
-                }));
+                zPackage.Write(x.Key);
+                zPackage.Write(x.Value);
             }
             return zPackage;
         }
@@ -324,11 +321,10 @@ namespace QuickPing.Utilities
         {
             ZDOID zdoid = zPackage.ReadZDOID();
             Minimap.PinData pinData = zPackage.ReadPinData();
-            return new PinnedObject
-            {
-                ZDOID = zdoid,
-                PinData = pinData
-            };
+            PinnedObject pinnedObject = new PinnedObject();
+            pinnedObject.ZDOID = zdoid;
+            pinnedObject.PinData = pinData;
+            return pinnedObject;
         }
 
         #endregion

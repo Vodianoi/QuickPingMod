@@ -30,7 +30,7 @@ namespace QuickPing.Patches
         private static void OnNewConnection(ZNetPeer peer)
         {
             if (peer.IsReady())
-            QuickPingPlugin.Instance.RPC_Handshake.SendPackage(peer.m_uid, DataManager.PackPinnedObjects());
+                QuickPingPlugin.Instance.RPC_Handshake.SendPackage(peer.m_uid, DataManager.PackPinnedObjects());
         }
 
 
