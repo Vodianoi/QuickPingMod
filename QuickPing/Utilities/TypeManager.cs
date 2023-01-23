@@ -185,7 +185,7 @@ namespace QuickPing.Utilities
                 ZNetView netView = fieldInfo.GetValue(destructible) as ZNetView;
                 pinnedObject.ZDOID = netView.GetZDO().m_uid;
             }
-            pinnedObject.PinData.m_name = TextManager.GetHoverName(obj, type, pinnedObject.PinData.m_name ?? Settings.DefaultPingText);
+            pinnedObject.PinData.m_name = TextManager.GetHoverName(obj, type, pinnedObject.PinData.m_name);
             return pinnedObject;
         }
 
