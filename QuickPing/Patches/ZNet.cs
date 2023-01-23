@@ -29,6 +29,7 @@ namespace QuickPing.Patches
         [HarmonyPostfix]
         private static void OnNewConnection(ZNetPeer peer)
         {
+            if (peer.IsReady())
             QuickPingPlugin.Instance.RPC_Handshake.SendPackage(peer.m_uid, DataManager.PackPinnedObjects());
         }
 
