@@ -105,8 +105,9 @@
     <PackageReference Include="HarmonyX" Version="2.10.1" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>..\..\valheim_unstripped_0.214.2\valheim\AuxiliaryFiles\GameAssemblies\Unity.TextMeshPro.dll</HintPath>
+    <Reference Include="Unity.TextMeshPro, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Unity.TextMeshPro.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
