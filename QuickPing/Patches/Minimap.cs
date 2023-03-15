@@ -489,7 +489,7 @@ namespace QuickPing.Patches
             }
             if ((bool)pin.m_uiElement)
             {
-                UnityEngine.Object.Destroy(pin.m_uiElement.gameObject);
+                __instance.DestroyPinMarker(pin);
             }
             __instance.m_pins.Remove(pin);
             return false;

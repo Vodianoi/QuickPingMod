@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace QuickPing.Patches
 {
@@ -21,7 +21,7 @@ namespace QuickPing.Patches
         [HarmonyPatch(typeof(Chat))]
         [HarmonyPatch(nameof(Chat.AddInworldText))]
         [HarmonyPrefix]
-        public static bool AddInworldText(Chat __instance, GameObject go, long senderID, Vector3 position, Talker.Type type, string user, string text)
+        public static bool AddInworldText(Chat __instance, GameObject go, long senderID, Vector3 position, Talker.Type type, UserInfo user, string text)
         {
             Chat.WorldTextInstance worldTextInstance = __instance.FindExistingWorldText(senderID);
             if (worldTextInstance == null)
@@ -30,11 +30,12 @@ namespace QuickPing.Patches
                 worldTextInstance.m_talkerID = senderID;
                 worldTextInstance.m_gui = Object.Instantiate(__instance.m_worldTextBase, __instance.transform);
                 worldTextInstance.m_gui.gameObject.SetActive(value: true);
-                worldTextInstance.m_textField = worldTextInstance.m_gui.transform.Find("Text").GetComponent<Text>();
+                Transform transform = worldTextInstance.m_gui.transform.Find("Text");
+                worldTextInstance.m_textMeshField = transform.GetComponent<TextMeshProUGUI>();
                 __instance.m_worldTexts.Add(worldTextInstance);
             }
 
-            worldTextInstance.m_name = user;
+            worldTextInstance.m_userInfo = user;
             worldTextInstance.m_type = type;
             worldTextInstance.m_go = go;
             worldTextInstance.m_position = position;
@@ -58,10 +59,9 @@ namespace QuickPing.Patches
                     color = Settings.DefaultColor.Value;
                     break;
             }
-
-            worldTextInstance.m_textField.supportRichText = true;
-            worldTextInstance.m_textField.color = color;
-            worldTextInstance.m_textField.GetComponent<Outline>().enabled = type != Talker.Type.Whisper;
+            worldTextInstance.m_textMeshField.richText = true;
+            worldTextInstance.m_textMeshField.color = color;
+            //worldTextInstance.m_textMeshField.GetComponent<Outline>().enabled = type != Talker.Type.Whisper;
             worldTextInstance.m_timer = 0f;
             worldTextInstance.m_text = text;
 
@@ -78,7 +78,7 @@ namespace QuickPing.Patches
         /// <returns></returns>
         [HarmonyPatch(typeof(Chat), nameof(Chat.UpdateWorldTextField))]
         [HarmonyPrefix]
-        public static bool UpdateWorldTextField(Chat __instance, Chat.WorldTextInstance wt)
+        public static bool UpdateWorldTextField(Chat.WorldTextInstance wt)
         {
             string text = "";
             if (wt.m_type == Talker.Type.Shout || wt.m_type == Talker.Type.Ping)
@@ -87,16 +87,11 @@ namespace QuickPing.Patches
                 text = "<color=#" + ColorUtility.ToHtmlStringRGBA(Settings.PlayerColor.Value) + ">" + wt.m_name + "</color>: ";
             }
 
-            text += "<color=#" + ColorUtility.ToHtmlStringRGBA(wt.m_textField.color) + ">" + wt.m_text + "</color>";
-            wt.m_textField.text = text;
+            text += "<color=#" + ColorUtility.ToHtmlStringRGBA(wt.m_textMeshField.color) + ">" + wt.m_text + "</color>";
+            wt.m_textMeshField.text = text;
 
             return false;
         }
-
-
-
-
-
 
     }
 
