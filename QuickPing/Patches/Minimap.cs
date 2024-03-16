@@ -228,7 +228,7 @@ namespace QuickPing.Patches
                                 GUIManager.BlockInput(true);
                                 InitNameInput();
                                 tempOriginalText = strID;
-                                Minimap.instance.ShowPinNameInput(pinData);
+                                Minimap.instance.ShowPinNameInput(pinData.m_pos);
                             }
                         }
                     }

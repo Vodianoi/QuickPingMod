@@ -95,7 +95,7 @@
       <Version>5.4.21</Version>
     </PackageReference>
     <PackageReference Include="Digitalroot.Valheim.Common.References">
-      <Version>0.212.18</Version>
+      <Version>0.216.902</Version>
     </PackageReference>
     <PackageReference Include="GitVersion.MsBuild">
       <Version>5.11.1</Version>
