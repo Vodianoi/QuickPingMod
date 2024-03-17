@@ -13,7 +13,7 @@ jobs:
         with:
           tag: "${{ github.ref_name }}"
           fileName: "QuickPing.zip"
-      - uses: Vodianoi/uploadMod@0.9.41
+      - uses: Vodianoi/uploadMod@0.9.42
         with:
           mod-id: '2033' #Nexus
           archive-file: QuickPing.zip
