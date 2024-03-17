@@ -16,7 +16,6 @@ Ping position and markers will always work but must be installed on all clients 
 ## What's Changed
 * Hotfix/patch 0.217.38 by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/112
 
-
 **Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.8...1.5.9
 
 ## Configuration
