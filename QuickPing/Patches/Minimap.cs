@@ -16,8 +16,6 @@ namespace QuickPing.Patches
     /// </summary>
     internal static class Minimap_Patch
     {
-
-
         private static GameObject panel;
         private static GameObject nameInput;
         private static GameObject toggleSaveName;
@@ -33,7 +31,6 @@ namespace QuickPing.Patches
         /// <returns></returns>
         public static Minimap.PinType IsPinable(string strID)
         {
-
             string baseLocalization = Localization_Patch.GetBaseTranslation(strID);
             Dictionary<Minimap.PinType, List<string>> pinables = new()
             {
@@ -70,7 +67,8 @@ namespace QuickPing.Patches
                         "$piece_deposit_silver",
                         "$piece_deposit_silvervein",
                         "$piece_deposit_tin",
-                        "$piece_mudpile"
+                        "$piece_mudpile",
+                        "$piece_giant_brain"
                     }
                 },
 
@@ -89,6 +87,7 @@ namespace QuickPing.Patches
                         "$item_mushroomblue",
                         "$item_thistle",
                         "$item_jotunpuffs",
+                        "$item_ancientroot",
                         // fix #58 conflicts with PlantEverything
                         "$peRaspberryBushName",
                         "$peBlueberryBushName",
@@ -98,7 +97,7 @@ namespace QuickPing.Patches
                         "$pePickableBlueMushroomName",
                         "$pePickableThistleName",
                         "$pePickableDandelionName",
-
+                        "$pePickableJotunpuffsName",
                     }
                 },
 
@@ -125,6 +124,7 @@ namespace QuickPing.Patches
                     return pinType;
                 }
             }
+
             return Minimap.PinType.None;
         }
 
@@ -132,18 +132,21 @@ namespace QuickPing.Patches
         /// Force rename pin
         /// </summary>
         /// <param name="obj"></param>
-        internal static void RenamePin(HoverObject obj) => AddPin(obj.Hover, obj.Destructible, obj.Name, obj.center, rename: true);
+        internal static void RenamePin(HoverObject obj) =>
+            AddPin(obj.Hover, obj.Destructible, obj.Name, obj.center, rename: true);
 
         /// <summary>
         /// Add correct pin to map if Settings.
         /// </summary>
         /// <param name="obj"></param>
         public static void AddPin(HoverObject obj) => AddPin(obj.Hover, obj.Destructible, obj.Name, obj.center);
+
         /// <summary>
         /// Add correct pin to map if Settings and bypass filters.
         /// </summary>
         /// <param name="obj"></param>
-        public static void ForceAddPin(HoverObject obj) => AddPin(obj.Hover, obj.Destructible, obj.Name, obj.center, true);
+        public static void ForceAddPin(HoverObject obj) =>
+            AddPin(obj.Hover, obj.Destructible, obj.Name, obj.center, true);
 
         /// <summary>
         /// Add correct pin to map if Settings.
@@ -153,9 +156,14 @@ namespace QuickPing.Patches
         /// <param name="strID">Display Name of hover object</param>
         /// <param name="pos">Pinged position (last raycast point or hover center)</param>
         /// <param name="force">Bypass filters</param>
-        public static void AddPin(GameObject hover, IDestructible idestructible, string strID, Vector3 pos, bool force = false, bool rename = false)
+        public static void AddPin(GameObject hover, IDestructible idestructible, string strID, Vector3 pos,
+            bool force = false, bool rename = false)
         {
-            if (!Settings.AddPin.Value && !force) { return; }
+            if (!Settings.AddPin.Value && !force)
+            {
+                return;
+            }
+
             bool pinned = false;
 
             Minimap.PinData pinData = new Minimap.PinData
@@ -180,15 +188,17 @@ namespace QuickPing.Patches
                         }
 
                         pinData.m_pos = pos;
-                        pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                        pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false,
+                            0L);
                         pinned = true;
-                        QuickPingPlugin.Log.LogInfo($"Add Portal Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+                        QuickPingPlugin.Log.LogInfo(
+                            $"Add Portal Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
                     }
+
                     break;
                 default:
                     if (closestPin == null || rename)
                     {
-
                         pinData.m_name ??= Localization.instance.Localize(strID);
 
                         // check for customnames
@@ -201,12 +211,15 @@ namespace QuickPing.Patches
                         {
                             pinData.m_name = Settings.DefaultPingText;
                         }
+
                         if (pinData.m_type == Minimap.PinType.None && force)
                         {
                             pinData.m_type = Settings.DefaultPinType.Value;
-                            pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                            pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true,
+                                false, 0L);
                             pinned = true;
-                            QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+                            QuickPingPlugin.Log.LogInfo(
+                                $"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
                             break;
                         }
 
@@ -214,12 +227,15 @@ namespace QuickPing.Patches
                         {
                             if (closestPin == null)
                             {
-                                pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false, 0L);
+                                pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true,
+                                    false, 0L);
                                 pinned = true;
                             }
                             else if (rename)
                                 pinData = closestPin;
-                            QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
+
+                            QuickPingPlugin.Log.LogInfo(
+                                $"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
 
                             //Check if Settings.AskForName.Value is true, and if CustomNames contains its name.
                             //if true ask for user input before adding pin
@@ -232,23 +248,28 @@ namespace QuickPing.Patches
                             }
                         }
                     }
+
                     break;
             }
 
             if (idestructible != null && pinned)
             {
-                FieldInfo fieldInfo = idestructible.GetType().GetField("m_nview", BindingFlags.Instance | BindingFlags.NonPublic);
+                FieldInfo fieldInfo = idestructible.GetType()
+                    .GetField("m_nview", BindingFlags.Instance | BindingFlags.NonPublic);
                 if (fieldInfo == null)
                 {
-                    QuickPingPlugin.Log.LogWarning($"Unable to link destructible {idestructible} to pin: {pinData.m_name}. (Is it a god?)");
+                    QuickPingPlugin.Log.LogWarning(
+                        $"Unable to link destructible {idestructible} to pin: {pinData.m_name}. (Is it a god?)");
                     return;
                 }
+
                 ZNetView netView = fieldInfo.GetValue(idestructible) as ZNetView;
                 ZDOID uid = netView.GetZDO().m_uid;
                 if (uid == null)
                 {
                     QuickPingPlugin.Log.LogError($"Try adding {idestructible} but {netView} uid is null");
                 }
+
                 if (!DataManager.PinnedObjects.ContainsKey(uid))
                 {
                     DataManager.PinnedObjects[uid] = pinData;
@@ -264,6 +285,7 @@ namespace QuickPing.Patches
             {
                 Minimap.instance.m_wasFocused = false;
             }
+
             if (Minimap.instance.m_namePin != null)
             {
                 panel.SetActive(true);
@@ -275,6 +297,7 @@ namespace QuickPing.Patches
                 {
                     EventSystem.current.SetSelectedGameObject(nameInput);
                 }
+
                 if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
                 {
                     ValidateNameInput(inputField, toggleSave.isOn);
@@ -283,6 +306,7 @@ namespace QuickPing.Patches
                 {
                     CancelNameInput();
                 }
+
                 Minimap.instance.m_wasFocused = true;
             }
             else //end
@@ -329,9 +353,8 @@ namespace QuickPing.Patches
                 QuickPingPlugin.Log.LogInfo($"Save name {Minimap.instance.m_namePin.m_name} for {originalText}");
                 SaveName(Minimap.instance.m_namePin.m_name, originalText);
             }
+
             Minimap.instance.m_namePin = null;
-
-
         }
         /// <summary>
         /// Save the name of a pinned object and update PinnedObjects list with new value
@@ -427,7 +450,7 @@ namespace QuickPing.Patches
                 parent: panel.transform,
                 width: 20f,
                 height: 20f
-                );
+            );
 
             Text saveNameText = toggleSaveName.transform.Find("Label").GetComponent<Text>();
             saveNameText.color = Color.white;
@@ -448,8 +471,8 @@ namespace QuickPing.Patches
             //saveAllText.text = "Update all pins.";
             //saveAllText.enabled = true;
             //toggleSaveAll.GetComponent<Toggle>().interactable = false;
-
         }
+
         #endregion
 
         private static string GetPortalTag(Hoverable hoverable)
@@ -458,9 +481,6 @@ namespace QuickPing.Patches
             string tag = portalText.Split('"')[1];
             return tag;
         }
-
-
-
 
 
         #region Patches
@@ -482,26 +502,21 @@ namespace QuickPing.Patches
                 if (p.Value.Compare(pin))
                 {
                     pin = __instance.GetClosestPin(p.Value.m_pos, Settings.ClosestPinRange.Value);
-                    DataManager.PinnedObjects.Remove(DataManager.PinnedObjects.FirstOrDefault((x) => x.Value.Compare(p.Value)).Key);
+                    DataManager.PinnedObjects.Remove(DataManager.PinnedObjects
+                        .FirstOrDefault((x) => x.Value.Compare(p.Value)).Key);
                     break;
                 }
-
             }
+
             if ((bool)pin.m_uiElement)
             {
                 __instance.DestroyPinMarker(pin);
             }
+
             __instance.m_pins.Remove(pin);
             return false;
         }
 
-
-
-
-
         #endregion
-
     }
-
-
 }
