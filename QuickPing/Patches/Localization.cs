@@ -68,7 +68,6 @@ namespace QuickPing.Patches
                             res = Localization.instance.Localize("$location_mountaincave");
                             break;
                         #endregion
-
                         #region Mistlands
                         case "Mistlands_DvergrTownEntrance":
                         case "Mistlands_DvergrTownEntrance1":

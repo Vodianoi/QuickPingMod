@@ -76,17 +76,13 @@ namespace QuickPing.Patches
         #endregion
         private static string GetHoverName(string pingText, GameObject hover, HoverType type)
         {
-            Hoverable hoverable;
-            Character hoverCreature;
-            Piece piece;
-            Location location;
             switch (type)
             {
                 case HoverType.GameObject:
                     //pingText = Settings.pingText;
                     break;
                 case HoverType.Hoverable:
-                    hover.TryGetComponent(out hoverable);
+                    hover.TryGetComponent(out Hoverable hoverable);
                     pingText = !hoverable.GetHoverName().StartsWith("$")
                         ? Localization_Patch.GetBaseTranslation(hoverable.GetHoverName())
                         : hoverable.GetHoverName();
@@ -107,15 +103,15 @@ namespace QuickPing.Patches
                         pingText = hover.GetComponentInParent<Piece>().m_name;
                     break;
                 case HoverType.Piece:
-                    piece = hover.GetComponent<Piece>();
+                    var piece = hover.GetComponent<Piece>();
                     pingText = piece.m_name;
                     break;
                 case HoverType.Location:
-                    location = hover.GetComponent<Location>();
+                    var location = hover.GetComponent<Location>();
                     pingText = Localization_Patch.Localize(location);
                     break;
                 case HoverType.Character:
-                    hoverCreature = hover.GetComponent<Character>();
+                    var hoverCreature = hover.GetComponent<Character>();
                     pingText = hoverCreature.m_name;
 
                     break;
