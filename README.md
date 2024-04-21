@@ -14,9 +14,9 @@ Ping position and markers will always work but must be installed on all clients 
 - Change already existing Portal pin by pinging the portal again, it will change the marker's name to portal tag.
 
 ## What's Changed
-* Hotfix/patch 0.217.38 by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/112
+* Hotfix/patch 0.217.46 by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/116
 
-**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.8...1.5.9
+**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.10...1.5.11
 
 ## Configuration
 The settings for QuickPing can be accessed in the BepInEx config file located in the `Valheim/BepInEx/config` folder. The settings include:
