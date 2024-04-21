@@ -14,16 +14,9 @@ Ping position and markers will always work but must be installed on all clients 
 - Change already existing Portal pin by pinging the portal again, it will change the marker's name to portal tag.
 
 ## What's Changed
-* Support/38 bug keybinds not changing to the one i set the default keybind is being kept instead by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/47
-* Support/37 creature pin by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/54
-* Support/58 conflict with advize planteverything by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/59
-* Feature/19 ask for pin name by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/61
-* Support/60 mushrooms, thistle etc. by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/67
-* Support/62 add mistlands assets by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/68
-* All data is now saved in {World}.{PlayerProfileName}.mod.quickping.{extension}. Unique for every Character, per world. https://github.com/Vodianoi/QuickPingMod/pull/66
+* Hotfix/patch 0.217.46 by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/116
 
-
-**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.3...1.5.4
+**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.10...1.5.11
 
 ## Configuration
 The settings for QuickPing can be accessed in the BepInEx config file located in the `Valheim/BepInEx/config` folder. The settings include:
@@ -48,8 +41,9 @@ The settings for QuickPing can be accessed in the BepInEx config file located in
   
 
 
-## Known issues and next patch ideas 
+## Known issues and ideas 
 You can find the github and contribute by adding an issue at: [Github](https://github.com/Vodianoi/QuickPingMod)
+Please report any bug !
 
 ## Downloads
 *___[Thunderstore](https://valheim.thunderstore.io/package/Atopy/QuickPing/)___*
