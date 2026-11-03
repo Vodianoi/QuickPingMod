@@ -19,7 +19,6 @@ namespace QuickPing.Patches
                 if (DataManager.PinnedObjects.ContainsKey(id))
                 {
                     Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
-                    //Minimap_Patch.PinnedObjects.Remove(id);
                 }
             }
         }
@@ -38,7 +37,6 @@ namespace QuickPing.Patches
                 if (DataManager.PinnedObjects.ContainsKey(id))
                 {
                     Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
-                    //Minimap_Patch.PinnedObjects.Remove(id);
                 }
             }
         }
@@ -77,7 +75,6 @@ namespace QuickPing.Patches
                 GameObject obj = UnityEngine.Object.Instantiate(__instance.m_spawnWhenDestroyed, __instance.transform.position, __instance.transform.rotation);
                 ZNetView component = obj.GetComponent<ZNetView>();
                 component.SetLocalScale(__instance.transform.localScale);
-                //component.GetZDO().SetPGWVersion(__instance.m_nview.GetZDO().GetPGWVersion());
                 Gibber component2 = obj.GetComponent<Gibber>();
                 if ((bool)component2)
                 {
@@ -126,7 +123,6 @@ namespace QuickPing.Patches
                 if (DataManager.PinnedObjects.ContainsKey(id))
                 {
                     Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
-                    //Minimap_Patch.PinnedObjects.Remove(id);
                 }
             }
         }

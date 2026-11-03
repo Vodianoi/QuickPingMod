@@ -61,7 +61,6 @@ namespace QuickPing.Patches
             }
             worldTextInstance.m_textMeshField.richText = true;
             worldTextInstance.m_textMeshField.color = color;
-            //worldTextInstance.m_textMeshField.GetComponent<Outline>().enabled = type != Talker.Type.Whisper;
             worldTextInstance.m_timer = 0f;
             worldTextInstance.m_text = text;
 
@@ -83,7 +82,6 @@ namespace QuickPing.Patches
             string text = "";
             if (wt.m_type == Talker.Type.Shout || wt.m_type == Talker.Type.Ping)
             {
-                //"<color=#" + ColorUtility.ToHtmlStringRGBA(Settings.PlayerColor.Value) + ">" + user + "</color>: <color=#" + ColorUtility.ToHtmlStringRGBA(color) + ">" + text + "</color>";
                 text = "<color=#" + ColorUtility.ToHtmlStringRGBA(Settings.PlayerColor.Value) + ">" + wt.m_name + "</color>: ";
             }
 

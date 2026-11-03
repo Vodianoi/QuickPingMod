@@ -38,17 +38,10 @@ namespace QuickPing
 
         public static ManualLogSource Log { get; private set; }
 
-
-        // Use this class to add your own localization to the game
-        // https://valheim-modding.github.io/Jotunn/tutorials/localization.html
-        //public static CustomLocalization Localization = LocalizationManager.Instance.GetLocalization();
-
         private void Awake()
         {
-
             Log = Logger;
             Instance = this;
-            //Log.LogInfo($"Plugin {MyPluginInfo.GUID} is loaded!");
 
             Settings.Init();
             Harmony.CreateAndPatchAll(typeof(Player_Patch), MyPluginInfo.PLUGIN_GUID);
@@ -59,6 +52,7 @@ namespace QuickPing
             Harmony.CreateAndPatchAll(typeof(Destructible_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(ZNet_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(WearNTear_Patch), MyPluginInfo.PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(Character_Patch), MyPluginInfo.PLUGIN_GUID);
 
             Player_Patch.OnPlayerPing.AddListener(Player_Patch.SendPing);
             Player_Patch.OnPlayerPing.AddListener(Minimap_Patch.AddPin);

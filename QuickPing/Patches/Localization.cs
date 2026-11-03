@@ -1,4 +1,3 @@
-﻿//using System.Collections.Generic;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -89,12 +88,10 @@ namespace QuickPing.Patches
         /// <returns></returns>
         public static string GetBaseTranslation(string str)
         {
-            //QuickPing.Log.LogWarning($"Get base translation for -> {str}");
             if (str == "") return "noStr";
             Dictionary<string, string> values = Localization.instance.m_translations;
             var res = values.FirstOrDefault(x => x.Value == str).Key;
 
-            //QuickPing.Log.LogWarning($"{str} -> ${res}");
             return "$" + res;
         }
     }

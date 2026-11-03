@@ -140,82 +140,56 @@ namespace QuickPing.Patches
             LayerMask m_interactMask = LayerMask.GetMask("Default", "static_solid", "Default_small", "piece", "piece_nonsolid", "terrain", "character", "character_net", "character_ghost", "character_noenv", "vehicle", "item");
             RaycastHit[] array = Physics.RaycastAll(GameCamera.instance.transform.position, GameCamera.instance.transform.forward, range + 10, layerMask: m_interactMask);
             Array.Sort(array, (RaycastHit x, RaycastHit y) => x.distance.CompareTo(y.distance));
-            RaycastHit[] array2 = array;
+            // Closest hit that isn't the local player
+            int hitIndex = Array.FindIndex(array, hit => !OverlappingPlayer(hit));
+
             //Out of range handler
-            if (array2.Length == 0)
+            if (hitIndex < 0)
             {
                 var ray = new Ray(GameCamera.instance.transform.position, GameCamera.instance.transform.forward);
                 hoverObj.pos = ray.GetPoint(range);
                 hoverObj.center = hoverObj.pos;
                 return hoverObj;
             }
-            //get closest actually
-            for (int i = 0; i < 1; i++)
+
+            RaycastHit raycastHit = array[hitIndex];
+            hoverObj.pos = raycastHit.point;
+
+            //If ray hit in range
+            if (Vector3.Distance(Player.m_localPlayer.GetEyePoint(), raycastHit.point) < range)
             {
-                hoverObj.pos = array2[i].point;
-                RaycastHit raycastHit = array2[i];
-                if (OverlappingPlayer(ref raycastHit))
+                Transform hitTransform = raycastHit.collider.transform;
+                Character character = (raycastHit.collider.attachedRigidbody ? raycastHit.collider.attachedRigidbody.GetComponent<Character>() : raycastHit.collider.GetComponent<Character>());
+
+                if (character != null && (!character.GetBaseAI() || !character.GetBaseAI().IsSleeping()))
                 {
-                    continue;
+                    hoverObj.type = HoverType.Character;
+                    hoverObj.Hover = character.gameObject;
+                    hoverObj.center = character.transform.position;
                 }
-
-
-                //If ray hit in range
-                if (Vector3.Distance(Player.m_localPlayer.GetEyePoint(), raycastHit.point) < range)
+                else if ((hoverObj.type = CheckType(hitTransform, out hoverObj.Destructible)) != HoverType.GameObject)
                 {
-                    Character character = (raycastHit.collider.attachedRigidbody ? raycastHit.collider.attachedRigidbody.GetComponent<Character>() : raycastHit.collider.GetComponent<Character>());
-
-                    if (character != null && (!character.GetBaseAI() || !character.GetBaseAI().IsSleeping()))
+                    hoverObj.Hover = hitTransform.gameObject;
+                    hoverObj.center = hoverObj.Hover.transform.position;
+                }
+                //Children, then parents
+                else if (!TryFindInChildren(hitTransform, hoverObj) && hitTransform.parent != null)
+                {
+                    hoverObj.Destructible = Utilities.GO_Ext.GetRecursiveComponentInParents<IDestructible>(hitTransform);
+                    //TODO Check order
+                    if (hoverObj.Hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Location>(hitTransform))
                     {
-                        hoverObj.type = HoverType.Character;
-                        hoverObj.Hover = character.gameObject;
-                        hoverObj.center = character.transform.position;
+                        hoverObj.type = HoverType.Location;
                     }
-
-                    else if ((hoverObj.type = CheckType(raycastHit.collider.transform, out hoverObj.Destructible))
-                        != HoverType.GameObject)
+                    else if (hoverObj.Hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Piece>(hitTransform))
                     {
-                        hoverObj.Hover = raycastHit.collider.transform.gameObject;
-                        hoverObj.center = hoverObj.Hover.transform.position;
-                        QuickPingPlugin.Log.LogWarning("Root");
+                        hoverObj.type = HoverType.Piece;
                     }
-
-
-                    //Children (might be useless)
-                    else if (raycastHit.collider.GetComponentInChildren<GameObject>() != null)
+                    else if (hoverObj.Hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Hoverable>(hitTransform))
                     {
-                        var list = raycastHit.collider.GetComponentsInChildren<GameObject>();
-                        foreach (var go in list)
-                        {
-                            if ((hoverObj.type = CheckType(go.transform, out hoverObj.Destructible)) != HoverType.GameObject)
-                            {
-                                hoverObj.Hover = go.transform.gameObject;
-                                hoverObj.center = hoverObj.Hover.transform.position;
-                                QuickPingPlugin.Log.LogWarning("Child");
-                            }
-                        }
-
-                    }
-                    //Parents
-                    else if (raycastHit.collider.transform.parent != null)
-                    {
-                        hoverObj.Destructible = Utilities.GO_Ext.GetRecursiveComponentInParents<IDestructible>(raycastHit.collider.transform);
-                        //TODO Check order
-                        if (hoverObj.Hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Location>(raycastHit.collider.transform))
-                        {
-                            hoverObj.type = HoverType.Location;
-                        }
-                        else if (hoverObj.Hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Piece>(raycastHit.collider.transform))
-                        {
-                            hoverObj.type = HoverType.Piece;
-                        }
-                        else if (hoverObj.Hover = Utilities.GO_Ext.GetRecursiveParentWithComponent<Hoverable>(raycastHit.collider.transform))
-                        {
-                            hoverObj.type = HoverType.Hoverable;
-                        }
+                        hoverObj.type = HoverType.Hoverable;
                     }
                 }
-                break;
             }
 
             if (hoverObj.Hover)
@@ -289,7 +263,25 @@ namespace QuickPing.Patches
             return HoverType.GameObject;
         }
 
-        private static bool OverlappingPlayer(ref RaycastHit raycastHit)
+        /// <summary>
+        /// Look for a pingable component on the children of <paramref name="root"/> (root excluded).
+        /// </summary>
+        private static bool TryFindInChildren(Transform root, HoverObject hoverObj)
+        {
+            foreach (Transform child in root.GetComponentsInChildren<Transform>())
+            {
+                if (child == root) continue;
+                if ((hoverObj.type = CheckType(child, out hoverObj.Destructible)) != HoverType.GameObject)
+                {
+                    hoverObj.Hover = child.gameObject;
+                    hoverObj.center = child.position;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static bool OverlappingPlayer(RaycastHit raycastHit)
         {
             return (bool)raycastHit.collider.attachedRigidbody && raycastHit.collider.attachedRigidbody.gameObject == Player.m_localPlayer.gameObject;
         }
@@ -304,7 +296,7 @@ namespace QuickPing.Patches
             {
                 QuickPingPlugin.Log.LogInfo("SendPing : " + text);
                 ZRoutedRpc.instance.InvokeRoutedRPC(local ? Player.m_localPlayer.GetZDOID().UserID : ZRoutedRpc.Everybody, "ChatMessage", position, 3, UserInfo.GetLocalUser(), text);
-                if (Player.m_debugMode && Console.instance != null && Console.instance.IsCheatsEnabled() && Console.instance != null)
+                if (Player.m_debugMode && Console.instance != null && Console.instance.IsCheatsEnabled())
                 {
                     Console.instance.AddString(string.Format("Pinged at: {0}, {1}", position.x, position.z));
                 }

@@ -19,7 +19,7 @@ namespace QuickPing.Utilities
         {
             bool cloudSaveNamesFailed = SaveCustomNames(world, playerProfile);
             bool cloudSavePinsFailed = SavePinnedObjects(world, playerProfile);
-            return cloudSaveNamesFailed && cloudSavePinsFailed;
+            return cloudSaveNamesFailed || cloudSavePinsFailed;
         }
 
 
@@ -46,14 +46,17 @@ namespace QuickPing.Utilities
             {
                 fileReader?.Dispose();
                 QuickPingPlugin.Log.LogWarning($"Failed to load pinned objects. World: {world.m_name} - Profile: {playerProfile.m_playerName}");
-                //return new World(__name, loadError: true, versionError: false, __fileSource);
                 return;
             }
 
 
-            BinaryReader binary = fileReader.m_binary;
-            int count = binary.ReadInt32();
-            ZPackage zPackage = new ZPackage(binary.ReadBytes(count));
+            ZPackage zPackage;
+            using (fileReader)
+            {
+                BinaryReader binary = fileReader.m_binary;
+                int count = binary.ReadInt32();
+                zPackage = new ZPackage(binary.ReadBytes(count));
+            }
 
             UnpackPinnedObjects(zPackage);
         }
@@ -106,9 +109,13 @@ namespace QuickPing.Utilities
             }
 
 
-            BinaryReader binary = fileReader.m_binary;
-            int count = binary.ReadInt32();
-            ZPackage zPackage = new ZPackage(binary.ReadBytes(count));
+            ZPackage zPackage;
+            using (fileReader)
+            {
+                BinaryReader binary = fileReader.m_binary;
+                int count = binary.ReadInt32();
+                zPackage = new ZPackage(binary.ReadBytes(count));
+            }
 
             UnpackCustomNames(zPackage);
         }
@@ -151,8 +158,6 @@ namespace QuickPing.Utilities
             string __MyExtension = $".{playerProfile.m_playerName}.mod.quickping.{extension}";
 
 
-            //INFO
-            //QuickPingPlugin.Log.LogInfo("World .pinned save path: " + worldSavePath);
 
             return worldSavePath + __MyExtension;
         }
@@ -202,7 +207,7 @@ namespace QuickPing.Utilities
             {
                 string originalName = zPackage.ReadString();
                 string name = zPackage.ReadString();
-                if (originalName is not "" or null)
+                if (originalName is not (null or ""))
                     CustomNames.Add(originalName, name);
             }
         }
