@@ -28,8 +28,13 @@ namespace QuickPing.Patches
                     break;
             }
 
+            // Resolve the character name like vanilla does (falls back to the raw ID)
+            string userName = ZNet.TryGetPlayerByPlatformUserID(user, out ZNet.PlayerInfo playerInfo)
+                ? CensorShittyWords.FilterUGC(playerInfo.m_name, UGCType.CharacterName, user)
+                : user.ToString();
+
             string text2 = (timestamp ? ("[" + DateTime.Now.ToString("MM-dd-yyyy HH:mm:ss") + "] ") : "");
-            text2 = text2 + "<color=#" + ColorUtility.ToHtmlStringRGBA(Settings.PlayerColor.Value) + ">" + user + "</color>: <color=#" + ColorUtility.ToHtmlStringRGBA(color) + ">" + text + "</color>";
+            text2 = text2 + "<color=#" + ColorUtility.ToHtmlStringRGBA(Settings.PlayerColor.Value) + ">" + userName + "</color>: <color=#" + ColorUtility.ToHtmlStringRGBA(color) + ">" + text + "</color>";
             __instance.AddString(text2);
             return false;
         }

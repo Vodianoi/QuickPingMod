@@ -467,18 +467,16 @@ namespace QuickPing.Patches
             {
                 if (p.Value.Compare(pin))
                 {
-                    pin = __instance.GetClosestPin(p.Value.m_pos, Settings.ClosestPinRange.Value);
-                    DataManager.PinnedObjects.Remove(DataManager.PinnedObjects
-                        .FirstOrDefault((x) => x.Value.Compare(p.Value)).Key);
+                    // The stored PinData may be a copy: target the pin actually on the map
+                    pin = __instance.GetClosestPin(p.Value.m_pos, Settings.ClosestPinRange.Value) ?? pin;
+                    DataManager.PinnedObjects.Remove(p.Key);
                     break;
                 }
             }
 
-            if ((bool)pin.m_uiElement)
-            {
-                __instance.DestroyPinMarker(pin);
-            }
-
+            // --- vanilla ---
+            __instance.m_pinUpdateRequired = true;
+            __instance.DestroyPinMarker(pin);
             __instance.m_pins.Remove(pin);
             return false;
         }

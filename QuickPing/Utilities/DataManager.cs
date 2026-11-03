@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Splatform;
 using System.IO;
 
 namespace QuickPing.Utilities
@@ -51,44 +52,22 @@ namespace QuickPing.Utilities
 
 
             ZPackage zPackage;
-            using (fileReader)
+            try
             {
                 BinaryReader binary = fileReader.m_binary;
                 int count = binary.ReadInt32();
                 zPackage = new ZPackage(binary.ReadBytes(count));
+            }
+            finally
+            {
+                fileReader.Dispose();
             }
 
             UnpackPinnedObjects(zPackage);
         }
         private static bool SavePinnedObjects(World world, PlayerProfile playerProfile)
         {
-
-            ZPackage zPackage = PackPinnedObjects();
-
-
-            bool cloudSaveFailed;
-            if (world.m_fileSource != FileHelpers.FileSource.Cloud)
-            {
-                Directory.CreateDirectory(World.GetWorldSavePath(world.m_fileSource));
-            }
-
-            string metaPath = GetPath(world, playerProfile, "pinned");
-            string text = metaPath + ".new";
-            string oldFile = metaPath + ".old";
-            byte[] array = zPackage.GetArray();
-            FileWriter fileWriter = new FileWriter(text, FileHelpers.FileHelperType.Binary, world.m_fileSource);
-            fileWriter.m_binary.Write(array.Length);
-            fileWriter.m_binary.Write(array);
-            fileWriter.Finish();
-
-
-            cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && world.m_fileSource == FileHelpers.FileSource.Cloud;
-            if (!cloudSaveFailed)
-            {
-                FileHelpers.ReplaceOldFile(metaPath, text, oldFile, world.m_fileSource);
-            }
-
-            return cloudSaveFailed;
+            return WritePackage(world, GetPath(world, playerProfile, "pinned"), PackPinnedObjects());
         }
 
         private static void LoadCustomNames(World world, PlayerProfile playerProfile)
@@ -110,11 +89,15 @@ namespace QuickPing.Utilities
 
 
             ZPackage zPackage;
-            using (fileReader)
+            try
             {
                 BinaryReader binary = fileReader.m_binary;
                 int count = binary.ReadInt32();
                 zPackage = new ZPackage(binary.ReadBytes(count));
+            }
+            finally
+            {
+                fileReader.Dispose();
             }
 
             UnpackCustomNames(zPackage);
@@ -122,29 +105,32 @@ namespace QuickPing.Utilities
 
         private static bool SaveCustomNames(World world, PlayerProfile playerProfile)
         {
+            return WritePackage(world, GetPath(world, playerProfile, "customNames"), PackCustomNames());
+        }
 
-            ZPackage zPackage = PackCustomNames();
-
-            bool cloudSaveFailed;
+        /// <summary>
+        /// Write a ZPackage next to the world save (via .new/.old swap, like vanilla).
+        /// </summary>
+        /// <returns>true if the cloud save failed</returns>
+        private static bool WritePackage(World world, string path, ZPackage zPackage)
+        {
             if (world.m_fileSource != FileHelpers.FileSource.Cloud)
             {
-                Directory.CreateDirectory(World.GetWorldSavePath(world.m_fileSource));
+                Directory.CreateDirectory(SaveSystem.GetWorldsSaveRootPath(world.m_fileSource));
             }
 
-            string metaPath = GetPath(world, playerProfile, "customNames");
-            string text = metaPath + ".new";
-            string oldFile = metaPath + ".old";
+            string newFile = path + ".new";
+            string oldFile = path + ".old";
             byte[] array = zPackage.GetArray();
-            FileWriter fileWriter = new FileWriter(text, FileHelpers.FileHelperType.Binary, world.m_fileSource);
+            FileWriter fileWriter = new FileWriter(newFile, CloudStorageFileGrouping.SameFolder, FileHelpers.FileHelperType.Binary, world.m_fileSource);
             fileWriter.m_binary.Write(array.Length);
             fileWriter.m_binary.Write(array);
             fileWriter.Finish();
 
-
-            cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && world.m_fileSource == FileHelpers.FileSource.Cloud;
+            bool cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && world.m_fileSource == FileHelpers.FileSource.Cloud;
             if (!cloudSaveFailed)
             {
-                FileHelpers.ReplaceOldFile(metaPath, text, oldFile, world.m_fileSource);
+                FileHelpers.ReplaceOldFile(path, newFile, oldFile, CloudStorageFileGrouping.SameFolder, world.m_fileSource);
             }
 
             return cloudSaveFailed;

@@ -7,13 +7,15 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>QuickPing</RootNamespace>
     <AssemblyName>QuickPing</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <LangVersion>9.0</LangVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>false</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <!-- GitVersionInformation.g.cs needs ExcludeFromCodeCoverage, missing from the Unity corlib Jotunn references -->
+    <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -90,16 +92,20 @@
     <PackageReference Include="BepInEx.BaseLib">
       <Version>5.4.21</Version>
     </PackageReference>
+    <PackageReference Include="Digitalroot.Valheim.References.JvL">
+      <Version>2.30.2</Version>
+    </PackageReference>
+    <!-- Stay on 5.x: GitVersion 6 disables itself under Visual Studio / msbuild.exe (.NET Framework MSBuild) -->
     <PackageReference Include="GitVersion.MsBuild">
-      <Version>6.3.0</Version>
+      <Version>5.12.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="HarmonyX">
-      <Version>2.14.0</Version>
+      <Version>2.16.1</Version>
     </PackageReference>
     <PackageReference Include="JotunnLib">
-      <Version>2.25.0</Version>
+      <Version>2.30.2</Version>
     </PackageReference>
     <PackageReference Include="MonoMod.Backports">
       <Version>1.1.2</Version>
@@ -141,7 +147,8 @@
   <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT' And '$(VALHEIM_INSTALL)' != ''">
     <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot; -DeployPath &quot;$(MOD_DEPLOYPATH.TrimEnd('\'))&quot; -ProjectPath &quot;$(ProjectDir.TrimEnd('\'))&quot; " />
   </Target>
-  <!-- Runs after GitVersion so the plugin version is known at compile time -->
+  <!-- Generates MyPluginInfo (GUID/name/version). Runs after GitVersion so the version is known at compile time;
+       GitVersion also writes the assembly version (UpdateAssemblyInfo). -->
   <Target Name="AddGeneratedFile" BeforeTargets="BeforeCompile;CoreCompile" DependsOnTargets="GetVersion">
     <PropertyGroup>
       <BepInExPluginGuid Condition="'$(BepInExPluginGuid)' == ''">com.$(Company.ToLower()).plugins.$(AssemblyName.ToLower())</BepInExPluginGuid>
