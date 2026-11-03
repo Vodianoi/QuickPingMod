@@ -62,6 +62,9 @@ namespace QuickPing
             Player_Patch.OnPlayerRename.AddListener(Player_Patch.SendRename);
             Player_Patch.OnPlayerRename.AddListener(Minimap_Patch.RenamePin);
 
+#if DEBUG
+            Jotunn.Managers.CommandManager.Instance.AddConsoleCommand(new Utilities.DevDumpCommand());
+#endif
         }
     }
 }
