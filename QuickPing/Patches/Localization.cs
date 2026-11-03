@@ -14,7 +14,7 @@ namespace QuickPing.Patches
         public static string Localize(Location location)
         {
             string res = "";
-            foreach (var l in Location.m_allLocations)
+            foreach (var l in Location.s_allLocations)
             {
                 if (location.name.Contains(l.name))
                 {

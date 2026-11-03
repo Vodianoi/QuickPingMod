@@ -56,8 +56,10 @@ namespace QuickPing.Patches
         /// <returns></returns>
         [HarmonyPatch(typeof(Destructible), nameof(Destructible.Destroy))]
         [HarmonyPrefix]
-        public static bool Destroy(Destructible __instance, Vector3 hitPoint, Vector3 hitDir)
+        public static bool Destroy(Destructible __instance, HitData hit)
         {
+            Vector3 hitPoint = hit.m_point;
+            Vector3 hitDir = hit.m_dir;
 
             __instance.CreateDestructionEffects(hitPoint, hitDir);
             if (__instance.m_destroyNoise > 0f)

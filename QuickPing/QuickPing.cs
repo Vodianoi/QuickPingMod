@@ -67,8 +67,6 @@ namespace QuickPing
             Player_Patch.OnPlayerRename.AddListener(Player_Patch.SendRename);
             Player_Patch.OnPlayerRename.AddListener(Minimap_Patch.RenamePin);
 
-            // To learn more about Jotunn's features, go to
-            // https://valheim-modding.github.io/Jotunn/tutorials/overview.html
         }
     }
 }

@@ -8,8 +8,8 @@ jobs:
   publish-modpackage:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: robinraju/release-downloader@v1.7
+      - uses: actions/checkout@v4
+      - uses: robinraju/release-downloader@v1
         with:
           tag: "${{ github.ref_name }}"
           fileName: "QuickPing.zip"

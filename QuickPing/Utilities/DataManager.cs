@@ -159,7 +159,6 @@ namespace QuickPing.Utilities
 
         #endregion
 
-
         #region Packaging
 
         /// <summary>
@@ -227,7 +226,6 @@ namespace QuickPing.Utilities
         }
 
         #endregion
-
 
         #region Extensions
         private static void Write(this ZPackage zPackage, Minimap.PinData pinData)
