@@ -70,6 +70,7 @@
     <Compile Include="Patches\IDestructible.cs" />
     <Compile Include="Patches\Minimap.cs" />
     <Compile Include="Patches\Player.cs" />
+    <Compile Include="Patches\SaveCollection.cs" />
     <Compile Include="Patches\Terminal.cs" />
     <Compile Include="Patches\ZNet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

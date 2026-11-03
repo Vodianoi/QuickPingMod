@@ -18,134 +18,147 @@ namespace QuickPing.Utilities
         #region Public Methods
         public static bool Save(World world, PlayerProfile playerProfile)
         {
-            bool cloudSaveNamesFailed = SaveCustomNames(world, playerProfile);
-            bool cloudSavePinsFailed = SavePinnedObjects(world, playerProfile);
+            bool cloudSaveNamesFailed = WritePackage(GetPath(world, playerProfile, "customNames"), world.m_fileSource, PackCustomNames());
+            bool cloudSavePinsFailed = WritePackage(GetPath(world, playerProfile, "pinned"), world.m_fileSource, PackPinnedObjects());
             return cloudSaveNamesFailed || cloudSavePinsFailed;
         }
 
 
         public static void Load(World world, PlayerProfile playerProfile)
         {
-            LoadCustomNames(world, playerProfile);
-            LoadPinnedObjects(world, playerProfile);
+            CustomNames.Clear();
+            ZPackage names = ReadPackage(GetPath(world, playerProfile, "customNames"), world.m_fileSource);
+            if (names != null)
+                UnpackCustomNames(names);
+            else
+                QuickPingPlugin.Log.LogWarning($"Failed to load custom names. World: {world.m_name} - Profile: {playerProfile.m_playerName}");
+
+            PinnedObjects.Clear();
+            ZPackage pins = ReadPackage(GetPath(world, playerProfile, "pinned"), world.m_fileSource);
+            if (pins != null)
+                UnpackPinnedObjects(pins);
+            else
+                QuickPingPlugin.Log.LogWarning($"Failed to load pinned objects. World: {world.m_name} - Profile: {playerProfile.m_playerName}");
+        }
+
+        /// <summary>
+        /// Earlier builds for Valheim 1.0.21 dropped the '/' after the worlds folder and wrote
+        /// "worlds&lt;World&gt;.&lt;Player&gt;.mod.quickping.*" at the Steam Cloud root. The game then lists them
+        /// as world saves and the world list crashes ("Invalid path"). Move them back into "worlds/".
+        /// </summary>
+        public static void RepairMisnamedCloudFiles()
+        {
+            const FileHelpers.FileSource cloud = FileHelpers.FileSource.Cloud;
+            if (!FileHelpers.CloudStorageSupported || !FileHelpers.CloudStorageSupportedAndEnabled) return;
+
+            string[] files;
+            try
+            {
+                // Same listing as the game's world list (SaveCollection.GetAllFilesInSource)
+                files = FileHelpers.GetFiles(cloud, SaveSystem.GetSavePath(SaveDataType.World, cloud)) ?? Array.Empty<string>();
+            }
+            catch (Exception e)
+            {
+                QuickPingPlugin.Log.LogWarning($"Could not list cloud files: {e.Message}");
+                return;
+            }
+
+            string root = SaveSystem.GetWorldsSaveRootPath(cloud).Trim('/'); // "worlds"
+            foreach (string file in files)
+            {
+                string name = file.Replace('\\', '/').TrimStart('/');
+                if (name.Contains("/") || !name.StartsWith(root) || !name.Contains(".mod.quickping.")) continue;
+
+                string target = root + "/" + name.Substring(root.Length);
+                try
+                {
+                    if (!name.EndsWith(".old"))
+                    {
+                        ZPackage zPackage = ReadPackage(file, cloud);
+                        if (zPackage == null || WritePackage(target, cloud, zPackage))
+                        {
+                            QuickPingPlugin.Log.LogWarning($"Could not move misnamed cloud file {file} to {target}");
+                            continue;
+                        }
+                    }
+                    FileHelpers.Delete(file, cloud);
+                    QuickPingPlugin.Log.LogInfo($"Moved misnamed cloud file {file} to {target}");
+                }
+                catch (Exception e)
+                {
+                    QuickPingPlugin.Log.LogWarning($"Could not repair misnamed cloud file {file}: {e.Message}");
+                }
+            }
         }
         #endregion
 
         #region Private Methods
-        private static void LoadPinnedObjects(World world, PlayerProfile playerProfile)
+        /// <summary>
+        /// Read a ZPackage written by <see cref="WritePackage"/>. Returns null if the file is missing or unreadable.
+        /// </summary>
+        private static ZPackage ReadPackage(string path, FileHelpers.FileSource fileSource)
         {
-            PinnedObjects.Clear();
-
-            var pinnedPath = GetPath(world, playerProfile, "pinned");
-
-            FileReader fileReader = null;
+            FileReader fileReader;
             try
             {
-                fileReader = new FileReader(pinnedPath, world.m_fileSource);
+                fileReader = new FileReader(path, fileSource);
             }
             catch
             {
-                fileReader?.Dispose();
-                QuickPingPlugin.Log.LogWarning($"Failed to load pinned objects. World: {world.m_name} - Profile: {playerProfile.m_playerName}");
-                return;
+                return null;
             }
 
-
-            ZPackage zPackage;
             try
             {
                 BinaryReader binary = fileReader.m_binary;
                 int count = binary.ReadInt32();
-                zPackage = new ZPackage(binary.ReadBytes(count));
+                return new ZPackage(binary.ReadBytes(count));
+            }
+            catch
+            {
+                return null;
             }
             finally
             {
                 fileReader.Dispose();
             }
-
-            UnpackPinnedObjects(zPackage);
-        }
-        private static bool SavePinnedObjects(World world, PlayerProfile playerProfile)
-        {
-            return WritePackage(world, GetPath(world, playerProfile, "pinned"), PackPinnedObjects());
-        }
-
-        private static void LoadCustomNames(World world, PlayerProfile playerProfile)
-        {
-            CustomNames.Clear();
-            var customNamesPath = GetPath(world, playerProfile, "customNames");
-
-            FileReader fileReader = null;
-            try
-            {
-                fileReader = new FileReader(customNamesPath, world.m_fileSource);
-            }
-            catch
-            {
-                fileReader?.Dispose();
-                QuickPingPlugin.Log.LogWarning($"Failed to load custom names. World: {world.m_name} - Profile: {playerProfile.m_playerName}");
-                return;
-            }
-
-
-            ZPackage zPackage;
-            try
-            {
-                BinaryReader binary = fileReader.m_binary;
-                int count = binary.ReadInt32();
-                zPackage = new ZPackage(binary.ReadBytes(count));
-            }
-            finally
-            {
-                fileReader.Dispose();
-            }
-
-            UnpackCustomNames(zPackage);
-        }
-
-        private static bool SaveCustomNames(World world, PlayerProfile playerProfile)
-        {
-            return WritePackage(world, GetPath(world, playerProfile, "customNames"), PackCustomNames());
         }
 
         /// <summary>
         /// Write a ZPackage next to the world save (via .new/.old swap, like vanilla).
         /// </summary>
         /// <returns>true if the cloud save failed</returns>
-        private static bool WritePackage(World world, string path, ZPackage zPackage)
+        private static bool WritePackage(string path, FileHelpers.FileSource fileSource, ZPackage zPackage)
         {
-            if (world.m_fileSource != FileHelpers.FileSource.Cloud)
+            if (fileSource != FileHelpers.FileSource.Cloud)
             {
-                Directory.CreateDirectory(SaveSystem.GetWorldsSaveRootPath(world.m_fileSource));
+                Directory.CreateDirectory(SaveSystem.GetWorldsSaveRootPath(fileSource));
             }
 
             string newFile = path + ".new";
             string oldFile = path + ".old";
             byte[] array = zPackage.GetArray();
-            FileWriter fileWriter = new FileWriter(newFile, CloudStorageFileGrouping.SameFolder, FileHelpers.FileHelperType.Binary, world.m_fileSource);
+            FileWriter fileWriter = new FileWriter(newFile, CloudStorageFileGrouping.SameFolder, FileHelpers.FileHelperType.Binary, fileSource);
             fileWriter.m_binary.Write(array.Length);
             fileWriter.m_binary.Write(array);
             fileWriter.Finish();
 
-            bool cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && world.m_fileSource == FileHelpers.FileSource.Cloud;
+            bool cloudSaveFailed = fileWriter.Status != FileWriter.WriterStatus.CloseSucceeded && fileSource == FileHelpers.FileSource.Cloud;
             if (!cloudSaveFailed)
             {
-                FileHelpers.ReplaceOldFile(path, newFile, oldFile, CloudStorageFileGrouping.SameFolder, world.m_fileSource);
+                FileHelpers.ReplaceOldFile(path, newFile, oldFile, CloudStorageFileGrouping.SameFolder, fileSource);
             }
 
             return cloudSaveFailed;
         }
 
-
+        /// <summary>
+        /// "&lt;worlds folder&gt;/&lt;World&gt;.&lt;Player&gt;.mod.quickping.&lt;extension&gt;", next to the world's .db
+        /// (built like World.GetDBPath()).
+        /// </summary>
         private static string GetPath(World world, PlayerProfile playerProfile, string extension)
         {
-            FileHelpers.SplitFilePath(world.GetDBPath(), out string directory, out string fileName, out string fileExtension);
-            var worldSavePath = directory + fileName;
-            string __MyExtension = $".{playerProfile.m_playerName}.mod.quickping.{extension}";
-
-
-
-            return worldSavePath + __MyExtension;
+            return $"{SaveSystem.GetWorldsSaveRootPath(world.m_fileSource)}/{world.m_worldName}.{playerProfile.m_playerName}.mod.quickping.{extension}";
         }
 
         #endregion

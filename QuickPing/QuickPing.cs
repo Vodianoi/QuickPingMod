@@ -48,6 +48,7 @@ namespace QuickPing
             Harmony.CreateAndPatchAll(typeof(ChatPing_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(Minimap_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(Terminal_Patch), MyPluginInfo.PLUGIN_GUID);
+            Harmony.CreateAndPatchAll(typeof(SaveCollection_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(MineRock5_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(Destructible_Patch), MyPluginInfo.PLUGIN_GUID);
             Harmony.CreateAndPatchAll(typeof(ZNet_Patch), MyPluginInfo.PLUGIN_GUID);

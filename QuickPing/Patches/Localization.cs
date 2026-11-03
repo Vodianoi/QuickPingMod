@@ -84,7 +84,7 @@ namespace QuickPing.Patches
         /// <summary>
         /// HEAVY AND NOT SAFE : MAY CHANGE  TODO
         /// </summary>
-        /// <param name="str">Trnslated text</param>
+        /// <param name="str">Translated text</param>
         /// <returns></returns>
         public static string GetBaseTranslation(string str)
         {
