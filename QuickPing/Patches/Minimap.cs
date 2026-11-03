@@ -25,103 +25,143 @@ namespace QuickPing.Patches
         private static string tempOriginalText;
 
         /// <summary>
+        /// Pin type for each pingable name token (or literal name). Tokens come from the game data
+        /// (Valheim 1.0.21, see the quickping_dump dev command). Location tokens are mapped in Localization_Patch.
+        /// </summary>
+        private static readonly Dictionary<Minimap.PinType, List<string>> Pinables = new()
+        {
+            //Fire pin
+            {
+                Minimap.PinType.Icon0,
+                new List<string>
+                {
+                    "$piece_firepit",
+                    "$piece_bonfire",
+                    "$piece_fire",
+                    "GoblinCamp",
+                }
+            },
+
+            //Home pin: traders
+            {
+                Minimap.PinType.Icon1,
+                new List<string>
+                {
+                    "Haldor",
+                    "Hildir",
+                    "$npc_bogwitch",
+                }
+            },
+
+            //Hammer pin: ores and minable resources
+            {
+                Minimap.PinType.Icon2,
+                new List<string>
+                {
+                    "$piece_deposit_copper",
+                    "$piece_deposit_tin",
+                    "$piece_deposit_obsidian",
+                    "$piece_deposit_silver",
+                    "$piece_deposit_silvervein",
+                    "$piece_mudpile",
+                    "$piece_giant_brain",
+                    "$item_softtissue", // same text as $piece_giant_brain
+                    "$piece_giant_bone",
+                    "$piece_giant_helmet",
+                    "$piece_giant_sword",
+                    "$item_flametalore",
+                    "$item_pickable_bogiron",
+                    "$item_pickable_sulfurrock",
+                    "$piece_deposit_goldvein", // Deep North: Petrified Gammeltroll
+                }
+            },
+
+            //Point pin: wild pickables
+            {
+                Minimap.PinType.Icon3,
+                new List<string>
+                {
+                    "$item_raspberries",
+                    "$item_blueberries",
+                    "$item_cloudberries",
+                    "$item_lingonberries",
+                    "$item_vineberry",
+                    "$item_dragonegg",
+                    "$item_voltureegg",
+                    "$item_dandelion",
+                    "$item_mushroomcommon",
+                    "$item_mushroomyellow",
+                    "$item_magecap",
+                    "$item_mushroomblue",
+                    "$item_thistle",
+                    "$item_jotunpuffs",
+                    "$item_royaljelly",
+                    "$item_fiddleheadfern",
+                    "$item_smokepuff",
+                    "$item_glowworm",
+                    "$item_ancientroot",
+                    "$item_carrotseeds",
+                    "$item_turnipseeds",
+                    "$item_onionseeds",
+                    "$item_kaleseeds",
+                    // fix #58 conflicts with PlantEverything
+                    "$peRaspberryBushName",
+                    "$peBlueberryBushName",
+                    "$peCloudberryBushName",
+                    "$pePickableMushroomName",
+                    "$pePickableYellowMushroomName",
+                    "$pePickableBlueMushroomName",
+                    "$pePickableThistleName",
+                    "$pePickableDandelionName",
+                    "$pePickableJotunpuffsName",
+                }
+            },
+
+            //Rune pin: dungeons and points of interest
+            {
+                Minimap.PinType.Icon4,
+                new List<string>
+                {
+                    "$location_forestcave",
+                    "$location_forestcrypt",
+                    "$location_bearcave",
+                    "Stone Henge",
+                    "$location_sunkencrypt",
+                    "$location_mountaincave",
+                    "$location_dvergrtown",
+                    "$location_dvergrboss",
+                    "$location_morgenhole",
+                    "$charredfortress",
+                    "$location_thehole",
+                    "$location_darkesthole",
+                    "$location_dnbossroom",
+                    "$location_dnbossroomnew",
+                    "$location_morkhalla",
+                    "$location_mausoleum",
+                    "$piece_portal",
+                }
+            },
+
+            //Hildir's quest dungeons use their vanilla map icons
+            { Minimap.PinType.Hildir1, new List<string> { "$hud_pin_hildir1" } },
+            { Minimap.PinType.Hildir2, new List<string> { "$hud_pin_hildir2" } },
+            { Minimap.PinType.Hildir3, new List<string> { "$hud_pin_hildir3" } },
+        };
+
+        /// <summary>
         /// Check if an object can be pinned
         /// </summary>
-        /// <param name="strID"></param>
-        /// <returns></returns>
+        /// <param name="strID">Name token or localized name of the pinged object</param>
+        /// <returns>Pin type, or None if it is not pinned automatically</returns>
         public static Minimap.PinType IsPinable(string strID)
         {
             string baseLocalization = Localization_Patch.GetBaseTranslation(strID);
-            Dictionary<Minimap.PinType, List<string>> pinables = new()
+
+            foreach (var pinables in Pinables)
             {
-                //Fire pin
+                if (pinables.Value.Contains(strID) || pinables.Value.Contains(baseLocalization))
                 {
-                    Minimap.PinType.Icon0,
-                    new List<string>
-                    {
-                        "$piece_firepit",
-                        "$piece_bonfire",
-                        "$piece_fire",
-                        "GoblinCamp"
-                    }
-                },
-
-                //Home pin
-                {
-                    Minimap.PinType.Icon1,
-                    new List<string>
-                    {
-                        //"$",
-                        //"$",
-                        //"$",
-                        //"$",
-                    }
-                },
-
-                //Hammer pin
-                {
-                    Minimap.PinType.Icon2,
-                    new List<string>
-                    {
-                        "$piece_deposit_copper",
-                        "$piece_deposit_silver",
-                        "$piece_deposit_silvervein",
-                        "$piece_deposit_tin",
-                        "$piece_mudpile",
-                        "$piece_giant_brain"
-                    }
-                },
-
-                //Point pin
-                {
-                    Minimap.PinType.Icon3,
-                    new List<string>
-                    {
-                        "$item_raspberries",
-                        "$item_blueberries",
-                        "$item_cloudberries",
-                        "$item_dragonegg",
-                        "$item_dandelion",
-                        "$item_mushroomcommon",
-                        "$item_magecap",
-                        "$item_mushroomblue",
-                        "$item_thistle",
-                        "$item_jotunpuffs",
-                        "$item_ancientroot",
-                        // fix #58 conflicts with PlantEverything
-                        "$peRaspberryBushName",
-                        "$peBlueberryBushName",
-                        "$peCloudberryBushName",
-                        "$pePickableMushroomName",
-                        "$pePickableYellowMushroomName",
-                        "$pePickableBlueMushroomName",
-                        "$pePickableThistleName",
-                        "$pePickableDandelionName",
-                        "$pePickableJotunpuffsName",
-                    }
-                },
-
-                //Rune pin
-                {
-                    Minimap.PinType.Icon4,
-                    new List<string>
-                    {
-                        "$location_forestcave",
-                        "$location_forestcrypt",
-                        "Stone Henge",
-                        "$location_sunkencrypt",
-                        "$location_mountaincave",
-                        "$location_dvergrtown",
-                        "$piece_portal"
-                    }
-                }
-            };
-
-            foreach (var pinType in pinables.Keys)
-            {
-                if (pinables[pinType].Contains(strID) || pinables[pinType].Contains(baseLocalization))
-                {
-                    return pinType;
+                    return pinables.Key;
                 }
             }
 
