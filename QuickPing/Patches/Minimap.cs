@@ -42,7 +42,7 @@ namespace QuickPing.Patches
                 }
             },
 
-            //Home pin: traders
+            //Home pin: traders and settlements
             {
                 Minimap.PinType.Icon1,
                 new List<string>
@@ -50,6 +50,12 @@ namespace QuickPing.Patches
                     "Haldor",
                     "Hildir",
                     "$npc_bogwitch",
+                    "$quickping_location_village",
+                    "$quickping_location_farm",
+                    "$quickping_location_lumbercamp",
+                    "$quickping_location_harbour",
+                    "$quickping_location_house",
+                    "$quickping_location_swamphut",
                 }
             },
 
@@ -138,6 +144,10 @@ namespace QuickPing.Patches
                     "$location_dnbossroomnew",
                     "$location_morkhalla",
                     "$location_mausoleum",
+                    "$quickping_location_ruins",
+                    "$quickping_location_tower",
+                    "$quickping_location_lighthouse",
+                    "$quickping_location_shipwreck",
                     "$piece_portal",
                 }
             },

@@ -190,6 +190,9 @@ namespace QuickPing.Patches
                         hoverObj.type = HoverType.Hoverable;
                     }
                 }
+
+                //Structures (villages, ruins, dungeons...): ping the whole location instead of the piece
+                TryUseLocation(hoverObj, hitTransform, raycastHit.point);
             }
 
             if (hoverObj.Hover)
@@ -261,6 +264,44 @@ namespace QuickPing.Patches
 
             }
             return HoverType.GameObject;
+        }
+
+        /// <summary>
+        /// If the hit object is part of a named location (village, ruin, dungeon entrance...), target the location.
+        /// Networked location parts (walls, doors, chests...) are spawned without a parent, so the location is
+        /// also looked up by position. Player-built pieces and objects worth pinning on their own
+        /// (ores, berries, traders...) are kept.
+        /// </summary>
+        private static void TryUseLocation(HoverObject hoverObj, Transform hitTransform, Vector3 point)
+        {
+            if (hoverObj.type == HoverType.Character) return;
+
+            Location parentLocation = hitTransform.GetComponentInParent<Location>();
+            Piece piece = hitTransform.GetComponentInParent<Piece>();
+            bool structurePart = parentLocation
+                || (piece ? !piece.IsPlacedByPlayer() : hitTransform.GetComponentInParent<WearNTear>());
+            if (!structurePart) return;
+
+            if (hoverObj.Hover && hoverObj.type != HoverType.Location)
+            {
+                string ownName;
+                try
+                {
+                    ownName = GetHoverName(hoverObj.Name, hoverObj.Hover, hoverObj.type);
+                }
+                catch (Exception)
+                {
+                    ownName = null;
+                }
+                if (ownName != null && Minimap_Patch.IsPinable(ownName) != Minimap.PinType.None) return;
+            }
+
+            Location location = parentLocation ? parentLocation : Location.GetLocation(point);
+            if (!location || Localization_Patch.Localize(location) == "") return;
+
+            hoverObj.type = HoverType.Location;
+            hoverObj.Hover = location.gameObject;
+            hoverObj.Destructible = null;
         }
 
         /// <summary>
