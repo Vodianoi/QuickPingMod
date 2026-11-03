@@ -3,6 +3,8 @@
 
 [url=https://valheim.thunderstore.io/package/Rolo/ExploreTogether/]ExploreTogether[/url]'s ping feature remastered. 
 
+Compatible with [b]Valheim 1.0.21[/b] (Ashlands, Bog Witch, Deep North).
+
 [size=6]Install Instruction[/size]
 
 Ping position and markers will always work but must be installed on all clients if you want everyone able to see pinged object's name display.
@@ -11,10 +13,18 @@ Ping position and markers will always work but must be installed on all clients 
 
 [list]
 [*]Use T (by default, see config) to [b]ping what you point[/b], name of pointed object/creature is displayed in the world and on the minimap to all players.
-  Some objects automatically add a pin on map if a player ping them (Copper, Silver, Dungeons, Portals, Berries etc.)
+  Some objects automatically add a pin on map if a player ping them:
+  [list]
+  [*][b]Ores and resources[/b] (hammer): copper, tin, obsidian, silver, Petrified Gammeltroll, muddy scrap piles, Mistlands giant remains, flametal, bog iron, sulfur rock
+  [*][b]Pickables[/b] (point): berries, mushrooms, thistle, dandelion, Jotun puffs, royal jelly, vineberries, fiddlehead, smoke puff, volture eggs, luminous larva, wild seeds...
+  [*][b]Dungeons and points of interest[/b] (rune): Troll Caves, Burial Chambers, Bear Caves, Sunken Crypts, Frost Caves, Infested Mines and Citadel, Putrid Holes, Charred Fortress, Deep North dungeons, ruins, towers, lighthouses, shipwrecks, portals
+  [*][b]Traders and settlements[/b] (house): Haldor, Hildir, the Bog Witch, villages, abandoned houses, swamp huts, farms, harbours
+  [*][b]Hildir's quest dungeons[/b] use Hildir's map icons
+  [/list]
+[*][b][i](New)[/i] Ping whole structures[/b]: pointing at any part of a village, ruin or dungeon entrance (walls, roofs, doors...) pings and pins the whole location. Your own buildings and resources worth pinning on their own (ores, berries...) are kept.
 [*]Use G (by default, see config) to [b]force add a marker[/b] (exclamation point by default if not filtered) [b]on map[/b] with pointed object's name.
 [*]If a pinned object is destroyed, it will also destroy its attached marker.
-[*][b][i](New)[/b][/i] Use Alt + Ping (by default, see config) and enter a custom name to [b]ping an object[/b].
+[*]Use Alt + Ping (by default, see config) and enter a custom name to [b]ping an object[/b].
 [*]Change text colors (chat, ping, shout, whisper, names) in config 
 [*]Change already existing Portal pin by pinging the portal again, it will change the marker's name to portal tag.
 [/list]
@@ -22,15 +32,14 @@ Ping position and markers will always work but must be installed on all clients 
 [size=6]What's Changed[/size]
 
 [list]
-[*]Support/38 bug keybinds not changing to the one i set the default keybind is being kept instead by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/47
-[*]Support/37 creature pin by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/54
-[*]Support/58 conflict with advize planteverything by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/59
-[*]Feature/19 ask for pin name by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/61
-[*]Support/60 mushrooms, thistle etc. by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/67
-[*]Support/62 add mistlands assets by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/68
-[*]All data is now saved in {World}.{PlayerProfileName}.mod.quickping.{extension}. Unique for every Character, per world. https://github.com/Vodianoi/QuickPingMod/pull/66
+[*]Compatibility with Valheim 1.0.21 (new save system, chat, destructibles)
+[*]Ping whole structures (villages, ruins, dungeon entrances) instead of the building piece
+[*]New pins for Ashlands, Deep North, Mistlands, Hildir and traders
+[*]Fix chat showing a platform ID instead of the player name
+[*]Fix pins not removed when a creature dies, and other ping/pin fixes
+[*]Fix QuickPing files written outside the worlds folder on Steam Cloud (they are moved back automatically)
 [/list]
-[b]Full Changelog[/b]: https://github.com/Vodianoi/QuickPingMod/compare/1.5.3...1.5.4
+[b]Full Changelog[/b]: https://github.com/Vodianoi/QuickPingMod/compare/1.5.11...1.6.0
 
 [size=6]Configuration[/size]
 

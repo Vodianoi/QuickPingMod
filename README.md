@@ -1,22 +1,35 @@
 # QuickPing
 [ExploreTogether](https://valheim.thunderstore.io/package/Rolo/ExploreTogether/)'s ping feature remastered. 
 
+Compatible with **Valheim 1.0.21** (Ashlands, Bog Witch, Deep North).
+
 ## Install Instruction
 Ping position and markers will always work but must be installed on all clients if you want everyone able to see pinged object's name display.
 
 ## Features
 - Use T (by default, see config) to **ping what you point**, name of pointed object/creature is displayed in the world and on the minimap to all players.
-  Some objects automatically add a pin on map if a player ping them (Copper, Silver, Dungeons, Portals, Berries etc.)
+  Some objects automatically add a pin on map if a player ping them:
+  - **Ores and resources** (hammer): copper, tin, obsidian, silver, Petrified Gammeltroll, muddy scrap piles, Mistlands giant remains, flametal, bog iron, sulfur rock
+  - **Pickables** (point): berries, mushrooms, thistle, dandelion, Jotun puffs, royal jelly, vineberries, fiddlehead, smoke puff, volture eggs, luminous larva, wild seeds...
+  - **Dungeons and points of interest** (rune): Troll Caves, Burial Chambers, Bear Caves, Sunken Crypts, Frost Caves, Infested Mines and Citadel, Putrid Holes, Charred Fortress, Deep North dungeons, ruins, towers, lighthouses, shipwrecks, portals
+  - **Traders and settlements** (house): Haldor, Hildir, the Bog Witch, villages, abandoned houses, swamp huts, farms, harbours
+  - **Hildir's quest dungeons** use Hildir's map icons
+- ***(New)*** **Ping whole structures**: pointing at any part of a village, ruin or dungeon entrance (walls, roofs, doors...) pings and pins the whole location. Your own buildings and resources worth pinning on their own (ores, berries...) are kept.
 - Use G (by default, see config) to **force add a marker** (exclamation point by default if not filtered) **on map** with pointed object's name.
 - If a pinned object is destroyed, it will also destroy its attached marker.
-- ***(New)*** Use Alt + Ping (by default, see config) and enter a custom name to **ping an object**.
+- Use Alt + Ping (by default, see config) and enter a custom name to **ping an object**.
 - Change text colors (chat, ping, shout, whisper, names) in config 
 - Change already existing Portal pin by pinging the portal again, it will change the marker's name to portal tag.
 
 ## What's Changed
-* Hotfix/patch 0.217.46 by @Vodianoi in https://github.com/Vodianoi/QuickPingMod/pull/116
+* Compatibility with Valheim 1.0.21 (new save system, chat, destructibles)
+* Ping whole structures (villages, ruins, dungeon entrances) instead of the building piece
+* New pins for Ashlands, Deep North, Mistlands, Hildir and traders
+* Fix chat showing a platform ID instead of the player name
+* Fix pins not removed when a creature dies, and other ping/pin fixes
+* Fix QuickPing files written outside the worlds folder on Steam Cloud (they are moved back automatically)
 
-**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.10...1.5.11
+**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.11...1.6.0
 
 ## Configuration
 The settings for QuickPing can be accessed in the BepInEx config file located in the `Valheim/BepInEx/config` folder. The settings include:
