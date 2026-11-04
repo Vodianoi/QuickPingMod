@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using QuickPing.Utilities;
 using TMPro;
 using UnityEngine;
 
@@ -54,6 +55,8 @@ namespace QuickPing.Patches
                     color = Settings.PingColor.Value;
                     if (text == string.Empty)
                         text = Settings.DefaultPingText;
+                    if (Settings.EnableBeam.Value)
+                        PingBeam.Show(position, color);
                     break;
                 default:
                     color = Settings.DefaultColor.Value;
@@ -86,6 +89,13 @@ namespace QuickPing.Patches
             }
 
             text += "<color=#" + ColorUtility.ToHtmlStringRGBA(wt.m_textMeshField.color) + ">" + wt.m_text + "</color>";
+
+            if (wt.m_type == Talker.Type.Ping && Settings.ShowDistance.Value && Player.m_localPlayer)
+            {
+                int distance = Mathf.RoundToInt(Vector3.Distance(Player.m_localPlayer.transform.position, wt.m_position));
+                text += $"\n<size=75%><color=#{ColorUtility.ToHtmlStringRGBA(wt.m_textMeshField.color)}>{distance} m</color></size>";
+            }
+
             wt.m_textMeshField.text = text;
 
             return false;

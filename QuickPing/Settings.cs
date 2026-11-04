@@ -23,6 +23,10 @@ namespace QuickPing
         public static ConfigEntry<Color> PingColor { get; private set; }
         public static ConfigEntry<Color> DefaultColor { get; private set; }
         public static ConfigEntry<float> ClosestPinRange { get; private set; }
+        public static ConfigEntry<float> PinExclusionRange { get; private set; }
+
+        public static ConfigEntry<bool> EnableBeam { get; private set; }
+        public static ConfigEntry<bool> ShowDistance { get; private set; }
 
         public static ButtonConfig PingBtn { get; private set; }
         public static ButtonConfig PingEverythingBtn { get; private set; }
@@ -46,6 +50,22 @@ namespace QuickPing
                 2f,
                 "Minimum distance between objects to pin/replace portal tag");
 
+            PinExclusionRange = QuickPingPlugin.Instance.Config.Bind("General",
+                "PinExclusionRange",
+                10f,
+                new ConfigDescription("Don't add an automatic pin when a pin with the same name is closer than this (meters). Avoids duplicates on big deposits, berry bushes or tar pits.",
+                    new AcceptableValueRange<float>(0f, 100f)));
+
+            //PING
+            EnableBeam = QuickPingPlugin.Instance.Config.Bind("Ping",
+                "EnableBeam",
+                true,
+                "Show a light beam where pings land (yours and other players'), so they are easy to find from far away.");
+
+            ShowDistance = QuickPingPlugin.Instance.Config.Bind("Ping",
+                "ShowDistance",
+                false,
+                "Show your distance to the ping below its text.");
 
             DefaultPinType = QuickPingPlugin.Instance.Config.Bind("General",
                 "DefaultPinType",
