@@ -45,16 +45,17 @@ namespace QuickPing
 
             Settings.Init();
             Localization_Patch.AddTranslations();
-            Harmony.CreateAndPatchAll(typeof(Player_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(ChatPing_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(Minimap_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(Terminal_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(SaveCollection_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(MineRock5_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(Destructible_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(ZNet_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(WearNTear_Patch), MyPluginInfo.PLUGIN_GUID);
-            Harmony.CreateAndPatchAll(typeof(Character_Patch), MyPluginInfo.PLUGIN_GUID);
+            Patch(typeof(Player_Patch));
+            Patch(typeof(ChatPing_Patch));
+            Patch(typeof(Minimap_Patch));
+            Patch(typeof(Terminal_Patch));
+            Patch(typeof(SaveCollection_Patch));
+            Patch(typeof(MineRock5_Patch));
+            Patch(typeof(Destructible_Patch));
+            Patch(typeof(ZNet_Patch));
+            Patch(typeof(WearNTear_Patch));
+            Patch(typeof(Character_Patch));
+            Patch(typeof(Leviathan_Patch));
 
             Player_Patch.OnPlayerPing.AddListener(Player_Patch.SendPing);
             Player_Patch.OnPlayerPing.AddListener(Minimap_Patch.AddPin);
@@ -66,6 +67,21 @@ namespace QuickPing
 #if DEBUG
             Jotunn.Managers.CommandManager.Instance.AddConsoleCommand(new Utilities.DevDumpCommand());
 #endif
+        }
+
+        /// <summary>
+        /// Apply one patch class. If a game update breaks it, log it and keep the rest of the mod working.
+        /// </summary>
+        private static void Patch(System.Type patchClass)
+        {
+            try
+            {
+                Harmony.CreateAndPatchAll(patchClass, MyPluginInfo.PLUGIN_GUID);
+            }
+            catch (System.Exception e)
+            {
+                Log.LogError($"Failed to patch {patchClass.Name}, this part of the mod is disabled: {e}");
+            }
         }
     }
 }

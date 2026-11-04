@@ -108,7 +108,7 @@ namespace QuickPing.Patches
                     break;
                 case HoverType.Location:
                     var location = hover.GetComponent<Location>();
-                    pingText = Localization_Patch.Localize(location);
+                    pingText = Localization_Patch.GetToken(location);
                     break;
                 case HoverType.Character:
                     var hoverCreature = hover.GetComponent<Character>();
@@ -191,8 +191,20 @@ namespace QuickPing.Patches
                     }
                 }
 
-                //Structures (villages, ruins, dungeons...): ping the whole location instead of the piece
-                TryUseLocation(hoverObj, hitTransform, raycastHit.point);
+                Leviathan leviathan = hitTransform.GetComponentInParent<Leviathan>();
+                if (leviathan)
+                {
+                    //Its rocks have no name: ping the whole creature, the pin is removed when it dives
+                    hoverObj.type = HoverType.GameObject;
+                    hoverObj.Hover = leviathan.gameObject;
+                    hoverObj.Name = "$quickping_leviathan";
+                    hoverObj.Destructible = leviathan.m_mineRock;
+                }
+                else
+                {
+                    //Structures (villages, ruins, dungeons...): ping the whole location instead of the piece
+                    TryUseLocation(hoverObj, hitTransform, raycastHit.point);
+                }
             }
 
             if (hoverObj.Hover)

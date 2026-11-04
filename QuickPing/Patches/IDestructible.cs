@@ -144,4 +144,23 @@ namespace QuickPing.Patches
         }
     }
 
+    [HarmonyPatch(typeof(Leviathan))]
+    internal static class Leviathan_Patch
+    {
+        // A Leviathan dives away for good after being mined: remove its pin
+        [HarmonyPatch(typeof(Leviathan), nameof(Leviathan.RPC_Left))]
+        [HarmonyPostfix]
+        public static void RPC_Left(Leviathan __instance)
+        {
+            if (__instance.m_nview && __instance.m_nview.GetZDO() != null)
+            {
+                var id = __instance.m_nview.GetZDO().m_uid;
+                if (DataManager.PinnedObjects.ContainsKey(id))
+                {
+                    Minimap.instance.RemovePin(DataManager.PinnedObjects[id]);
+                }
+            }
+        }
+    }
+
 }

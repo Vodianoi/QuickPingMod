@@ -79,6 +79,8 @@ namespace QuickPing.Patches
                     "$item_pickable_bogiron",
                     "$item_pickable_sulfurrock",
                     "$piece_deposit_goldvein", // Deep North: Petrified Gammeltroll
+                    "$item_tar",                    "$item_destructible_gucksack",
+                    "$quickping_leviathan",
                 }
             },
 
@@ -152,6 +154,20 @@ namespace QuickPing.Patches
                 }
             },
 
+            //Boss pin: boss altars (locations named after their boss, see Localization_Patch)
+            {
+                Minimap.PinType.Boss,
+                new List<string>
+                {
+                    "$enemy_eikthyr",
+                    "$enemy_gdking",
+                    "$enemy_bonemass",
+                    "$enemy_dragon",
+                    "$enemy_goblinking",
+                    "$enemy_fader",
+                }
+            },
+
             //Hildir's quest dungeons use their vanilla map icons
             { Minimap.PinType.Hildir1, new List<string> { "$hud_pin_hildir1" } },
             { Minimap.PinType.Hildir2, new List<string> { "$hud_pin_hildir2" } },
@@ -179,11 +195,28 @@ namespace QuickPing.Patches
         }
 
         /// <summary>
-        /// Force rename pin
+        /// Pin type of a pinged object, or None if it is not pinned automatically.
+        /// </summary>
+        private static Minimap.PinType GetPinType(GameObject hover, string strID)
+        {
+            // Dropped items share their name with pickables (berries, mushrooms...)
+            if (hover && hover.GetComponent<ItemDrop>())
+                return Minimap.PinType.None;
+
+            Minimap.PinType type = IsPinable(strID);
+
+            // Boss names pin their altar, not the boss during the fight
+            if (type == Minimap.PinType.Boss && hover && hover.GetComponent<Character>())
+                return Minimap.PinType.None;
+
+            return type;
+        }
+
+        /// <summary>
+        /// Open the pin editor (name and icon) for what the player is looking at.
         /// </summary>
         /// <param name="obj"></param>
-        internal static void RenamePin(HoverObject obj) =>
-            AddPin(obj.Hover, obj.Destructible, obj.Name, obj.center, rename: true);
+        internal static void RenamePin(HoverObject obj) => OpenEditor(obj);
 
         /// <summary>
         /// Add correct pin to map if Settings.
@@ -207,186 +240,208 @@ namespace QuickPing.Patches
         /// <param name="pos">Pinged position (last raycast point or hover center)</param>
         /// <param name="force">Bypass filters</param>
         public static void AddPin(GameObject hover, IDestructible idestructible, string strID, Vector3 pos,
-            bool force = false, bool rename = false)
+            bool force = false)
         {
             if (!Settings.AddPin.Value && !force)
             {
                 return;
             }
 
-            bool pinned = false;
-
-            Minimap.PinData pinData = new Minimap.PinData
-            {
-                m_type = IsPinable(strID)
-            };
-            if (hover && hover.GetComponent<ItemDrop>())
-                pinData.m_type = Minimap.PinType.None;
-
+            Minimap.PinType type = GetPinType(hover, strID);
             Minimap.PinData closestPin = Minimap.instance.GetClosestPin(pos, Settings.ClosestPinRange.Value);
 
-            switch (strID)
+            if (strID == "$piece_portal")
             {
-                case "$piece_portal":
-                    if (hover.TryGetComponent(out Hoverable hoverable))
-                    {
-                        pinData.m_name = GetPortalTag(hoverable);
+                if (!hover || !hover.TryGetComponent(out Hoverable hoverable))
+                    return;
 
-                        if (closestPin != null)
-                        {
-                            Minimap.instance.RemovePin(closestPin);
-                        }
+                // Replace this portal's pin: its tag may have changed
+                if (closestPin != null)
+                {
+                    Minimap.instance.RemovePin(closestPin);
+                }
 
-                        pinData.m_pos = pos;
-                        pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true, false,
-                            0L);
-                        pinned = true;
-                        QuickPingPlugin.Log.LogInfo(
-                            $"Add Portal Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
-                    }
-
-                    break;
-                default:
-                    if (closestPin == null || rename)
-                    {
-                        pinData.m_name ??= Localization.instance.Localize(strID);
-
-                        // check for customnames
-                        bool customName = DataManager.CustomNames.ContainsKey(strID);
-                        if (customName)
-                            pinData.m_name = DataManager.CustomNames[strID];
-
-                        pinData.m_pos = pos;
-                        if (pinData.m_name == null || pinData.m_name == "" && !customName)
-                        {
-                            pinData.m_name = Settings.DefaultPingText;
-                        }
-
-                        if (pinData.m_type == Minimap.PinType.None && force)
-                        {
-                            pinData.m_type = Settings.DefaultPinType.Value;
-                            pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true,
-                                false, 0L);
-                            pinned = true;
-                            QuickPingPlugin.Log.LogInfo(
-                                $"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
-                            break;
-                        }
-
-                        if (pinData.m_type != Minimap.PinType.None)
-                        {
-                            if (closestPin == null)
-                            {
-                                pinData = Minimap.instance.AddPin(pinData.m_pos, pinData.m_type, pinData.m_name, true,
-                                    false, 0L);
-                                pinned = true;
-                            }
-                            else if (rename)
-                                pinData = closestPin;
-
-                            QuickPingPlugin.Log.LogInfo(
-                                $"Add Pin : Name:{pinData.m_name} x:{pinData.m_pos.x}, y:{pinData.m_pos.y}, Type:{pinData.m_type}");
-
-                            //Check if Settings.AskForName.Value is true, and if CustomNames contains its name.
-                            //if true ask for user input before adding pin
-                            if (rename)
-                            {
-                                GUIManager.BlockInput(true);
-                                InitNameInput();
-                                tempOriginalText = strID;
-                                Minimap.instance.ShowPinNameInput(pinData.m_pos);
-                            }
-                        }
-                    }
-
-                    break;
+                AddTrackedPin(idestructible, pos, type, GetPortalTag(hoverable));
+                return;
             }
 
-            if (idestructible != null && pinned)
+            if (closestPin != null)
             {
-                FieldInfo fieldInfo = idestructible.GetType()
-                    .GetField("m_nview", BindingFlags.Instance | BindingFlags.NonPublic);
-                if (fieldInfo == null)
-                {
-                    QuickPingPlugin.Log.LogWarning(
-                        $"Unable to link destructible {idestructible} to pin: {pinData.m_name}. (Is it a god?)");
-                    return;
-                }
+                return;
+            }
 
-                ZNetView netView = fieldInfo.GetValue(idestructible) as ZNetView;
-                if (!netView || netView.GetZDO() == null)
-                {
-                    QuickPingPlugin.Log.LogWarning($"Unable to link destructible {idestructible} to pin: {pinData.m_name}. (No ZDO)");
-                    return;
-                }
+            if (type == Minimap.PinType.None)
+            {
+                if (!force) return;
+                type = Settings.DefaultPinType.Value;
+            }
 
-                ZDOID uid = netView.GetZDO().m_uid;
+            AddTrackedPin(idestructible, pos, type, ResolvePinName(strID));
+        }
 
-                if (!DataManager.PinnedObjects.ContainsKey(uid))
-                {
-                    DataManager.PinnedObjects[uid] = pinData;
-                }
+        /// <summary>
+        /// Pin name for an object: the name saved by the player, else its localized name.
+        /// </summary>
+        private static string ResolvePinName(string strID)
+        {
+            if (string.IsNullOrEmpty(strID))
+                return Settings.DefaultPingText;
+
+            if (DataManager.CustomNames.TryGetValue(strID, out string customName))
+                return customName;
+
+            string name = Localization.instance.Localize(strID);
+            return string.IsNullOrEmpty(name) ? Settings.DefaultPingText : name;
+        }
+
+        private static Minimap.PinData AddTrackedPin(IDestructible idestructible, Vector3 pos, Minimap.PinType type, string name)
+        {
+            Minimap.PinData pinData = Minimap.instance.AddPin(pos, type, name, true, false, 0L);
+            QuickPingPlugin.Log.LogInfo($"Add Pin : Name:{name} x:{pos.x}, y:{pos.y}, Type:{type}");
+            TrackPin(idestructible, pinData);
+            return pinData;
+        }
+
+        /// <summary>
+        /// Link a pin to its object, so it is removed when the object is destroyed.
+        /// </summary>
+        private static void TrackPin(IDestructible idestructible, Minimap.PinData pinData)
+        {
+            if (idestructible == null) return;
+
+            FieldInfo fieldInfo = idestructible.GetType()
+                .GetField("m_nview", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (fieldInfo == null)
+            {
+                QuickPingPlugin.Log.LogWarning(
+                    $"Unable to link destructible {idestructible} to pin: {pinData.m_name}. (Is it a god?)");
+                return;
+            }
+
+            ZNetView netView = fieldInfo.GetValue(idestructible) as ZNetView;
+            if (!netView || netView.GetZDO() == null)
+            {
+                QuickPingPlugin.Log.LogWarning($"Unable to link destructible {idestructible} to pin: {pinData.m_name}. (No ZDO)");
+                return;
+            }
+
+            ZDOID uid = netView.GetZDO().m_uid;
+
+            if (!DataManager.PinnedObjects.ContainsKey(uid))
+            {
+                DataManager.PinnedObjects[uid] = pinData;
             }
         }
 
-        #region NameInput
+        #region PinEditor
+
+        /// <summary>
+        /// Icons offered by the editor (the ones of the vanilla map).
+        /// </summary>
+        private static readonly Minimap.PinType[] EditorIcons =
+        {
+            Minimap.PinType.Icon0,
+            Minimap.PinType.Icon1,
+            Minimap.PinType.Icon2,
+            Minimap.PinType.Icon3,
+            Minimap.PinType.Icon4,
+        };
+
+        private static readonly Dictionary<Minimap.PinType, Image> iconImages = new();
+
+        private static Minimap.PinData editedPin;
+        private static Vector3 editedPos;
+        private static IDestructible editedDestructible;
+        private static Minimap.PinType selectedType;
+        private static int closingFrame = -1;
+
+        /// <summary>
+        /// Edit the pin under the cursor, or prepare a new one there.
+        /// </summary>
+        private static void OpenEditor(HoverObject obj)
+        {
+            if (IsNaming || !Minimap.instance) return;
+
+            editedPin = Minimap.instance.GetClosestPin(obj.center, Settings.ClosestPinRange.Value);
+            editedPos = obj.center;
+            editedDestructible = obj.Destructible;
+            tempOriginalText = obj.Name;
+
+            string name;
+            if (editedPin != null)
+            {
+                name = editedPin.m_name;
+                selectedType = editedPin.m_type;
+            }
+            else
+            {
+                name = ResolvePinName(obj.Name);
+                selectedType = GetPinType(obj.Hover, obj.Name);
+                if (selectedType == Minimap.PinType.None)
+                    selectedType = Settings.DefaultPinType.Value;
+            }
+
+            if (!InitNameInput(name)) return;
+
+            closingFrame = -1;
+            GUIManager.BlockInput(true);
+        }
 
         public static void UpdateNameInput()
         {
-            if (Minimap.instance.m_namePin == null)
+            // Release the game input one frame after closing, so Enter/Escape don't also open the chat or menu
+            if (closingFrame >= 0)
             {
-                Minimap.instance.m_wasFocused = false;
+                if (Time.frameCount > closingFrame)
+                {
+                    closingFrame = -1;
+                    IsNaming = false;
+                    GUIManager.BlockInput(false);
+                }
+                return;
             }
 
-            if (Minimap.instance.m_namePin != null)
+            if (!panel || !nameInput)
             {
-                panel.SetActive(true);
-                nameInput.SetActive(true);
-                toggleSaveName.SetActive(true);
-                var inputField = nameInput.GetComponent<InputField>();
-                var toggleSave = toggleSaveName.GetComponent<Toggle>();
-                if (!inputField.isFocused)
-                {
-                    EventSystem.current.SetSelectedGameObject(nameInput);
-                }
-
-                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
-                {
-                    ValidateNameInput(inputField, toggleSave.isOn);
-                }
-                else if (Input.GetKeyDown(KeyCode.Escape))
-                {
-                    CancelNameInput();
-                }
-
-                Minimap.instance.m_wasFocused = true;
+                CloseEditor();
+                return;
             }
-            else //end
+
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
-                panel.gameObject.SetActive(value: false);
-                IsNaming = false;
-                tempOriginalText = null;
-                GUIManager.BlockInput(false);
-                DestroyGUI();
+                ValidateNameInput(nameInput.GetComponent<InputField>(), toggleSaveName.GetComponent<Toggle>().isOn);
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                CloseEditor();
+                return;
+            }
+
+            // Keep typing in the name field, unless an icon was just clicked
+            if (EventSystem.current && !EventSystem.current.currentSelectedGameObject)
+            {
+                EventSystem.current.SetSelectedGameObject(nameInput);
             }
         }
 
-        private static void CancelNameInput()
+        private static void CloseEditor()
         {
-            Minimap.instance.m_namePin = null;
-            Minimap.instance.m_wasFocused = false;
-            panel.gameObject.SetActive(value: false);
-            IsNaming = false;
-            tempOriginalText = null;
-            GUIManager.BlockInput(false);
             DestroyGUI();
+            editedPin = null;
+            editedDestructible = null;
+            tempOriginalText = null;
+            closingFrame = Time.frameCount;
         }
 
         private static void DestroyGUI()
         {
-            GameObject.Destroy(nameInput);
-            GameObject.Destroy(panel);
-            GameObject.Destroy(toggleSaveName);
+            iconImages.Clear();
+            if (panel) GameObject.Destroy(panel);
+            panel = null;
+            nameInput = null;
+            toggleSaveName = null;
         }
 
         private static void ValidateNameInput(InputField inputField, bool save)
@@ -397,16 +452,51 @@ namespace QuickPing.Patches
             text = text.Replace('>', ' ');
             string originalText = tempOriginalText;
 
-            Minimap.instance.m_namePin.m_name = text;
-
-            // Persistent save of text value for this pinned object
-            if (save)
+            if (editedPin != null && Minimap.instance.m_pins.Contains(editedPin))
             {
-                QuickPingPlugin.Log.LogInfo($"Save name {Minimap.instance.m_namePin.m_name} for {originalText}");
-                SaveName(Minimap.instance.m_namePin.m_name, originalText);
+                UpdatePin(editedPin, text, selectedType);
+            }
+            else
+            {
+                AddTrackedPin(editedDestructible, editedPos, selectedType, text);
             }
 
-            Minimap.instance.m_namePin = null;
+            // Persistent save of text value for this pinned object
+            if (save && !string.IsNullOrEmpty(originalText))
+            {
+                if (text == "")
+                {
+                    DataManager.CustomNames.Remove(originalText);
+                }
+                else
+                {
+                    QuickPingPlugin.Log.LogInfo($"Save name {text} for {originalText}");
+                    SaveName(text, originalText);
+                }
+            }
+
+            CloseEditor();
+        }
+
+        /// <summary>
+        /// Rename and change the icon of a pin already on the map.
+        /// </summary>
+        private static void UpdatePin(Minimap.PinData pin, string name, Minimap.PinType type)
+        {
+            // Pins loaded from the save are tracked by copy (matched on name and position): track this one instead
+            foreach (ZDOID id in DataManager.PinnedObjects.Where(p => p.Value.Compare(pin)).Select(p => p.Key).ToList())
+            {
+                DataManager.PinnedObjects[id] = pin;
+            }
+
+            pin.m_name = name;
+            pin.m_type = type;
+            pin.m_icon = Minimap.instance.GetSprite(type);
+
+            // Markers are rebuilt on the next map update
+            Minimap.instance.DestroyPinMarker(pin);
+            pin.m_NamePinData = string.IsNullOrEmpty(name) ? null : new Minimap.PinNameData(pin);
+            Minimap.instance.m_pinUpdateRequired = true;
         }
 
         /// <summary>
@@ -416,30 +506,31 @@ namespace QuickPing.Patches
         /// <param name="originalName"></param>
         private static void SaveName(string m_name, string originalName)
         {
-            if (DataManager.CustomNames.ContainsKey(originalName))
+            DataManager.CustomNames[originalName] = m_name;
+        }
+
+        private static void SelectIcon(Minimap.PinType type)
+        {
+            selectedType = type;
+            foreach (var icon in iconImages)
             {
-                DataManager.CustomNames[originalName] = m_name;
-            }
-            else
-            {
-                DataManager.CustomNames.Add(originalName, m_name);
+                icon.Value.color = icon.Key == type ? Color.white : new Color(1f, 1f, 1f, 0.35f);
             }
         }
 
-        private static void InitNameInput()
+        private static bool InitNameInput(string name)
         {
             if (GUIManager.Instance == null)
             {
                 QuickPingPlugin.Log.LogError("GUIManager instance is null");
-                return;
+                return false;
             }
 
             if (!GUIManager.CustomGUIFront)
             {
                 QuickPingPlugin.Log.LogError("GUIManager CustomGUI is null");
-                return;
+                return false;
             }
-
 
             IsNaming = true;
 
@@ -448,56 +539,93 @@ namespace QuickPing.Patches
                 anchorMin: new Vector2(0.5f, 0.5f),
                 anchorMax: new Vector2(0.5f, 0.5f),
                 position: new Vector2(0f, 0f),
-                width: 200f,
-                height: 90f,
+                width: 260f,
+                height: 150f,
                 draggable: true);
 
-            // Add a vertical layout group to the panel
             var verticalLayoutGroup = panel.gameObject.AddComponent<VerticalLayoutGroup>();
-
-            // Set the spacing between elements
             verticalLayoutGroup.spacing = 10f;
-            verticalLayoutGroup.padding = new RectOffset(10, 10, 10, 10);
+            verticalLayoutGroup.padding = new RectOffset(15, 15, 15, 15);
+            verticalLayoutGroup.childAlignment = TextAnchor.MiddleCenter;
             verticalLayoutGroup.childControlWidth = true;
             verticalLayoutGroup.childControlHeight = true;
-
+            verticalLayoutGroup.childForceExpandHeight = false;
 
             nameInput = GUIManager.Instance.CreateInputField(
                 parent: panel.transform,
-                anchorMin: new Vector2(0.5f, 0.9f),
-                anchorMax: new Vector2(0.5f, 0.9f),
+                anchorMin: new Vector2(0.5f, 0.5f),
+                anchorMax: new Vector2(0.5f, 0.5f),
                 position: new Vector2(0, 0),
                 contentType: InputField.ContentType.Standard,
                 placeholderText: "Pin Name",
                 fontSize: 16,
-                width: 90f,
+                width: 200f,
                 height: 30f
             );
-            nameInput.SetActive(IsNaming);
+            nameInput.AddComponent<LayoutElement>().preferredHeight = 30f;
+            nameInput.GetComponent<InputField>().text = name;
+
+            // Icon picker
+            GameObject icons = new GameObject("Icons", typeof(RectTransform));
+            icons.transform.SetParent(panel.transform, false);
+            icons.AddComponent<LayoutElement>().preferredHeight = 32f;
+            var iconsLayout = icons.AddComponent<HorizontalLayoutGroup>();
+            iconsLayout.spacing = 8f;
+            iconsLayout.childAlignment = TextAnchor.MiddleCenter;
+            iconsLayout.childControlWidth = false;
+            iconsLayout.childControlHeight = false;
+            iconsLayout.childForceExpandWidth = false;
+            iconsLayout.childForceExpandHeight = false;
+
+            foreach (Minimap.PinType type in EditorIcons)
+            {
+                GameObject icon = new GameObject(type.ToString(), typeof(RectTransform));
+                icon.transform.SetParent(icons.transform, false);
+                ((RectTransform)icon.transform).sizeDelta = new Vector2(32f, 32f);
+
+                Image image = icon.AddComponent<Image>();
+                image.sprite = Minimap.instance.GetSprite(type);
+                image.preserveAspect = true;
+
+                Button button = icon.AddComponent<Button>();
+                button.targetGraphic = image;
+                button.navigation = new Navigation { mode = Navigation.Mode.None };
+                button.onClick.AddListener(() => SelectIcon(type));
+
+                iconImages[type] = image;
+            }
+            SelectIcon(selectedType);
 
             toggleSaveName = GUIManager.Instance.CreateToggle(
                 parent: panel.transform,
                 width: 20f,
                 height: 20f
             );
+            toggleSaveName.AddComponent<LayoutElement>().preferredHeight = 20f;
 
             Text saveNameText = toggleSaveName.transform.Find("Label").GetComponent<Text>();
             saveNameText.color = Color.white;
-            saveNameText.text = "Save";
+            saveNameText.text = "Remember this name";
+            saveNameText.horizontalOverflow = HorizontalWrapMode.Overflow;
             saveNameText.enabled = true;
-            toggleSaveName.SetActive(IsNaming);
-            toggleSaveName.transform.position += new Vector3(20f, 0, 0);
+
+            if (EventSystem.current) EventSystem.current.SetSelectedGameObject(nameInput);
+            return true;
         }
 
         #endregion
 
+        /// <summary>
+        /// Portal tag shown in its hover text ("Portal "tag""), or the portal name when it has no tag.
+        /// </summary>
         private static string GetPortalTag(Hoverable hoverable)
         {
-            string portalText = hoverable.GetHoverText();
-            string tag = portalText.Split('"')[1];
-            return tag;
-        }
+            string[] parts = hoverable.GetHoverText().Split('"');
+            if (parts.Length > 2 && parts[1].Trim() != "")
+                return parts[1];
 
+            return Localization.instance.Localize(hoverable.GetHoverName());
+        }
 
         #region Patches
 

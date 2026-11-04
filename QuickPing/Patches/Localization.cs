@@ -13,6 +13,7 @@ namespace QuickPing.Patches
         {
             // Meadows
             { "Hildir_camp", "Hildir" },
+            { "Eikthyrnir", "$enemy_eikthyr" },
 
             // Black Forest
             { "TrollCave", "$location_forestcave" },
@@ -22,6 +23,7 @@ namespace QuickPing.Patches
             { "Crypt4", "$location_forestcrypt" },
             { "BearCave", "$location_bearcave" },
             { "Vendor_BlackForest", "Haldor" },
+            { "GDKing", "$enemy_gdking" },
             { "Hildir_crypt", "$hud_pin_hildir1" },
 
             // Swamp
@@ -30,9 +32,11 @@ namespace QuickPing.Patches
             { "SunkenCrypt3", "$location_sunkencrypt" },
             { "SunkenCrypt4", "$location_sunkencrypt" },
             { "BogWitch_Camp", "$npc_bogwitch" },
+            { "Bonemass", "$enemy_bonemass" },
 
             // Mountains
             { "DrakeNest01", "$item_dragonegg" },
+            { "Dragonqueen", "$enemy_dragon" },
             { "MountainCave01", "$location_mountaincave" },
             { "MountainCave02", "$location_mountaincave" },
             { "Hildir_cave", "$hud_pin_hildir2" },
@@ -48,6 +52,7 @@ namespace QuickPing.Patches
             { "StoneHenge5", "Stone Henge" },
             { "StoneHenge6", "Stone Henge" },
             { "Hildir_plainsfortress", "$hud_pin_hildir3" },
+            { "GoblinKing", "$enemy_goblinking" },
 
             // Mistlands
             { "Mistlands_DvergrTownEntrance1", "$location_dvergrtown" },
@@ -59,6 +64,7 @@ namespace QuickPing.Patches
             { "MorgenHole2", "$location_morgenhole" },
             { "MorgenHole3", "$location_morgenhole" },
             { "CharredFortress", "$charredfortress" },
+            { "FaderLocation", "$enemy_fader" },
 
             // Deep North (other dungeons use the location's discover label)
             { "TheHole01", "$location_thehole" },
@@ -167,6 +173,7 @@ namespace QuickPing.Patches
             { "quickping_location_tower", "Tower" },
             { "quickping_location_ruins", "Ruins" },
             { "quickping_location_shipwreck", "Shipwreck" },
+            { "quickping_leviathan", "Leviathan" },
         };
 
         public static void AddTranslations()
@@ -181,14 +188,23 @@ namespace QuickPing.Patches
         /// <returns>Localized name, or "" if unknown</returns>
         public static string Localize(Location location)
         {
+            string token = GetToken(location);
+            return token == "" ? "" : Localization.instance.Localize(token);
+        }
+
+        /// <summary>
+        /// Name token of a location (e.g. "$location_forestcave"): known prefabs first, then its discover label.
+        /// Pings use the token, so pin types never depend on a reverse translation lookup.
+        /// </summary>
+        /// <param name="location">GameObject Location component</param>
+        /// <returns>Name token (or literal name), or "" if unknown</returns>
+        public static string GetToken(Location location)
+        {
             string prefabName = location.name.Replace("(Clone)", "").Trim();
             if (LocationNames.TryGetValue(prefabName, out string token))
-                return Localization.instance.Localize(token);
+                return token;
 
-            if (!string.IsNullOrEmpty(location.m_discoverLabel))
-                return Localization.instance.Localize(location.m_discoverLabel);
-
-            return "";
+            return location.m_discoverLabel ?? "";
         }
 
         /// <summary>

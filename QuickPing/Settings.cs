@@ -24,6 +24,8 @@ namespace QuickPing
         public static ConfigEntry<Color> DefaultColor { get; private set; }
         public static ConfigEntry<float> ClosestPinRange { get; private set; }
 
+        public static ConfigEntry<bool> ShowDistance { get; private set; }
+
         public static ButtonConfig PingBtn { get; private set; }
         public static ButtonConfig PingEverythingBtn { get; private set; }
         public static ButtonConfig RenameBtn { get; private set; }
@@ -46,6 +48,11 @@ namespace QuickPing
                 2f,
                 "Minimum distance between objects to pin/replace portal tag");
 
+            //PING
+            ShowDistance = QuickPingPlugin.Instance.Config.Bind("Ping",
+                "ShowDistance",
+                false,
+                "Show your distance to the ping below its text.");
 
             DefaultPinType = QuickPingPlugin.Instance.Config.Bind("General",
                 "DefaultPinType",
