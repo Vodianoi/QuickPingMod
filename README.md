@@ -9,15 +9,18 @@ Ping position and markers will always work but must be installed on all clients 
 ## Features
 - Use T (by default, see config) to **ping what you point**, name of pointed object/creature is displayed in the world and on the minimap to all players.
   Some objects automatically add a pin on map if a player ping them:
-  - **Ores and resources** (hammer): copper, tin, obsidian, silver, Petrified Gammeltroll, muddy scrap piles, Mistlands giant remains, flametal, bog iron, sulfur rock
+  - **Ores and resources** (hammer): copper, tin, obsidian, silver, Petrified Gammeltroll, muddy scrap piles, Mistlands giant remains, flametal, bog iron, sulfur rock, tar pits, guck sacks, Leviathans
   - **Pickables** (point): berries, mushrooms, thistle, dandelion, Jotun puffs, royal jelly, vineberries, fiddlehead, smoke puff, volture eggs, luminous larva, wild seeds...
   - **Dungeons and points of interest** (rune): Troll Caves, Burial Chambers, Bear Caves, Sunken Crypts, Frost Caves, Infested Mines and Citadel, Putrid Holes, Charred Fortress, Deep North dungeons, ruins, towers, lighthouses, shipwrecks, portals
   - **Traders and settlements** (house): Haldor, Hildir, the Bog Witch, villages, abandoned houses, swamp huts, farms, harbours
   - **Hildir's quest dungeons** use Hildir's map icons
+  - **Boss altars** (boss icon): Eikthyr, The Elder, Bonemass, Moder, Yagluth, Fader
 - ***(New)*** **Ping whole structures**: pointing at any part of a village, ruin or dungeon entrance (walls, roofs, doors...) pings and pins the whole location. Your own buildings and resources worth pinning on their own (ores, berries...) are kept.
 - Use G (by default, see config) to **force add a marker** (exclamation point by default if not filtered) **on map** with pointed object's name.
 - If a pinned object is destroyed, it will also destroy its attached marker.
-- Use Alt + Ping (by default, see config) and enter a custom name to **ping an object**.
+- ***(New)*** Use Alt + Ping (by default, see config) to open the **pin editor**: rename the pin of what you point at (or create one) and choose its icon. Tick "Remember this name" to use it for every object of the same kind.
+- ***(New)*** A **light beam** shows where pings land (yours and other players'), and the distance can be shown under the ping text (see config).
+- ***(New)*** Only **one pin per spot**: no more duplicates when pinging a big deposit, a berry patch or a tar pit several times.
 - Change text colors (chat, ping, shout, whisper, names) in config 
 - Change already existing Portal pin by pinging the portal again, it will change the marker's name to portal tag.
 
@@ -28,6 +31,11 @@ Ping position and markers will always work but must be installed on all clients 
 * Fix chat showing a platform ID instead of the player name
 * Fix pins not removed when a creature dies, and other ping/pin fixes
 * Fix QuickPing files written outside the worlds folder on Steam Cloud (they are moved back automatically)
+* Pin editor: rename any pin and choose its icon
+* Ping beam and optional distance
+* New pins: boss altars, Leviathans, tar pits, guck sacks
+* No duplicate pins with the same name nearby
+* Fix pinging a portal without a tag
 
 **Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.11...1.6.0
 
@@ -37,13 +45,18 @@ The settings for QuickPing can be accessed in the BepInEx config file located in
 - **Bindings**
   - **PingKey**: The keybind to trigger a ping where you are looking (default: T)
   - **PingEverythingKey**: The keybind to add a pin on minimap to whatever you're looking at (default: G)
-  - **RenameKey**: The keybind to rename a ping (default: T + LeftAlt)
+  - **RenameKey**: The keybind to open the pin editor (default: T + LeftAlt)
 
 - **General**
   - **PingWhereLooking**: Create a ping where you are looking when you press the Ping key (default: true)
   - **AddPinOnMap**: Add a marker on map when useful resources are pinged (ignored by G) (default: true)
   - **ClosestPinRange**: Minimum distance between objects to pin/replace portal tag (default: 2)
   - **DefaultPinType**: Default marker when forcing adding a pin on map (default: RandomEvent (!))
+  - **PinExclusionRange**: No automatic pin when a pin with the same name is closer than this, in meters (default: 10)
+
+- **Ping**
+  - **EnableBeam**: Show a light beam where pings land (default: true)
+  - **ShowDistance**: Show your distance to the ping below its text (default: false)
   
 - **Colors**
   - **PlayerColor**: Color for Player name in pings/messages (default: green)
