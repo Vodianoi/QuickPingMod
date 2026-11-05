@@ -214,6 +214,13 @@ namespace QuickPing.Patches
         }
 
         /// <summary>
+        /// Closest pin within ClosestPinRange.
+        /// The game's own lookup skips pins whose marker isn't drawn (just added, minimap hidden...): include them.
+        /// </summary>
+        internal static Minimap.PinData FindPin(Vector3 pos) =>
+            Minimap.instance.GetClosestPin(pos, Settings.ClosestPinRange.Value, mustBeVisible: false);
+
+        /// <summary>
         /// Add correct pin to map if Settings.
         /// </summary>
         /// <param name="obj"></param>
@@ -243,7 +250,7 @@ namespace QuickPing.Patches
             }
 
             Minimap.PinType type = GetPinType(hover, strID);
-            Minimap.PinData closestPin = Minimap.instance.GetClosestPin(pos, Settings.ClosestPinRange.Value);
+            Minimap.PinData closestPin = FindPin(pos);
 
             if (strID == "$piece_portal")
             {
@@ -358,7 +365,7 @@ namespace QuickPing.Patches
         {
             if (IsNaming || !Minimap.instance) return;
 
-            editedPin = Minimap.instance.GetClosestPin(obj.center, Settings.ClosestPinRange.Value);
+            editedPin = FindPin(obj.center);
             editedPos = obj.center;
             editedDestructible = obj.Destructible;
             tempOriginalText = obj.Name;
@@ -614,7 +621,7 @@ namespace QuickPing.Patches
                 if (p.Value.Compare(pin))
                 {
                     // The stored PinData may be a copy: target the pin actually on the map
-                    pin = __instance.GetClosestPin(p.Value.m_pos, Settings.ClosestPinRange.Value) ?? pin;
+                    pin = FindPin(p.Value.m_pos) ?? pin;
                     DataManager.PinnedObjects.Remove(p.Key);
                     break;
                 }
