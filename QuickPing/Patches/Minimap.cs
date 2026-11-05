@@ -472,8 +472,8 @@ namespace QuickPing.Patches
                 AddTrackedPin(editedDestructible, editedPos, selectedType, text);
             }
 
-            // Persistent save of text value for this pinned object
-            if (save && !string.IsNullOrEmpty(originalText))
+            // Persistent save of text value for this kind of object
+            if (save && CanRememberName(originalText))
             {
                 if (text == "")
                 {
@@ -488,6 +488,12 @@ namespace QuickPing.Patches
 
             CloseCustomNamePing();
         }
+
+        /// <summary>
+        /// Names are remembered per kind of object (its name token), not for a plain ping.
+        /// </summary>
+        private static bool CanRememberName(string originalText) =>
+            !string.IsNullOrEmpty(originalText) && originalText != Settings.DefaultPingText;
 
         /// <summary>
         /// Rename and change the icon of a pin already on the map.
@@ -583,6 +589,8 @@ namespace QuickPing.Patches
 
             toggleSaveName = GameUI.CreateToggle(panel.transform, "Remember this name", 20f);
             toggleSaveName.gameObject.AddComponent<LayoutElement>().preferredHeight = 20f;
+            // A plain ping (nothing pointed at) has no kind of object to remember a name for
+            toggleSaveName.gameObject.SetActive(CanRememberName(tempOriginalText));
 
             if (EventSystem.current) EventSystem.current.SetSelectedGameObject(nameInput.gameObject);
             return true;
