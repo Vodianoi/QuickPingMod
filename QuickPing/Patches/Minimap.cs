@@ -15,9 +15,10 @@ namespace QuickPing.Patches
     /// </summary>
     internal static class Minimap_Patch
     {
-        private static GameObject panel;
-        private static InputField nameInput;
-        private static Toggle toggleSaveName;
+        // internal: read by the in-game tests
+        internal static GameObject panel;
+        internal static InputField nameInput;
+        internal static Toggle toggleSaveName;
 
         public static bool IsNaming = false;
 
@@ -404,7 +405,7 @@ namespace QuickPing.Patches
 
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
-                ValidateNameInput(nameInput, toggleSaveName.isOn);
+                ConfirmCustomNamePing();
                 return;
             }
 
@@ -421,7 +422,15 @@ namespace QuickPing.Patches
             }
         }
 
-        private static void CloseCustomNamePing()
+        /// <summary>
+        /// Save the typed name and chosen icon, like pressing Enter.
+        /// </summary>
+        internal static void ConfirmCustomNamePing()
+        {
+            ValidateNameInput(nameInput, toggleSaveName.isOn);
+        }
+
+        internal static void CloseCustomNamePing()
         {
             DestroyGUI();
             editedPin = null;
@@ -504,7 +513,7 @@ namespace QuickPing.Patches
             DataManager.CustomNames[originalName] = m_name;
         }
 
-        private static void SelectIcon(Minimap.PinType type)
+        internal static void SelectIcon(Minimap.PinType type)
         {
             selectedType = type;
             foreach (var icon in iconImages)

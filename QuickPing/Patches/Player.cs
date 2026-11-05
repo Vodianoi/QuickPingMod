@@ -44,33 +44,22 @@ namespace QuickPing.Patches
             if (Settings.PingKey.Value != KeyCode.None)
             {
                 if (Settings.IsDown(Settings.CustomNamePingKey.Value))
-                {
-                    HoverObject ping = FindHoverObject(500f);
-
-                    ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
-
-                    OnPlayerCustomNamePing.Invoke(ping);
-                }
-                else
-                if (Settings.IsDown(Settings.PingKey.Value))
-                {
-                    HoverObject ping = FindHoverObject(500f);
-
-                    ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
-
-                    OnPlayerPing.Invoke(ping);
-                }
-                else
-                if (Settings.IsDown(Settings.PinEverythingKey.Value))
-                {
-                    HoverObject ping = FindHoverObject(500f);
-
-                    ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
-
-                    OnPlayerForcePing.Invoke(ping);
-                }
-
+                    OnPlayerCustomNamePing.Invoke(FindPingTarget());
+                else if (Settings.IsDown(Settings.PingKey.Value))
+                    OnPlayerPing.Invoke(FindPingTarget());
+                else if (Settings.IsDown(Settings.PinEverythingKey.Value))
+                    OnPlayerForcePing.Invoke(FindPingTarget());
             }
+        }
+
+        /// <summary>
+        /// What the player is looking at, with its ping name.
+        /// </summary>
+        internal static HoverObject FindPingTarget()
+        {
+            HoverObject ping = FindHoverObject(500f);
+            ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
+            return ping;
         }
 
         #endregion
