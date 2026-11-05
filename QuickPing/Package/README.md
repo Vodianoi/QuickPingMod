@@ -18,24 +18,16 @@ Ping position and markers will always work but must be installed on all clients 
 - ***(New)*** **Ping whole structures**: pointing at any part of a village, ruin or dungeon entrance (walls, roofs, doors...) pings and pins the whole location. Your own buildings and resources worth pinning on their own (ores, berries...) are kept.
 - Use G (by default, see config) to **force add a marker** (exclamation point by default if not filtered) **on map** with pointed object's name.
 - If a pinned object is destroyed, it will also destroy its attached marker.
-- ***(New)*** Use Alt + Ping (by default, see config) to open the **pin editor**: rename the pin of what you point at (or create one) and choose its icon. Tick "Remember this name" to use it for every object of the same kind.
+- ***(New)*** Use Alt + Ping (by default, see config) for a **Custom Name Ping**: ping what you point at and choose the name and icon of its pin, even where there is no pin yet. Tick "Remember this name" to use it for every object of the same kind.
 - ***(New)*** The distance to a ping can be shown under the ping text (see config).
 - Change text colors (chat, ping, shout, whisper, names) in config 
 - Change already existing Portal pin by pinging the portal again, it will change the marker's name to portal tag.
 
 ## What's Changed
-* Compatibility with Valheim 1.0.21 (new save system, chat, destructibles)
-* Ping whole structures (villages, ruins, dungeon entrances) instead of the building piece
-* New pins for Ashlands, Deep North, Mistlands, Hildir and traders
-* Fix chat showing a platform ID instead of the player name
-* Fix pins not removed when a creature dies, and other ping/pin fixes
-* Fix QuickPing files written outside the worlds folder on Steam Cloud (they are moved back automatically)
-* Pin editor: rename any pin and choose its icon
-* Optional distance under pings
-* New pins: boss altars, Leviathans, tar pits, guck sacks
-* Fix pinging a portal without a tag
+* No longer needs Jotunn: only BepInEx is required
+* The pin editor is now called **Custom Name Ping**. Its key setting is renamed `CustomNamePingInputKey`; a binding changed under the old name (`RenameInputKey`) is kept
 
-**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.5.11...1.6.0
+**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.6.0...1.7.0
 
 ## Configuration
 The settings for QuickPing can be accessed in the BepInEx config file located in the `Valheim/BepInEx/config` folder. The settings include:
@@ -43,7 +35,7 @@ The settings for QuickPing can be accessed in the BepInEx config file located in
 - **Bindings**
   - **PingKey**: The keybind to trigger a ping where you are looking (default: T)
   - **PingEverythingKey**: The keybind to add a pin on minimap to whatever you're looking at (default: G)
-  - **RenameKey**: The keybind to open the pin editor (default: T + LeftAlt)
+  - **CustomNamePingInputKey**: The keybind for a Custom Name Ping (default: T + LeftAlt)
 
 - **General**
   - **PingWhereLooking**: Create a ping where you are looking when you press the Ping key (default: true)
