@@ -93,15 +93,14 @@ namespace QuickPing
                 "CustomNamePingInputKey",
                 customNamePingDefault,
                 "Ping where you are looking and choose the name and icon of its pin (also where there is no pin yet).");
-            MigrateKey("RenameInputKey", CustomNamePingKey, customNamePingDefault);
+            MigrateKey(QuickPingPlugin.Instance.Config, "RenameInputKey", CustomNamePingKey, customNamePingDefault);
         }
 
         /// <summary>
         /// Keep the binding a player set under a key's old name (renamed in 1.7.0), then drop the old name.
         /// </summary>
-        private static void MigrateKey(string oldKey, ConfigEntry<KeyboardShortcut> entry, KeyboardShortcut defaultValue)
+        internal static void MigrateKey(ConfigFile config, string oldKey, ConfigEntry<KeyboardShortcut> entry, KeyboardShortcut defaultValue)
         {
-            ConfigFile config = QuickPingPlugin.Instance.Config;
             ConfigEntry<KeyboardShortcut> old = config.Bind(entry.Definition.Section, oldKey, defaultValue);
             if (!old.Value.Equals(defaultValue))
                 entry.Value = old.Value;
