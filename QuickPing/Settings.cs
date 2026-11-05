@@ -1,6 +1,5 @@
 ﻿using BepInEx.Configuration;
-using Jotunn.Configs;
-using Jotunn.Managers;
+using System.Linq;
 using UnityEngine;
 
 namespace QuickPing
@@ -26,9 +25,6 @@ namespace QuickPing
 
         public static ConfigEntry<bool> ShowDistance { get; private set; }
 
-        public static ButtonConfig PingBtn { get; private set; }
-        public static ButtonConfig PingEverythingBtn { get; private set; }
-        public static ButtonConfig RenameBtn { get; private set; }
 
         public static void Init()
         {
@@ -96,37 +92,22 @@ namespace QuickPing
                 "RenameInputKey",
                 new KeyboardShortcut(PingKey.Value, KeyCode.LeftAlt), new ConfigDescription("" +
                 "The keybind to rename a ping"));
-            AddInputs();
-
         }
 
-        public static void AddInputs()
+        /// <summary>
+        /// Key pressed this frame (keyboard, mouse or gamepad button).
+        /// </summary>
+        public static bool IsDown(KeyCode key)
         {
-            PingBtn = new ButtonConfig
-            {
-                Name = "Ping",
-                Config = PingKey,
-                Hint = "Ping where you are looking, and pin useful resources",
-            };
+            return key != KeyCode.None && ZInput.GetKeyDown(key, false);
+        }
 
-            PingEverythingBtn = new ButtonConfig
-            {
-                Name = "PinEverything",
-                Config = PinEverythingKey,
-                Hint = "Pin on map everything you're looking at",
-
-            };
-
-            RenameBtn = new ButtonConfig
-            {
-                Name = "Rename",
-                ShortcutConfig = RenameKey,
-            };
-
-            InputManager.Instance.AddButton(MyPluginInfo.PLUGIN_GUID, RenameBtn);
-            InputManager.Instance.AddButton(MyPluginInfo.PLUGIN_GUID, PingBtn);
-            InputManager.Instance.AddButton(MyPluginInfo.PLUGIN_GUID, PingEverythingBtn);
-
+        /// <summary>
+        /// Main key pressed this frame while all its modifiers are held.
+        /// </summary>
+        public static bool IsDown(KeyboardShortcut shortcut)
+        {
+            return IsDown(shortcut.MainKey) && shortcut.Modifiers.All(key => ZInput.GetKey(key, false));
         }
     }
 }

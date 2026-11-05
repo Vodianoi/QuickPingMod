@@ -1,3 +1,4 @@
+using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -159,7 +160,8 @@ namespace QuickPing.Patches
         };
 
         /// <summary>
-        /// QuickPing's own names, for structures the game doesn't name (registered through Jotunn).
+        /// QuickPing's own names, for structures the game doesn't name.
+        /// English only: they are used whatever the game language.
         /// </summary>
         private static readonly Dictionary<string, string> Translations = new()
         {
@@ -176,9 +178,34 @@ namespace QuickPing.Patches
             { "quickping_leviathan", "Leviathan" },
         };
 
+        /// <summary>
+        /// Add QuickPing's names if the game localization already exists.
+        /// Later language loads go through <see cref="SetupLanguage"/>.
+        /// </summary>
         public static void AddTranslations()
         {
-            Jotunn.Managers.LocalizationManager.Instance.GetLocalization().AddTranslation("English", Translations);
+            // Not Localization.instance: it would create the localization before the game does
+            if (Localization.m_instance != null)
+                AddWords(Localization.m_instance);
+        }
+
+        /// <summary>
+        /// The game clears its words when it loads a language: add QuickPing's names back.
+        /// </summary>
+        [HarmonyPatch(typeof(Localization), nameof(Localization.SetupLanguage))]
+        [HarmonyPostfix]
+        private static void SetupLanguage(Localization __instance)
+        {
+            AddWords(__instance);
+        }
+
+        private static void AddWords(Localization localization)
+        {
+            foreach (var word in Translations)
+            {
+                if (!localization.m_translations.ContainsKey(word.Key))
+                    localization.AddWord(word.Key, word.Value);
+            }
         }
 
         /// <summary>

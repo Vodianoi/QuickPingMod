@@ -44,6 +44,7 @@ namespace QuickPing
             Instance = this;
 
             Settings.Init();
+            Patch(typeof(Localization_Patch));
             Localization_Patch.AddTranslations();
             Patch(typeof(Player_Patch));
             Patch(typeof(ChatPing_Patch));
@@ -65,7 +66,7 @@ namespace QuickPing
             Player_Patch.OnPlayerRename.AddListener(Minimap_Patch.RenamePin);
 
 #if DEBUG
-            Jotunn.Managers.CommandManager.Instance.AddConsoleCommand(new Utilities.DevDumpCommand());
+            Utilities.DevDumpCommand.Register();
 #endif
         }
 

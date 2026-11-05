@@ -1,6 +1,5 @@
 ﻿#if DEBUG
 using BepInEx;
-using Jotunn.Entities;
 using System;
 using System.IO;
 using System.Linq;
@@ -14,13 +13,19 @@ namespace QuickPing.Utilities
     /// to BepInEx/QuickPingDump.txt, to keep the pinnable lists in sync with the game.
     /// Run it in a loaded world (F5 console): quickping_dump
     /// </summary>
-    internal class DevDumpCommand : ConsoleCommand
+    internal static class DevDumpCommand
     {
-        public override string Name => "quickping_dump";
+        /// <summary>
+        /// The game keeps every created command in a static list, so creating it once is enough.
+        /// </summary>
+        public static void Register()
+        {
+            new Terminal.ConsoleCommand("quickping_dump",
+                "[QuickPing dev] Dump locations, pingable prefabs and localization keys",
+                _ => Run());
+        }
 
-        public override string Help => "[QuickPing dev] Dump locations, pingable prefabs and localization keys";
-
-        public override void Run(string[] args)
+        private static void Run()
         {
             if (!ZNetScene.instance || !ZoneSystem.instance)
             {
