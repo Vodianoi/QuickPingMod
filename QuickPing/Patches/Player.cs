@@ -117,6 +117,11 @@ namespace QuickPing.Patches
         /// <param name="pos"></param>
         /// <param name="center"></param>
         /// <param name="range"></param>
+        /// <summary>
+        /// Layers a ping can hit.
+        /// </summary>
+        internal static int PingLayers => LayerMask.GetMask("Default", "static_solid", "Default_small", "piece", "piece_nonsolid", "terrain", "character", "character_net", "character_ghost", "character_noenv", "vehicle", "item");
+
         public static HoverObject FindHoverObject(float range)
         {
             HoverObject hoverObj = new HoverObject()
@@ -126,8 +131,7 @@ namespace QuickPing.Patches
                 center = Player.m_localPlayer.GetHeadPoint(),
                 Name = Settings.DefaultPingText
             };
-            LayerMask m_interactMask = LayerMask.GetMask("Default", "static_solid", "Default_small", "piece", "piece_nonsolid", "terrain", "character", "character_net", "character_ghost", "character_noenv", "vehicle", "item");
-            RaycastHit[] array = Physics.RaycastAll(GameCamera.instance.transform.position, GameCamera.instance.transform.forward, range + 10, layerMask: m_interactMask);
+            RaycastHit[] array = Physics.RaycastAll(GameCamera.instance.transform.position, GameCamera.instance.transform.forward, range + 10, layerMask: PingLayers);
             Array.Sort(array, (RaycastHit x, RaycastHit y) => x.distance.CompareTo(y.distance));
             // Closest hit that isn't the local player
             int hitIndex = Array.FindIndex(array, hit => !OverlappingPlayer(hit));

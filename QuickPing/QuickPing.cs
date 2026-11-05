@@ -66,6 +66,8 @@ namespace QuickPing
 
 #if DEBUG
             DevDumpCommand.Register();
+            Tests.TestRunner.Register();
+            if (Tests.AutoRun.Enabled) Patch(typeof(Tests.AutoRun));
 #endif
         }
 
