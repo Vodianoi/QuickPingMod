@@ -100,6 +100,7 @@ namespace QuickPing.Utilities
             ((RectTransform)go.transform.Find("Background/Checkmark")).sizeDelta = new Vector2(size, size);
 
             Toggle toggle = go.GetComponent<Toggle>();
+            toggle.isOn = false; // Unity's default checkbox starts ticked
             toggle.toggleTransition = Toggle.ToggleTransition.Fade;
             toggle.colors = ToggleColors;
             if (toggle.targetGraphic is Image background)
