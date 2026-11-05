@@ -4,7 +4,6 @@
     "version_number":  "1.5.11",
     "website_url":  "https://github.com/Vodianoi/QuickPingMod",
     "dependencies":  [
-                         "denikson-BepInExPack_Valheim-5.4.2202",
-                         "ValheimModding-Jotunn-2.30.2"
+                         "denikson-BepInExPack_Valheim-5.4.2202"
                      ]
 }

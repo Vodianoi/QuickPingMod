@@ -14,7 +14,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
-    <!-- GitVersionInformation.g.cs needs ExcludeFromCodeCoverage, missing from the Unity corlib Jotunn references -->
+    <!-- GitVersionInformation.g.cs needs ExcludeFromCodeCoverage, missing from the Unity corlib references -->
     <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -96,9 +96,6 @@
     <PackageReference Include="BepInEx.BaseLib">
       <Version>5.4.21</Version>
     </PackageReference>
-    <PackageReference Include="Digitalroot.Valheim.References.JvL">
-      <Version>2.30.2</Version>
-    </PackageReference>
     <!-- Stay on 5.x: GitVersion 6 disables itself under Visual Studio / msbuild.exe (.NET Framework MSBuild) -->
     <PackageReference Include="GitVersion.MsBuild">
       <Version>5.12.0</Version>
@@ -108,9 +105,6 @@
     <PackageReference Include="HarmonyX">
       <Version>2.16.1</Version>
     </PackageReference>
-    <PackageReference Include="JotunnLib">
-      <Version>2.30.2</Version>
-    </PackageReference>
     <PackageReference Include="MonoMod.Backports">
       <Version>1.1.2</Version>
     </PackageReference>
@@ -118,9 +112,9 @@
       <Version>1.1.0</Version>
     </PackageReference>
   </ItemGroup>
-  <!-- CI has no Valheim install: use the published game/Unity references instead of Jotunn's
-       publicized assemblies (GitHub Actions sets CI=true). Keep these in sync with the game version. -->
-  <ItemGroup Condition="'$(CI)' == 'true'">
+  <!-- Published (publicized) game and Unity references, so builds don't need a Valheim install.
+       Keep these in sync with the game version. -->
+  <ItemGroup>
     <PackageReference Include="Digitalroot.Valheim.Common.References">
       <Version>1.0.21</Version>
     </PackageReference>
@@ -172,7 +166,7 @@
     <ZipDirectory SourceDirectory="$(PackageDir)" DestinationFile="$(AssemblyName).zip" Overwrite="true" />
   </Target>
   <!-- Local deploy to the Valheim plugins folder; skipped when VALHEIM_INSTALL is not set (CI) -->
-  <Target Name="JotunnPostBuildTaskWin" Condition="'$(OS)' == 'Windows_NT' And '$(VALHEIM_INSTALL)' != ''">
+  <Target Name="DeployToValheim" Condition="'$(OS)' == 'Windows_NT' And '$(VALHEIM_INSTALL)' != ''">
     <Exec Command="powershell.exe -ExecutionPolicy RemoteSigned -File &quot;$(SolutionDir)publish.ps1&quot; -Target &quot;$(ConfigurationName)&quot; -TargetPath &quot;$(TargetDir.TrimEnd('\'))&quot; -TargetAssembly &quot;$(TargetFileName)&quot; -ValheimPath &quot;$(VALHEIM_INSTALL.TrimEnd('\'))&quot; -DeployPath &quot;$(MOD_DEPLOYPATH.TrimEnd('\'))&quot; -ProjectPath &quot;$(ProjectDir.TrimEnd('\'))&quot; " />
   </Target>
   <!-- Generates MyPluginInfo (GUID/name/version). Runs after GitVersion so the version is known at compile time;
@@ -212,7 +206,7 @@ namespace $(RootNamespace)
     <BuildDependsOn>
 		$(BuildDependsOn);
 		GetAssemblyVersion;
-		JotunnPostBuildTaskWin;
+		DeployToValheim;
 	</BuildDependsOn>
   </PropertyGroup>
 </Project>

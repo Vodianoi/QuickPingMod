@@ -1,7 +1,6 @@
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using Jotunn.Utils;
 using QuickPing.Patches;
 using QuickPing.Utilities;
 using UnityEngine;
@@ -28,8 +27,6 @@ namespace QuickPing
         public bool pinable;
     }
 
-    [BepInDependency(Jotunn.Main.ModGuid)]
-    [NetworkCompatibility(CompatibilityLevel.NotEnforced, VersionStrictness.Minor)]
     [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
     public class QuickPingPlugin : BaseUnityPlugin
     {
