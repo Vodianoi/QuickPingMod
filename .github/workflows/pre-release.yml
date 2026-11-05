@@ -13,7 +13,9 @@ jobs:
   
   build: 
     name: "Build and Deploy"  
-    runs-on: windows-latest 
+    runs-on: windows-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
     steps:
       # CHECKOUT
       - uses: actions/checkout@v4
@@ -65,3 +67,20 @@ jobs:
           updateOnlyUnreleased: true
           name: "Pre-release: ${{ env.GitVersion_SemVer }}"
           prerelease: true
+
+      - name: Export tag
+        id: tag
+        shell: pwsh
+        run: '"tag=$env:GitVersion_SemVer" >> $env:GITHUB_OUTPUT'
+
+  # Check the Nexus Mods / Thunderstore credentials and the package without uploading.
+  upload-dry-run:
+    name: "Upload (dry run)"
+    needs: build
+    permissions:
+      contents: write
+    uses: ./.github/workflows/upload.yml
+    with:
+      tag: ${{ needs.build.outputs.tag }}
+      dry-run: true
+    secrets: inherit

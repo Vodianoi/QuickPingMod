@@ -18,6 +18,16 @@ on:
         type: boolean
         default: true
 
+  # Called by pre-release.yml to dry-run every pre-release.
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        required: true
+      dry-run:
+        type: boolean
+        default: true
+
 permissions:
   contents: write # release download + commit comment
 
@@ -46,7 +56,7 @@ jobs:
       # https://github.com/Vodianoi/uploadMod/pull/3 is merged and tagged.
       - uses: Vodianoi/uploadMod@6148dc425c82082405ed70d8ecbfc127ee5f1fad # dry-run branch
         with:
-          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
+          dry-run: ${{ github.event_name != 'release' && inputs.dry-run }}
           version: ${{ steps.version.outputs.version }}
           archive-file: QuickPing.zip
           file-name: QuickPing
