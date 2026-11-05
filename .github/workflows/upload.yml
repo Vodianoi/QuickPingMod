@@ -3,37 +3,62 @@ name: "Upload to Thunderstore and NexusMods"
 on:
   release:
     types: [published]
-    
+
+  # Test the upload pipeline on any existing release or pre-release.
+  # With dry-run (the default) nothing is uploaded: the action checks the
+  # Nexus Mods API key and file ID, the Thunderstore token and team, and has
+  # Thunderstore validate the zip's manifest.json.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag whose QuickPing.zip to test (pre-releases work too)
+        required: true
+      dry-run:
+        description: Dry run (untick to really upload this release)
+        type: boolean
+        default: true
+
+permissions:
+  contents: write # release download + commit comment
+
 jobs:
   publish-modpackage:
     runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event_name == 'release' && github.ref_name || inputs.tag }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: robinraju/release-downloader@v1
         with:
-          tag: "${{ github.ref_name }}"
-          fileName: "QuickPing.zip"
-      - uses: Vodianoi/uploadMod@0.9.42
+          tag: ${{ env.TAG }}
+          fileName: QuickPing.zip
+
+      # Thunderstore needs Major.Minor.Patch: drop a leading "v" and any
+      # pre-release suffix (1.6.0-feat-x.3 -> 1.6.0).
+      - name: Version
+        id: version
+        run: |
+          v="${TAG#v}"
+          echo "version=${v%%-*}" >> "$GITHUB_OUTPUT"
+
+      # TODO: switch to Vodianoi/uploadMod@v1 once
+      # https://github.com/Vodianoi/uploadMod/pull/3 is merged and tagged.
+      - uses: Vodianoi/uploadMod@6148dc425c82082405ed70d8ecbfc127ee5f1fad # dry-run branch
         with:
-          mod-id: '2033' #Nexus
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry-run }}
+          version: ${{ steps.version.outputs.version }}
           archive-file: QuickPing.zip
-          file-name: 'QuickPing'
-          version: "${{ github.ref_name }}"
-          category: 'Main'
+          file-name: QuickPing
           description: Ping what you see and pin it on the map !
-          game: valheim
-          namespace: 'com.atopy.plugins.quickping'
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NEXUSMOD_API_KEY: ${{ secrets.NEXUSMOD_API_KEY }}
-          NEXUSMOD_COOKIE_NEXUSID: ${{ secrets.NEXUSMOD_COOKIE_NEXUSID }}
-          NEXUSMOD_COOKIE_SID_DEVELOP: ${{ secrets.NEXUSMOD_COOKIE_SID_DEVELOP }}
-          
-      - uses: GreenTF/upload-thunderstore-package@v3.1
-        with:
-          namespace: Atopy # the thunderstore 'team' to publish under
-          description: Ping what you see and pin it on the map ! 
-          token: ${{ secrets.THUNDERSTORE_TOKEN }}
-          name: QuickPing # the name of the package
-          version: ${{ github.ref_name }} # Use the tag as the package version
-          community: Valheim
-          file: QuickPing.zip
+
+          nexus-api-key: ${{ secrets.NEXUSMOD_API_KEY }}
+          # File ID of the main QuickPing file (Files tab > Advanced), set as
+          # repository variable NEXUS_FILE_ID.
+          nexus-file-id: ${{ vars.NEXUS_FILE_ID }}
+          # Internal Nexus Mods ID of mod 2033: the dry run checks the file belongs to it.
+          nexus-mod-id: '15749645076465'
+          nexus-category: main
+
+          thunderstore-token: ${{ secrets.THUNDERSTORE_TOKEN }}
+          thunderstore-config: thunderstore.toml

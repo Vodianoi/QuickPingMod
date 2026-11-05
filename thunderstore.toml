@@ -1,0 +1,30 @@
+[config]
+schemaVersion = "0.0.1"
+
+[package]
+namespace = "Atopy"
+name = "QuickPing"
+versionNumber = "0.0.0" # the release tag is used instead
+description = "Ping what you see and pin it on the map !"
+websiteUrl = "https://github.com/Vodianoi/QuickPingMod"
+containsNsfwContent = false
+
+[package.dependencies]
+denikson-BepInExPack_Valheim = "5.4.2202"
+ValheimModding-Jotunn = "2.30.2"
+
+[build]
+icon = "./QuickPing/Package/icon.png"
+readme = "./QuickPing/Package/README.md"
+outdir = "./build"
+
+[[build.copy]]
+source = "./QuickPing/Package/plugins"
+target = "plugins"
+
+[publish]
+repository = "https://thunderstore.io"
+communities = ["valheim"]
+
+[publish.categories]
+valheim = ["mods", "utility", "tools", "client-side", "tweaks"]
