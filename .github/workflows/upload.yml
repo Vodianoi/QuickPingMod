@@ -65,8 +65,6 @@ jobs:
           # File ID of the main QuickPing file (Files tab > Advanced), set as
           # repository secret NEXUS_FILE_ID (a variable of that name works too).
           nexus-file-id: ${{ secrets.NEXUS_FILE_ID || vars.NEXUS_FILE_ID }}
-          # Internal Nexus Mods ID of mod 2033: the dry run checks the file belongs to it.
-          nexus-mod-id: '15749645076465'
           nexus-category: main
 
           thunderstore-token: ${{ secrets.THUNDERSTORE_TOKEN }}
