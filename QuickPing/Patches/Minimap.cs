@@ -78,7 +78,8 @@ namespace QuickPing.Patches
                     "$item_pickable_bogiron",
                     "$item_pickable_sulfurrock",
                     "$piece_deposit_goldvein", // Deep North: Petrified Gammeltroll
-                    "$item_tar",                    "$item_destructible_gucksack",
+                    "$item_tar",
+                    "$item_destructible_gucksack",
                     "$quickping_leviathan",
                 }
             },
