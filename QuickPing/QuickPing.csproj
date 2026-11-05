@@ -79,6 +79,8 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Utilities\DataManager.cs" />
     <Compile Include="Utilities\DevDump.cs" />
+    <Compile Include="Utilities\GameUI.cs" />
+    <Compile Include="Utilities\InputBlocker.cs" />
     <Compile Include="Utilities\Utils.cs" />
   </ItemGroup>
   <ItemGroup>

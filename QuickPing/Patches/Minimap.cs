@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Jotunn.Managers;
 using QuickPing.Utilities;
 using System;
 using System.Collections.Generic;
@@ -17,8 +16,8 @@ namespace QuickPing.Patches
     internal static class Minimap_Patch
     {
         private static GameObject panel;
-        private static GameObject nameInput;
-        private static GameObject toggleSaveName;
+        private static InputField nameInput;
+        private static Toggle toggleSaveName;
 
         public static bool IsNaming = false;
 
@@ -384,7 +383,7 @@ namespace QuickPing.Patches
             if (!InitNameInput(name)) return;
 
             closingFrame = -1;
-            GUIManager.BlockInput(true);
+            InputBlocker.Block(true);
         }
 
         public static void UpdateNameInput()
@@ -396,7 +395,7 @@ namespace QuickPing.Patches
                 {
                     closingFrame = -1;
                     IsNaming = false;
-                    GUIManager.BlockInput(false);
+                    InputBlocker.Block(false);
                 }
                 return;
             }
@@ -409,7 +408,7 @@ namespace QuickPing.Patches
 
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
-                ValidateNameInput(nameInput.GetComponent<InputField>(), toggleSaveName.GetComponent<Toggle>().isOn);
+                ValidateNameInput(nameInput, toggleSaveName.isOn);
                 return;
             }
 
@@ -422,7 +421,7 @@ namespace QuickPing.Patches
             // Keep typing in the name field, unless an icon was just clicked
             if (EventSystem.current && !EventSystem.current.currentSelectedGameObject)
             {
-                EventSystem.current.SetSelectedGameObject(nameInput);
+                EventSystem.current.SetSelectedGameObject(nameInput.gameObject);
             }
         }
 
@@ -520,28 +519,12 @@ namespace QuickPing.Patches
 
         private static bool InitNameInput(string name)
         {
-            if (GUIManager.Instance == null)
-            {
-                QuickPingPlugin.Log.LogError("GUIManager instance is null");
-                return false;
-            }
-
-            if (!GUIManager.CustomGUIFront)
-            {
-                QuickPingPlugin.Log.LogError("GUIManager CustomGUI is null");
-                return false;
-            }
+            Transform canvas = GameUI.Canvas;
+            if (!canvas) return false;
 
             IsNaming = true;
 
-            panel = GUIManager.Instance.CreateWoodpanel(
-                parent: GUIManager.CustomGUIFront.transform,
-                anchorMin: new Vector2(0.5f, 0.5f),
-                anchorMax: new Vector2(0.5f, 0.5f),
-                position: new Vector2(0f, 0f),
-                width: 260f,
-                height: 150f,
-                draggable: true);
+            panel = GameUI.CreateWoodPanel(canvas, 260f, 150f);
 
             var verticalLayoutGroup = panel.gameObject.AddComponent<VerticalLayoutGroup>();
             verticalLayoutGroup.spacing = 10f;
@@ -551,19 +534,9 @@ namespace QuickPing.Patches
             verticalLayoutGroup.childControlHeight = true;
             verticalLayoutGroup.childForceExpandHeight = false;
 
-            nameInput = GUIManager.Instance.CreateInputField(
-                parent: panel.transform,
-                anchorMin: new Vector2(0.5f, 0.5f),
-                anchorMax: new Vector2(0.5f, 0.5f),
-                position: new Vector2(0, 0),
-                contentType: InputField.ContentType.Standard,
-                placeholderText: "Pin Name",
-                fontSize: 16,
-                width: 200f,
-                height: 30f
-            );
-            nameInput.AddComponent<LayoutElement>().preferredHeight = 30f;
-            nameInput.GetComponent<InputField>().text = name;
+            nameInput = GameUI.CreateInputField(panel.transform, "Pin Name", 16, 200f, 30f);
+            nameInput.gameObject.AddComponent<LayoutElement>().preferredHeight = 30f;
+            nameInput.text = name;
 
             // Icon picker
             GameObject icons = new GameObject("Icons", typeof(RectTransform));
@@ -596,20 +569,10 @@ namespace QuickPing.Patches
             }
             SelectIcon(selectedType);
 
-            toggleSaveName = GUIManager.Instance.CreateToggle(
-                parent: panel.transform,
-                width: 20f,
-                height: 20f
-            );
-            toggleSaveName.AddComponent<LayoutElement>().preferredHeight = 20f;
+            toggleSaveName = GameUI.CreateToggle(panel.transform, "Remember this name", 20f);
+            toggleSaveName.gameObject.AddComponent<LayoutElement>().preferredHeight = 20f;
 
-            Text saveNameText = toggleSaveName.transform.Find("Label").GetComponent<Text>();
-            saveNameText.color = Color.white;
-            saveNameText.text = "Remember this name";
-            saveNameText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            saveNameText.enabled = true;
-
-            if (EventSystem.current) EventSystem.current.SetSelectedGameObject(nameInput);
+            if (EventSystem.current) EventSystem.current.SetSelectedGameObject(nameInput.gameObject);
             return true;
         }
 

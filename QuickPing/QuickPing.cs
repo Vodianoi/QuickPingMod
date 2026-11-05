@@ -3,6 +3,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using Jotunn.Utils;
 using QuickPing.Patches;
+using QuickPing.Utilities;
 using UnityEngine;
 
 
@@ -46,6 +47,7 @@ namespace QuickPing
             Settings.Init();
             Patch(typeof(Localization_Patch));
             Localization_Patch.AddTranslations();
+            Patch(typeof(InputBlocker));
             Patch(typeof(Player_Patch));
             Patch(typeof(ChatPing_Patch));
             Patch(typeof(Minimap_Patch));
@@ -66,7 +68,7 @@ namespace QuickPing
             Player_Patch.OnPlayerRename.AddListener(Minimap_Patch.RenamePin);
 
 #if DEBUG
-            Utilities.DevDumpCommand.Register();
+            DevDumpCommand.Register();
 #endif
         }
 
