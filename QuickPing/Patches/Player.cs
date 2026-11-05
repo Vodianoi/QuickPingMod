@@ -43,7 +43,7 @@ namespace QuickPing.Patches
             //Check Keys
             if (Settings.PingKey.Value != KeyCode.None)
             {
-                if (ZInput.GetButtonDown(Settings.RenameBtn.Name))
+                if (Settings.IsDown(Settings.RenameKey.Value))
                 {
                     HoverObject ping = FindHoverObject(500f);
 
@@ -52,7 +52,7 @@ namespace QuickPing.Patches
                     OnPlayerRename.Invoke(ping);
                 }
                 else
-                if (ZInput.GetButtonDown(Settings.PingBtn.Name))
+                if (Settings.IsDown(Settings.PingKey.Value))
                 {
                     HoverObject ping = FindHoverObject(500f);
 
@@ -61,7 +61,7 @@ namespace QuickPing.Patches
                     OnPlayerPing.Invoke(ping);
                 }
                 else
-                if (ZInput.GetButtonDown(Settings.PingEverythingBtn.Name))
+                if (Settings.IsDown(Settings.PinEverythingKey.Value))
                 {
                     HoverObject ping = FindHoverObject(500f);
 
