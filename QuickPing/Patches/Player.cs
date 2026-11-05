@@ -14,7 +14,7 @@ namespace QuickPing.Patches
     {
         public static UnityEvent<HoverObject> OnPlayerPing = new UnityEvent<HoverObject>();
         public static UnityEvent<HoverObject> OnPlayerForcePing = new UnityEvent<HoverObject>();
-        public static UnityEvent<HoverObject> OnPlayerRename = new UnityEvent<HoverObject>();
+        public static UnityEvent<HoverObject> OnPlayerCustomNamePing = new UnityEvent<HoverObject>();
 
 
         /// <summary>
@@ -43,13 +43,13 @@ namespace QuickPing.Patches
             //Check Keys
             if (Settings.PingKey.Value != KeyCode.None)
             {
-                if (Settings.IsDown(Settings.RenameKey.Value))
+                if (Settings.IsDown(Settings.CustomNamePingKey.Value))
                 {
                     HoverObject ping = FindHoverObject(500f);
 
                     ping.Name = GetHoverName(ping.Name, ping.Hover, ping.type);
 
-                    OnPlayerRename.Invoke(ping);
+                    OnPlayerCustomNamePing.Invoke(ping);
                 }
                 else
                 if (Settings.IsDown(Settings.PingKey.Value))
@@ -339,7 +339,6 @@ namespace QuickPing.Patches
             return (bool)raycastHit.collider.attachedRigidbody && raycastHit.collider.attachedRigidbody.gameObject == Player.m_localPlayer.gameObject;
         }
 
-        internal static void SendRename(HoverObject ping) => SendPing(ping);
         public static void SendPing(HoverObject ping) => SendPing(ping.pos, Localization.instance.Localize(ping.Name));
         internal static void SendPing(Vector3 position, string text, bool local = false)
         {

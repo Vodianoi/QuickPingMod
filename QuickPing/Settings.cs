@@ -12,7 +12,7 @@ namespace QuickPing
         public static ConfigEntry<bool> AddPin { get; private set; }
         public static ConfigEntry<KeyCode> PingKey { get; private set; }
         public static ConfigEntry<KeyCode> PinEverythingKey { get; internal set; }
-        public static ConfigEntry<KeyboardShortcut> RenameKey { get; internal set; }
+        public static ConfigEntry<KeyboardShortcut> CustomNamePingKey { get; internal set; }
 
         public static ConfigEntry<Minimap.PinType> DefaultPinType { get; internal set; }
 
@@ -88,10 +88,26 @@ namespace QuickPing
                 "PingEverythingInputKey",
                 KeyCode.G,
                 "Add a pin on minimap to whatever you're looking at.");
-            RenameKey = QuickPingPlugin.Instance.Config.Bind("Bindings",
-                "RenameInputKey",
-                new KeyboardShortcut(PingKey.Value, KeyCode.LeftAlt), new ConfigDescription("" +
-                "The keybind to rename a ping"));
+            var customNamePingDefault = new KeyboardShortcut(PingKey.Value, KeyCode.LeftAlt);
+            CustomNamePingKey = QuickPingPlugin.Instance.Config.Bind("Bindings",
+                "CustomNamePingInputKey",
+                customNamePingDefault,
+                "Ping where you are looking and choose the name and icon of its pin (also where there is no pin yet).");
+            MigrateKey("RenameInputKey", CustomNamePingKey, customNamePingDefault);
+        }
+
+        /// <summary>
+        /// Keep the binding a player set under a key's old name (renamed in 1.7.0), then drop the old name.
+        /// </summary>
+        private static void MigrateKey(string oldKey, ConfigEntry<KeyboardShortcut> entry, KeyboardShortcut defaultValue)
+        {
+            ConfigFile config = QuickPingPlugin.Instance.Config;
+            ConfigEntry<KeyboardShortcut> old = config.Bind(entry.Definition.Section, oldKey, defaultValue);
+            if (!old.Value.Equals(defaultValue))
+                entry.Value = old.Value;
+
+            config.Remove(old.Definition);
+            config.Save();
         }
 
         /// <summary>

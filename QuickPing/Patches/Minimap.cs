@@ -212,12 +212,6 @@ namespace QuickPing.Patches
         }
 
         /// <summary>
-        /// Open the pin editor (name and icon) for what the player is looking at.
-        /// </summary>
-        /// <param name="obj"></param>
-        internal static void RenamePin(HoverObject obj) => OpenEditor(obj);
-
-        /// <summary>
         /// Add correct pin to map if Settings.
         /// </summary>
         /// <param name="obj"></param>
@@ -332,12 +326,12 @@ namespace QuickPing.Patches
             }
         }
 
-        #region PinEditor
+        #region CustomNamePing
 
         /// <summary>
-        /// Icons offered by the editor (the ones of the vanilla map).
+        /// Icons offered by the Custom Name Ping window (the ones of the vanilla map).
         /// </summary>
-        private static readonly Minimap.PinType[] EditorIcons =
+        private static readonly Minimap.PinType[] PinIcons =
         {
             Minimap.PinType.Icon0,
             Minimap.PinType.Icon1,
@@ -355,9 +349,10 @@ namespace QuickPing.Patches
         private static int closingFrame = -1;
 
         /// <summary>
-        /// Edit the pin under the cursor, or prepare a new one there.
+        /// Custom Name Ping: choose the name and icon of the pin where the player is looking.
+        /// Edits the pin already there, or prepares a new one.
         /// </summary>
-        private static void OpenEditor(HoverObject obj)
+        internal static void OpenCustomNamePing(HoverObject obj)
         {
             if (IsNaming || !Minimap.instance) return;
 
@@ -402,7 +397,7 @@ namespace QuickPing.Patches
 
             if (!panel || !nameInput)
             {
-                CloseEditor();
+                CloseCustomNamePing();
                 return;
             }
 
@@ -414,7 +409,7 @@ namespace QuickPing.Patches
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                CloseEditor();
+                CloseCustomNamePing();
                 return;
             }
 
@@ -425,7 +420,7 @@ namespace QuickPing.Patches
             }
         }
 
-        private static void CloseEditor()
+        private static void CloseCustomNamePing()
         {
             DestroyGUI();
             editedPin = null;
@@ -474,7 +469,7 @@ namespace QuickPing.Patches
                 }
             }
 
-            CloseEditor();
+            CloseCustomNamePing();
         }
 
         /// <summary>
@@ -550,7 +545,7 @@ namespace QuickPing.Patches
             iconsLayout.childForceExpandWidth = false;
             iconsLayout.childForceExpandHeight = false;
 
-            foreach (Minimap.PinType type in EditorIcons)
+            foreach (Minimap.PinType type in PinIcons)
             {
                 GameObject icon = new GameObject(type.ToString(), typeof(RectTransform));
                 icon.transform.SetParent(icons.transform, false);
