@@ -24,10 +24,11 @@ Ping position and markers will always work but must be installed on all clients 
 - Change already existing Portal pin by pinging the portal again, it will change the marker's name to portal tag.
 
 ## What's Changed
+* Fix: the mod didn't load (`Could not load file or assembly 'MonoMod.Backports'`) ([#125](https://github.com/Vodianoi/QuickPingMod/issues/125))
 * No longer needs Jotunn: only BepInEx is required
 * The pin editor is now called **Custom Name Ping**. Its key setting is renamed `CustomNamePingInputKey`; a binding changed under the old name (`RenameInputKey`) is kept
 
-**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.6.0...1.7.0
+**Full Changelog**: https://github.com/Vodianoi/QuickPingMod/compare/1.6.0...1.7.1
 
 ## Configuration
 The settings for QuickPing can be accessed in the BepInEx config file located in the `Valheim/BepInEx/config` folder. The settings include:
