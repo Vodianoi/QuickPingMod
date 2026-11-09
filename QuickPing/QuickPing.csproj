@@ -153,6 +153,34 @@
       <PackageDir>Package\</PackageDir>
     </PropertyGroup>
   </Target>
+  <!-- Fail the build if the plugin needs an assembly players don't have: only the game (Managed folder),
+       BepInExPack_Valheim (BepInEx, Harmony, MonoMod, Cecil) and nothing else. A missing one disables the whole mod. -->
+  <UsingTask TaskName="CheckAssemblyReferences" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <AssemblyPath ParameterType="System.String" Required="true" />
+      <Allowed ParameterType="System.String" Required="true" />
+      <Missing ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Code Type="Fragment" Language="cs"><![CDATA[
+        var allowed = new System.Text.RegularExpressions.Regex(Allowed);
+        var assembly = System.Reflection.Assembly.Load(System.IO.File.ReadAllBytes(AssemblyPath));
+        var missing = new System.Collections.Generic.List<string>();
+        foreach (var reference in assembly.GetReferencedAssemblies())
+        {
+            if (!allowed.IsMatch(reference.Name))
+                missing.Add(reference.Name);
+        }
+        Missing = string.Join(", ", missing);
+      ]]></Code>
+    </Task>
+  </UsingTask>
+  <Target Name="CheckAssemblyReferences" AfterTargets="CoreCompile" BeforeTargets="CopyFilesToOutputDirectory">
+    <CheckAssemblyReferences AssemblyPath="@(IntermediateAssembly->'%(FullPath)')" Allowed="^(mscorlib|netstandard|System(\..+)?|Mono\.Security|Newtonsoft\.Json|UnityEngine(\..+)?|Unity\..+|assembly_.+|gui_framework|SoftReferenceableAssets|Splatform(\..+)?|BepInEx(\..+)?|0Harmony|HarmonyXInterop|MonoMod\.(Utils|RuntimeDetour)|Mono\.Cecil(\..+)?)$">
+      <Output TaskParameter="Missing" PropertyName="MissingReferences" />
+    </CheckAssemblyReferences>
+    <Error Condition="'$(MissingReferences)' != ''" Text="QuickPing references $(MissingReferences), which players don't have (not in the game or BepInExPack_Valheim): the mod would fail to load." />
+  </Target>
   <!-- Import Environment.props-->
   <Import Project="../Environment.Props" Condition="Exists('../Environment.Props')" />
   <Target Name="MakeThunderstorePackage">
