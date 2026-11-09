@@ -99,20 +99,16 @@
     <PackageReference Include="BepInEx.BaseLib">
       <Version>5.4.21</Version>
     </PackageReference>
+    <!-- The Harmony shipped by BepInExPack_Valheim. A newer HarmonyX pulls MonoMod.Backports, which the game doesn't have:
+         the compiler then uses its types (string interpolation) and the mod fails to load. -->
+    <PackageReference Include="HarmonyX">
+      <Version>2.9.0</Version>
+    </PackageReference>
     <!-- Stay on 5.x: GitVersion 6 disables itself under Visual Studio / msbuild.exe (.NET Framework MSBuild) -->
     <PackageReference Include="GitVersion.MsBuild">
       <Version>5.12.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="HarmonyX">
-      <Version>2.16.1</Version>
-    </PackageReference>
-    <PackageReference Include="MonoMod.Backports">
-      <Version>1.1.2</Version>
-    </PackageReference>
-    <PackageReference Include="MonoMod.ILHelpers">
-      <Version>1.1.0</Version>
     </PackageReference>
   </ItemGroup>
   <!-- Published (publicized) game and Unity references, so builds don't need a Valheim install.
